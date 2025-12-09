@@ -1,0 +1,2790 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
+    <title>إدارة المصروفات المنزلية المتطورة</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700;800;900&display=swap" rel="stylesheet">
+    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-database-compat.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Cairo', sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+        
+        :root {
+            --primary: #4361ee;
+            --primary-light: #4895ef;
+            --primary-dark: #3a0ca3;
+            --secondary: #7209b7;
+            --secondary-light: #b5179e;
+            --success: #4cc9f0;
+            --warning: #f72585;
+            --danger: #ef233c;
+            --light: #f8f9fa;
+            --dark: #212529;
+            --gray: #6c757d;
+            --gray-light: #e9ecef;
+            --border-radius: 24px;
+            --border-radius-sm: 16px;
+            --box-shadow: 0 12px 36px rgba(0, 0, 0, 0.2);
+            --box-shadow-sm: 0 6px 20px rgba(0, 0, 0, 0.15);
+            --transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            --gradient-primary: linear-gradient(135deg, #4361ee 0%, #3a0ca3 100%);
+            --gradient-secondary: linear-gradient(135deg, #7209b7 0%, #b5179e 100%);
+            --gradient-success: linear-gradient(135deg, #4cc9f0 0%, #4895ef 100%);
+            --gradient-warning: linear-gradient(135deg, #f72585 0%, #ef233c 100%);
+            --gradient-light: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            --gradient-dark: linear-gradient(135deg, #212529 0%, #343a40 100%);
+        }
+        
+        body {
+            background: linear-gradient(135deg, #f0f4ff 0%, #e6f7ff 100%);
+            color: var(--dark);
+            min-height: 100vh;
+            overflow-x: hidden;
+            position: relative;
+        }
+        
+        .animated-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            background: 
+                radial-gradient(circle at 20% 80%, rgba(67, 97, 238, 0.15) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(114, 9, 183, 0.15) 0%, transparent 50%),
+                radial-gradient(circle at 40% 40%, rgba(76, 201, 240, 0.1) 0%, transparent 50%),
+                linear-gradient(135deg, #f0f4ff 0%, #e6f7ff 100%);
+            overflow: hidden;
+        }
+        
+        .animated-bg::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(
+                90deg,
+                transparent 0%,
+                rgba(255, 255, 255, 0.1) 50%,
+                transparent 100%
+            );
+            animation: shimmer 8s infinite linear;
+        }
+        
+        /* Floating Elements Animation */
+        .floating-elements {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: -1;
+        }
+        
+        .floating-element {
+            position: absolute;
+            border-radius: 50%;
+            background: linear-gradient(135deg, rgba(67, 97, 238, 0.1), rgba(76, 201, 240, 0.1));
+            filter: blur(2px);
+            animation: floatAnimation 20s infinite linear;
+        }
+        
+        .floating-element:nth-child(1) {
+            width: 120px;
+            height: 120px;
+            top: 10%;
+            left: 5%;
+            animation-delay: 0s;
+        }
+        
+        .floating-element:nth-child(2) {
+            width: 80px;
+            height: 80px;
+            top: 20%;
+            right: 10%;
+            animation-delay: -5s;
+        }
+        
+        .floating-element:nth-child(3) {
+            width: 150px;
+            height: 150px;
+            bottom: 15%;
+            left: 15%;
+            animation-delay: -10s;
+        }
+        
+        .floating-element:nth-child(4) {
+            width: 100px;
+            height: 100px;
+            bottom: 25%;
+            right: 5%;
+            animation-delay: -15s;
+        }
+        
+        .app-header {
+            text-align: center;
+            padding: 25px 20px 30px;
+            background: var(--gradient-primary);
+            color: white;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 15px 40px rgba(67, 97, 238, 0.4);
+            margin-bottom: 10px;
+            animation: headerSlideIn 0.8s ease-out;
+        }
+        
+        .app-header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 6px;
+            background: linear-gradient(90deg, 
+                #4cc9f0, #4895ef, #4361ee, #3a0ca3,
+                #7209b7, #b5179e, #f72585, #ef233c);
+            background-size: 400% 100%;
+            animation: gradientFlow 12s infinite linear;
+        }
+        
+        .app-header::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M11 18c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm48 25c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm-43-7c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm63 31c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM34 90c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm56-76c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM12 86c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm28-65c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm23-11c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-6 60c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm29 22c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zM32 63c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm57-13c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-9-21c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM60 91c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM35 41c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM12 60c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2z' fill='%234361ee' fill-opacity='0.1' fill-rule='evenodd'/%3E%3C/svg%3E");
+            opacity: 0.1;
+            animation: float 20s infinite linear;
+        }
+        
+        .header-content {
+            position: relative;
+            z-index: 1;
+        }
+        
+        .app-header h1 {
+            font-size: 1.8rem;
+            margin-bottom: 8px;
+            text-shadow: 0 2px 15px rgba(0, 0, 0, 0.4);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+            animation: fadeInDown 0.8s ease 0.2s both;
+        }
+        
+        .app-header h1 i {
+            font-size: 2.2rem;
+            animation: bounce 2s infinite;
+        }
+        
+        .app-header p {
+            font-size: 0.95rem;
+            opacity: 0.95;
+            margin-bottom: 10px;
+            animation: fadeIn 1s ease 0.4s both;
+        }
+        
+        .designer-credit {
+            font-size: 0.8rem;
+            opacity: 0.8;
+            margin-top: 5px;
+            animation: fadeIn 1s ease 0.6s both;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            position: relative;
+            padding: 5px 12px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            backdrop-filter: blur(5px);
+            max-width: 250px;
+            margin: 8px auto 0;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .designer-credit i {
+            animation: ring 3s infinite;
+            color: #4cc9f0;
+        }
+        
+        /* Quick Month Selector */
+        .quick-month-selector {
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            background: rgba(255, 255, 255, 0.95);
+            padding: 15px 20px;
+            border-bottom: 3px solid var(--primary);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+            margin-bottom: 20px;
+            animation: slideInDown 0.6s ease;
+            backdrop-filter: blur(10px);
+            border-radius: 0 0 var(--border-radius) var(--border-radius);
+        }
+        
+        .month-selector-container {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 15px;
+        }
+        
+        .month-selector-label {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-weight: 800;
+            color: var(--dark);
+            font-size: 1.05rem;
+            white-space: nowrap;
+            background: rgba(67, 97, 238, 0.1);
+            padding: 10px 15px;
+            border-radius: 12px;
+            border: 2px solid rgba(67, 97, 238, 0.3);
+            transition: var(--transition);
+        }
+        
+        .month-selector-label:hover {
+            background: rgba(67, 97, 238, 0.2);
+            transform: translateY(-2px);
+        }
+        
+        .month-selector-label i {
+            color: var(--primary);
+            animation: pulse 2s infinite;
+        }
+        
+        .month-selector-controls {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex: 1;
+            justify-content: flex-end;
+        }
+        
+        .month-select {
+            flex: 1;
+            max-width: 320px;
+            padding: 12px 20px;
+            border: 2px solid var(--primary);
+            border-radius: 12px;
+            font-size: 1rem;
+            font-weight: 700;
+            color: var(--dark);
+            background: white;
+            cursor: pointer;
+            transition: var(--transition);
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='%234361ee' viewBox='0 0 16 16'%3E%3Cpath d='M7.247 11.14 2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: left 15px center;
+            background-size: 16px;
+            padding-left: 45px;
+            box-shadow: 0 4px 15px rgba(67, 97, 238, 0.1);
+        }
+        
+        .month-select:focus {
+            outline: none;
+            border-color: var(--primary-dark);
+            box-shadow: 0 0 0 4px rgba(67, 97, 238, 0.3);
+            transform: translateY(-2px);
+        }
+        
+        .current-month-btn {
+            padding: 12px 20px;
+            background: var(--gradient-primary);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 0.95rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            white-space: nowrap;
+            box-shadow: 0 6px 20px rgba(67, 97, 238, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .current-month-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+            transition: left 0.7s;
+        }
+        
+        .current-month-btn:hover::before {
+            left: 100%;
+        }
+        
+        .current-month-btn:hover {
+            transform: translateY(-4px) scale(1.05);
+            box-shadow: 0 10px 30px rgba(67, 97, 238, 0.5);
+        }
+        
+        .stats-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+            gap: 15px;
+            margin: 0 20px 25px;
+            animation: fadeInUp 0.8s ease 0.2s both;
+        }
+        
+        .stat-card {
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: var(--border-radius-sm);
+            padding: 20px 15px;
+            text-align: center;
+            box-shadow: var(--box-shadow-sm);
+            transition: var(--transition);
+            position: relative;
+            overflow: hidden;
+            border: 2px solid transparent;
+            backdrop-filter: blur(5px);
+            animation: cardFloat 4s ease-in-out infinite;
+        }
+        
+        .stat-card:nth-child(2) {
+            animation-delay: 0.5s;
+        }
+        
+        .stat-card:nth-child(3) {
+            animation-delay: 1s;
+        }
+        
+        .stat-card:nth-child(4) {
+            animation-delay: 1.5s;
+        }
+        
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 6px;
+            background: var(--gradient-primary);
+            transform: translateY(-100%);
+            transition: transform 0.6s ease;
+        }
+        
+        .stat-card:hover::before {
+            transform: translateY(0);
+        }
+        
+        .stat-card:hover {
+            transform: translateY(-8px) scale(1.03);
+            box-shadow: 0 20px 45px rgba(0, 0, 0, 0.2);
+            border-color: var(--primary);
+        }
+        
+        .stat-card i {
+            font-size: 2.5rem;
+            margin-bottom: 15px;
+            color: var(--primary);
+            transition: var(--transition);
+            background: linear-gradient(135deg, var(--primary), var(--primary-light));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .stat-card:hover i {
+            transform: scale(1.3) rotate(15deg);
+        }
+        
+        .stat-card h3 {
+            font-size: 1.8rem;
+            font-weight: 900;
+            color: var(--dark);
+            margin-bottom: 8px;
+            transition: var(--transition);
+            text-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        
+        .stat-card:hover h3 {
+            color: var(--primary);
+            transform: scale(1.05);
+        }
+        
+        .stat-card p {
+            font-size: 0.9rem;
+            color: var(--gray);
+            font-weight: 700;
+            letter-spacing: 0.5px;
+        }
+        
+        .stat-card.warning {
+            border-color: var(--warning);
+            animation: pulseWarningCard 2s infinite;
+        }
+        
+        .stat-card.warning i {
+            background: linear-gradient(135deg, var(--warning), var(--danger));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .stat-card.warning h3 {
+            color: var(--warning);
+        }
+        
+        /* Touch Category Selection */
+        .touch-category-selector {
+            margin: 0 20px 25px;
+            animation: fadeInUp 0.8s ease 0.4s both;
+        }
+        
+        .touch-category-selector h3 {
+            color: var(--dark);
+            font-size: 1.3rem;
+            font-weight: 800;
+            margin-bottom: 18px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            position: relative;
+            padding-bottom: 10px;
+        }
+        
+        .touch-category-selector h3::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            right: 0;
+            width: 100px;
+            height: 4px;
+            background: var(--gradient-primary);
+            border-radius: 2px;
+        }
+        
+        .touch-category-selector h3 i {
+            color: var(--primary);
+            animation: pulse 2s infinite;
+            background: var(--gradient-primary);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .categories-touch-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 15px;
+        }
+        
+        .category-touch-item {
+            background: white;
+            border-radius: var(--border-radius-sm);
+            padding: 18px 15px;
+            box-shadow: var(--box-shadow-sm);
+            transition: var(--transition);
+            position: relative;
+            overflow: hidden;
+            cursor: pointer;
+            border: 3px solid transparent;
+            text-align: center;
+            animation: fadeInScale 0.5s ease-out forwards;
+            opacity: 0;
+            transform: scale(0.9);
+        }
+        
+        .category-touch-item.selected {
+            border-color: var(--primary);
+            transform: scale(1.05);
+            box-shadow: 0 15px 35px rgba(67, 97, 238, 0.3);
+        }
+        
+        .category-touch-item:hover {
+            transform: translateY(-10px) scale(1.05);
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.25);
+        }
+        
+        .category-touch-icon {
+            width: 60px;
+            height: 60px;
+            margin: 0 auto 15px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.8rem;
+            color: white;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.25);
+            transition: var(--transition);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .category-touch-item:hover .category-touch-icon {
+            transform: scale(1.2) rotate(15deg);
+            box-shadow: 0 12px 35px rgba(0, 0, 0, 0.35);
+        }
+        
+        .category-touch-item.selected .category-touch-icon {
+            animation: bounce 1s infinite;
+        }
+        
+        .category-touch-icon::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, rgba(255,255,255,0.3) 0%, rgba(255,255,255,0.1) 100%);
+        }
+        
+        .category-touch-icon i {
+            position: relative;
+            z-index: 1;
+        }
+        
+        .category-touch-name {
+            font-size: 0.95rem;
+            font-weight: 800;
+            color: var(--dark);
+            margin-bottom: 8px;
+            line-height: 1.4;
+            transition: var(--transition);
+        }
+        
+        .category-touch-item:hover .category-touch-name {
+            color: var(--primary);
+        }
+        
+        .category-touch-limit {
+            font-size: 0.85rem;
+            color: var(--gray);
+            background: var(--gray-light);
+            padding: 6px 12px;
+            border-radius: 20px;
+            display: inline-block;
+            transition: var(--transition);
+            font-weight: 600;
+        }
+        
+        .category-touch-item:hover .category-touch-limit {
+            background: var(--primary);
+            color: white;
+            transform: translateY(-2px);
+        }
+        
+        .category-touch-item.warning {
+            border-color: var(--warning);
+        }
+        
+        .category-touch-item.warning .category-touch-limit {
+            background: rgba(247, 37, 133, 0.1);
+            color: var(--warning);
+            animation: pulseWarning 2s infinite;
+        }
+        
+        /* Expense Form */
+        .expense-form-container {
+            margin: 0 20px 25px;
+            animation: fadeInUp 0.8s ease 0.6s both;
+        }
+        
+        .expense-form {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: var(--border-radius-sm);
+            padding: 25px 20px;
+            box-shadow: var(--box-shadow);
+            position: relative;
+            overflow: hidden;
+            border: 2px solid rgba(67, 97, 238, 0.2);
+            backdrop-filter: blur(10px);
+        }
+        
+        .expense-form::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 8px;
+            height: 100%;
+            background: var(--gradient-primary);
+            border-radius: 0 12px 12px 0;
+        }
+        
+        .form-title {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+            color: var(--dark);
+            gap: 12px;
+        }
+        
+        .form-title i {
+            font-size: 1.6rem;
+            color: var(--primary);
+            animation: bounce 2s infinite;
+        }
+        
+        .form-title h3 {
+            font-size: 1.3rem;
+            font-weight: 800;
+            background: var(--gradient-primary);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .selected-category-display {
+            background: linear-gradient(135deg, rgba(67, 97, 238, 0.1), rgba(76, 201, 240, 0.1));
+            border-radius: 12px;
+            padding: 15px;
+            margin-bottom: 20px;
+            border: 2px dashed var(--primary);
+            text-align: center;
+            transition: var(--transition);
+            animation: pulseBorder 2s infinite;
+        }
+        
+        .selected-category-display.hidden {
+            display: none;
+        }
+        
+        .selected-category-info {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+        
+        .selected-category-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            color: white;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+        
+        .selected-category-text {
+            flex: 1;
+            min-width: 200px;
+        }
+        
+        .selected-category-name {
+            font-size: 1.2rem;
+            font-weight: 800;
+            color: var(--dark);
+            margin-bottom: 5px;
+        }
+        
+        .selected-category-limit {
+            font-size: 0.9rem;
+            color: var(--gray);
+            font-weight: 600;
+        }
+        
+        .change-category-btn {
+            background: var(--gradient-warning);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            box-shadow: 0 5px 15px rgba(247, 37, 133, 0.3);
+        }
+        
+        .change-category-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(247, 37, 133, 0.4);
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+            position: relative;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 700;
+            color: var(--dark);
+            font-size: 0.95rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .form-group label i {
+            color: var(--primary);
+            background: var(--gradient-primary);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .form-control {
+            width: 100%;
+            padding: 15px;
+            border: 3px solid var(--gray-light);
+            border-radius: 12px;
+            font-size: 1rem;
+            transition: var(--transition);
+            background: white;
+            color: var(--dark);
+            font-weight: 600;
+        }
+        
+        .form-control:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 4px rgba(67, 97, 238, 0.3);
+            transform: translateY(-3px);
+        }
+        
+        .amount-input-container {
+            position: relative;
+        }
+        
+        .currency-symbol {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-weight: 800;
+            color: var(--primary);
+            font-size: 1.2rem;
+        }
+        
+        #amount {
+            padding-left: 40px;
+        }
+        
+        .category-limit-info {
+            margin-top: 10px;
+            font-size: 0.85rem;
+            color: var(--gray);
+            padding: 10px 15px;
+            background: rgba(67, 97, 238, 0.1);
+            border-radius: 8px;
+            display: none;
+            animation: fadeIn 0.3s ease;
+            border-right: 4px solid var(--primary);
+        }
+        
+        .category-limit-info.show {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .btn {
+            padding: 15px 25px;
+            border: none;
+            border-radius: 12px;
+            font-size: 1rem;
+            font-weight: 800;
+            cursor: pointer;
+            transition: var(--transition);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            position: relative;
+            overflow: hidden;
+            letter-spacing: 0.5px;
+        }
+        
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+            transition: left 0.7s;
+        }
+        
+        .btn:hover::before {
+            left: 100%;
+        }
+        
+        .btn-primary {
+            background: var(--gradient-primary);
+            color: white;
+            box-shadow: 0 10px 30px rgba(67, 97, 238, 0.4);
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-6px) scale(1.03);
+            box-shadow: 0 20px 45px rgba(67, 97, 238, 0.5);
+        }
+        
+        .btn-block {
+            width: 100%;
+        }
+        
+        .recent-expenses {
+            margin: 0 20px 25px;
+            animation: fadeInUp 0.8s ease 0.8s both;
+        }
+        
+        .recent-expenses h3 {
+            color: var(--dark);
+            font-size: 1.3rem;
+            font-weight: 800;
+            margin-bottom: 18px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            position: relative;
+            padding-bottom: 10px;
+        }
+        
+        .recent-expenses h3::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            right: 0;
+            width: 100px;
+            height: 4px;
+            background: var(--gradient-primary);
+            border-radius: 2px;
+        }
+        
+        .recent-expenses h3 i {
+            color: var(--primary);
+            background: var(--gradient-primary);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .expenses-list {
+            background: white;
+            border-radius: var(--border-radius-sm);
+            padding: 20px;
+            box-shadow: var(--box-shadow-sm);
+            max-height: 400px;
+            overflow-y: auto;
+            margin-bottom: 20px;
+            backdrop-filter: blur(5px);
+        }
+        
+        .expense-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 0;
+            border-bottom: 2px solid var(--gray-light);
+            transition: var(--transition);
+            animation: slideInRight 0.5s ease;
+            position: relative;
+        }
+        
+        .expense-item:last-child {
+            border-bottom: none;
+        }
+        
+        .expense-item:hover {
+            background: linear-gradient(90deg, rgba(67, 97, 238, 0.08), rgba(76, 201, 240, 0.08));
+            padding-right: 10px;
+            border-radius: 12px;
+            transform: translateX(-5px);
+        }
+        
+        .expense-info {
+            flex: 1;
+            min-width: 0;
+        }
+        
+        .expense-info h4 {
+            color: var(--dark);
+            margin-bottom: 6px;
+            font-size: 1rem;
+            font-weight: 800;
+        }
+        
+        .expense-meta {
+            display: flex;
+            gap: 15px;
+            font-size: 0.85rem;
+            color: var(--gray);
+        }
+        
+        .expense-date {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        
+        .expense-notes {
+            font-size: 0.9rem;
+            color: var(--gray);
+            margin-top: 6px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            max-width: 200px;
+        }
+        
+        .expense-amount {
+            font-weight: 900;
+            font-size: 1.2rem;
+            color: var(--primary);
+            background: rgba(67, 97, 238, 0.1);
+            padding: 8px 16px;
+            border-radius: 25px;
+            margin-left: 10px;
+            flex-shrink: 0;
+            transition: var(--transition);
+            border: 2px solid transparent;
+        }
+        
+        .expense-item:hover .expense-amount {
+            background: var(--primary);
+            color: white;
+            transform: scale(1.08);
+            border-color: var(--primary-light);
+        }
+        
+        .expense-actions {
+            display: flex;
+            gap: 6px;
+        }
+        
+        .delete-expense-btn {
+            background: none;
+            border: none;
+            color: var(--danger);
+            cursor: pointer;
+            padding: 8px;
+            border-radius: 50%;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .delete-expense-btn:hover {
+            background: rgba(239, 35, 60, 0.15);
+            transform: scale(1.15) rotate(10deg);
+        }
+        
+        /* Reports Section */
+        .reports-section {
+            margin: 0 20px 25px;
+            animation: fadeInUp 0.8s ease 1s both;
+        }
+        
+        .reports-section h3 {
+            color: var(--dark);
+            font-size: 1.3rem;
+            font-weight: 800;
+            margin-bottom: 18px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            position: relative;
+            padding-bottom: 10px;
+        }
+        
+        .reports-section h3::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            right: 0;
+            width: 100px;
+            height: 4px;
+            background: var(--gradient-primary);
+            border-radius: 2px;
+        }
+        
+        .reports-section h3 i {
+            color: var(--primary);
+            background: var(--gradient-primary);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .reports-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-bottom: 25px;
+        }
+        
+        .report-card {
+            background: white;
+            border-radius: var(--border-radius-sm);
+            padding: 25px 20px;
+            box-shadow: var(--box-shadow-sm);
+            transition: var(--transition);
+            position: relative;
+            overflow: hidden;
+            border: 2px solid transparent;
+            backdrop-filter: blur(5px);
+        }
+        
+        .report-card:hover {
+            transform: translateY(-8px);
+            box-shadow: var(--box-shadow);
+            border-color: var(--primary);
+        }
+        
+        .report-card h4 {
+            color: var(--dark);
+            font-size: 1.1rem;
+            font-weight: 800;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .report-card h4 i {
+            color: var(--primary);
+        }
+        
+        .chart-container {
+            height: 200px;
+            position: relative;
+            margin: 15px 0;
+        }
+        
+        .chart-placeholder {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, rgba(67, 97, 238, 0.05), rgba(76, 201, 240, 0.05));
+            border-radius: 12px;
+            color: var(--gray);
+            font-weight: 600;
+        }
+        
+        .report-stats {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 2px solid var(--gray-light);
+        }
+        
+        .report-stat {
+            text-align: center;
+            flex: 1;
+        }
+        
+        .report-stat-value {
+            font-size: 1.5rem;
+            font-weight: 900;
+            color: var(--primary);
+            margin-bottom: 5px;
+        }
+        
+        .report-stat-label {
+            font-size: 0.8rem;
+            color: var(--gray);
+            font-weight: 600;
+        }
+        
+        /* Alerts Section */
+        .alerts-section {
+            margin: 0 20px 80px;
+            animation: fadeInUp 0.8s ease 1.2s both;
+        }
+        
+        .alerts-section h3 {
+            color: var(--dark);
+            font-size: 1.3rem;
+            font-weight: 800;
+            margin-bottom: 18px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            position: relative;
+            padding-bottom: 10px;
+        }
+        
+        .alerts-section h3::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            right: 0;
+            width: 100px;
+            height: 4px;
+            background: var(--gradient-primary);
+            border-radius: 2px;
+        }
+        
+        .alerts-section h3 i {
+            color: var(--primary);
+            background: var(--gradient-primary);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .alerts-container {
+            background: white;
+            border-radius: var(--border-radius-sm);
+            padding: 20px;
+            box-shadow: var(--box-shadow-sm);
+            backdrop-filter: blur(5px);
+        }
+        
+        .alert-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 15px;
+            padding: 15px;
+            border-radius: 12px;
+            margin-bottom: 15px;
+            border-right: 5px solid;
+            animation: slideInLeft 0.5s ease;
+            transition: var(--transition);
+        }
+        
+        .alert-item:hover {
+            transform: translateX(-5px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+        }
+        
+        .alert-item.warning {
+            background: linear-gradient(135deg, rgba(247, 37, 133, 0.1), rgba(239, 35, 60, 0.1));
+            border-right-color: var(--warning);
+        }
+        
+        .alert-item.success {
+            background: linear-gradient(135deg, rgba(76, 201, 240, 0.1), rgba(72, 149, 239, 0.1));
+            border-right-color: var(--success);
+        }
+        
+        .alert-item.info {
+            background: linear-gradient(135deg, rgba(67, 97, 238, 0.1), rgba(58, 12, 163, 0.1));
+            border-right-color: var(--primary);
+        }
+        
+        .alert-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            color: white;
+            flex-shrink: 0;
+        }
+        
+        .alert-item.warning .alert-icon {
+            background: var(--gradient-warning);
+        }
+        
+        .alert-item.success .alert-icon {
+            background: var(--gradient-success);
+        }
+        
+        .alert-item.info .alert-icon {
+            background: var(--gradient-primary);
+        }
+        
+        .alert-content {
+            flex: 1;
+        }
+        
+        .alert-title {
+            font-weight: 800;
+            color: var(--dark);
+            margin-bottom: 5px;
+            font-size: 1rem;
+        }
+        
+        .alert-message {
+            font-size: 0.9rem;
+            color: var(--gray);
+            line-height: 1.5;
+        }
+        
+        /* Admin Button */
+        .admin-button {
+            position: fixed;
+            bottom: 25px;
+            left: 25px;
+            z-index: 1000;
+            animation: fadeIn 1s ease 1s both;
+        }
+        
+        .admin-btn {
+            width: 65px;
+            height: 65px;
+            border-radius: 50%;
+            background: var(--gradient-secondary);
+            color: white;
+            border: none;
+            box-shadow: 0 15px 40px rgba(114, 9, 183, 0.4);
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.6rem;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .admin-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, rgba(255,255,255,0.3) 0%, rgba(255,255,255,0.1) 100%);
+        }
+        
+        .admin-btn:hover {
+            transform: scale(1.15) rotate(15deg);
+            box-shadow: 0 20px 50px rgba(114, 9, 183, 0.6);
+        }
+        
+        .admin-btn:active {
+            transform: scale(0.95);
+        }
+        
+        .admin-btn i {
+            position: relative;
+            z-index: 1;
+            animation: spin 4s infinite linear;
+        }
+        
+        /* Admin Panel */
+        .admin-panel {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.95);
+            z-index: 2000;
+            display: flex;
+            flex-direction: column;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.5s ease;
+            backdrop-filter: blur(15px);
+        }
+        
+        .admin-panel.active {
+            opacity: 1;
+            visibility: visible;
+        }
+        
+        .admin-header {
+            background: var(--gradient-dark);
+            color: white;
+            padding: 25px 20px;
+            text-align: center;
+            position: relative;
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.4);
+        }
+        
+        .admin-header h2 {
+            font-size: 1.5rem;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+        }
+        
+        .admin-header p {
+            font-size: 0.9rem;
+            opacity: 0.9;
+        }
+        
+        .close-admin {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: rgba(255, 255, 255, 0.1);
+            border: none;
+            color: white;
+            font-size: 1.6rem;
+            cursor: pointer;
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: var(--transition);
+            backdrop-filter: blur(5px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .close-admin:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: rotate(90deg) scale(1.1);
+        }
+        
+        .admin-content {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px 15px;
+        }
+        
+        /* Notification */
+        .notification {
+            position: fixed;
+            bottom: 25px;
+            right: 25px;
+            background: var(--gradient-success);
+            color: white;
+            padding: 15px 25px;
+            border-radius: var(--border-radius-sm);
+            box-shadow: 0 15px 40px rgba(76, 201, 240, 0.4);
+            z-index: 1000;
+            animation: slideInLeft 0.5s ease;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            max-width: 350px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .notification.success {
+            background: var(--gradient-success);
+        }
+        
+        .notification.error {
+            background: var(--gradient-warning);
+        }
+        
+        .notification.warning {
+            background: linear-gradient(135deg, #f8961e 0%, #f3722c 100%);
+        }
+        
+        .notification.info {
+            background: var(--gradient-primary);
+        }
+        
+        .notification.hidden {
+            animation: slideOutRight 0.5s ease;
+            transform: translateX(100%);
+            opacity: 0;
+        }
+        
+        /* Loading States */
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            backdrop-filter: blur(10px);
+        }
+        
+        .loading-overlay.active {
+            display: flex;
+        }
+        
+        .spinner {
+            width: 60px;
+            height: 60px;
+            border: 6px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spin 1s ease-in-out infinite;
+        }
+        
+        /* Animations */
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        @keyframes fadeInDown {
+            from { opacity: 0; transform: translateY(-30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        @keyframes slideInDown {
+            from { opacity: 0; transform: translateY(-100%); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        @keyframes slideInUp {
+            from { opacity: 0; transform: translateY(50px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        @keyframes slideInRight {
+            from { opacity: 0; transform: translateX(30px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+        
+        @keyframes slideInLeft {
+            from { opacity: 0; transform: translateX(100%); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+        
+        @keyframes slideOutRight {
+            from { opacity: 1; transform: translateX(0); }
+            to { opacity: 0; transform: translateX(100%); }
+        }
+        
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(50px) scale(0.9); }
+            to { opacity: 1; transform: translateY(0) scale(1); }
+        }
+        
+        @keyframes gradientFlow {
+            0% { background-position: 0% 50%; }
+            100% { background-position: 400% 50%; }
+        }
+        
+        @keyframes shimmer {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+        
+        @keyframes float {
+            0% { transform: translateY(0) rotate(0deg); }
+            100% { transform: translateY(-1000px) rotate(720deg); }
+        }
+        
+        @keyframes floatAnimation {
+            0%, 100% { transform: translateY(0) rotate(0deg); }
+            33% { transform: translateY(-30px) rotate(5deg); }
+            66% { transform: translateY(30px) rotate(-5deg); }
+        }
+        
+        @keyframes headerSlideIn {
+            from { transform: translateY(-100%); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+        
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-12px); }
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.8; transform: scale(1.1); }
+        }
+        
+        @keyframes pulseWarning {
+            0%, 100% { box-shadow: 0 0 0 0 rgba(247, 37, 133, 0.4); }
+            70% { box-shadow: 0 0 0 10px rgba(247, 37, 133, 0); }
+        }
+        
+        @keyframes pulseWarningCard {
+            0%, 100% { box-shadow: 0 10px 30px rgba(247, 37, 133, 0.2); }
+            50% { box-shadow: 0 15px 40px rgba(247, 37, 133, 0.4); }
+        }
+        
+        @keyframes pulseBorder {
+            0%, 100% { border-color: var(--primary); }
+            50% { border-color: var(--primary-light); }
+        }
+        
+        @keyframes ring {
+            0% { transform: rotate(0deg); }
+            10% { transform: rotate(15deg); }
+            20% { transform: rotate(-15deg); }
+            30% { transform: rotate(10deg); }
+            40% { transform: rotate(-10deg); }
+            50%, 100% { transform: rotate(0deg); }
+        }
+        
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+        
+        @keyframes cardFloat {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+        
+        @keyframes fadeInScale {
+            to { opacity: 1; transform: scale(1); }
+        }
+        
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .stats-cards {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 12px;
+                margin: 0 15px 20px;
+            }
+            
+            .categories-touch-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 12px;
+            }
+            
+            .reports-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .month-selector-controls {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            
+            .month-select {
+                max-width: 100%;
+            }
+            
+            .app-header h1 {
+                font-size: 1.4rem;
+                flex-direction: column;
+                gap: 10px;
+            }
+            
+            .admin-button {
+                bottom: 20px;
+                left: 20px;
+            }
+            
+            .admin-btn {
+                width: 60px;
+                height: 60px;
+                font-size: 1.4rem;
+            }
+            
+            .notification {
+                max-width: 280px;
+                padding: 12px 20px;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .stats-cards {
+                grid-template-columns: 1fr;
+                gap: 10px;
+                margin: 0 12px 15px;
+            }
+            
+            .categories-touch-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .month-selector {
+                padding: 12px 15px;
+            }
+            
+            .month-selector-label {
+                font-size: 0.95rem;
+                padding: 8px 12px;
+            }
+            
+            .month-select {
+                padding: 10px 15px;
+                font-size: 0.95rem;
+            }
+            
+            .current-month-btn {
+                padding: 10px 15px;
+                font-size: 0.9rem;
+            }
+            
+            .app-header {
+                padding: 20px 15px 25px;
+            }
+            
+            .app-header h1 {
+                font-size: 1.2rem;
+            }
+            
+            .app-header p {
+                font-size: 0.85rem;
+            }
+            
+            .selected-category-info {
+                flex-direction: column;
+                text-align: center;
+                gap: 10px;
+            }
+            
+            .selected-category-text {
+                min-width: auto;
+            }
+        }
+        
+        /* Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        
+        ::-webkit-scrollbar-track {
+            background: var(--gray-light);
+            border-radius: 10px;
+        }
+        
+        ::-webkit-scrollbar-thumb {
+            background: var(--primary);
+            border-radius: 10px;
+        }
+        
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--primary-dark);
+        }
+    </style>
+</head>
+<body>
+    <div class="animated-bg"></div>
+    
+    <!-- Floating Elements -->
+    <div class="floating-elements">
+        <div class="floating-element"></div>
+        <div class="floating-element"></div>
+        <div class="floating-element"></div>
+        <div class="floating-element"></div>
+    </div>
+    
+    <!-- Loading Overlay -->
+    <div class="loading-overlay" id="loading-overlay">
+        <div class="spinner"></div>
+    </div>
+    
+    <!-- App Header -->
+    <header class="app-header">
+        <div class="header-content">
+            <h1>
+                <i class="fas fa-home"></i>
+                إدارة المصروفات المنزلية المتطورة
+            </h1>
+            <p>تطبيق متكامل مع تقارير مفصلة وتنبيهات ذكية</p>
+            <div class="designer-credit">
+                <i class="fas fa-bell"></i>
+                تصميم مهندس بولس سمير جرس
+            </div>
+        </div>
+    </header>
+    
+    <!-- Quick Month Selector -->
+    <div class="quick-month-selector" id="quick-month-selector">
+        <div class="month-selector-container">
+            <div class="month-selector-label">
+                <i class="fas fa-calendar-alt"></i>
+                <span id="current-month-display">يناير 2024</span>
+            </div>
+            <div class="month-selector-controls">
+                <select class="month-select" id="month-select">
+                    <!-- سيتم تعبئته ديناميكيًا -->
+                </select>
+                <button class="current-month-btn" id="current-month-btn">
+                    <i class="fas fa-sync-alt"></i>
+                    الشهر الحالي
+                </button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Stats Cards -->
+    <div class="stats-cards">
+        <div class="stat-card" id="total-budget-card">
+            <i class="fas fa-wallet"></i>
+            <h3 id="total-budget-amount">10,000 ج.م</h3>
+            <p>الميزانية الإجمالية</p>
+        </div>
+        
+        <div class="stat-card" id="total-expenses-card">
+            <i class="fas fa-money-bill-wave"></i>
+            <h3 id="total-expenses-amount">0 ج.م</h3>
+            <p>إجمالي المصروفات</p>
+        </div>
+        
+        <div class="stat-card" id="remaining-budget-card">
+            <i class="fas fa-coins"></i>
+            <h3 id="remaining-budget-amount">10,000 ج.م</h3>
+            <p>الميزانية المتبقية</p>
+        </div>
+        
+        <div class="stat-card" id="today-expenses-card">
+            <i class="fas fa-sun"></i>
+            <h3 id="today-expenses-amount">0 ج.م</h3>
+            <p>مصروفات اليوم</p>
+        </div>
+    </div>
+    
+    <!-- Touch Category Selection -->
+    <div class="touch-category-selector">
+        <h3><i class="fas fa-touch"></i> اختيار الفئة باللمس</h3>
+        <div class="categories-touch-grid" id="categories-touch-grid">
+            <!-- سيتم تعبئته ديناميكيًا -->
+        </div>
+    </div>
+    
+    <!-- Expense Form -->
+    <div class="expense-form-container">
+        <div class="expense-form">
+            <div class="form-title">
+                <i class="fas fa-plus-circle"></i>
+                <h3>إضافة مصروف جديد</h3>
+            </div>
+            
+            <!-- Selected Category Display -->
+            <div class="selected-category-display hidden" id="selected-category-display">
+                <div class="selected-category-info">
+                    <div class="selected-category-icon" id="selected-category-icon">
+                        <i class="fas fa-tag"></i>
+                    </div>
+                    <div class="selected-category-text">
+                        <div class="selected-category-name" id="selected-category-name">فئة غير مختارة</div>
+                        <div class="selected-category-limit" id="selected-category-limit">الحد: 0 ج.م</div>
+                    </div>
+                    <button class="change-category-btn" id="change-category-btn">
+                        <i class="fas fa-exchange-alt"></i>
+                        تغيير الفئة
+                    </button>
+                </div>
+            </div>
+            
+            <form id="add-expense-form">
+                <input type="hidden" id="category-id">
+                
+                <div class="form-group">
+                    <label for="amount"><i class="fas fa-money-bill-wave"></i> المبلغ (جنيه مصري)</label>
+                    <div class="amount-input-container">
+                        <span class="currency-symbol">ج.م</span>
+                        <input type="number" id="amount" class="form-control" min="1" step="0.01" required placeholder="أدخل المبلغ">
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="expense-date"><i class="fas fa-calendar-day"></i> تاريخ المصروف</label>
+                    <input type="date" id="expense-date" class="form-control" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="notes"><i class="fas fa-sticky-note"></i> ملاحظات (اختياري)</label>
+                    <textarea id="notes" class="form-control" rows="3" placeholder="أدخل أي ملاحظات إضافية"></textarea>
+                </div>
+                
+                <div class="category-limit-info" id="category-limit-info">
+                    <i class="fas fa-info-circle"></i>
+                    <div>
+                        <div>الحد المسموح: <span id="category-limit">0</span> ج.م</div>
+                        <div>المتبقي: <span id="category-remaining">0</span> ج.م</div>
+                    </div>
+                </div>
+                
+                <button type="submit" class="btn btn-primary btn-block" id="save-expense-btn">
+                    <i class="fas fa-save"></i> حفظ المصروف
+                </button>
+            </form>
+        </div>
+    </div>
+    
+    <!-- Reports Section -->
+    <div class="reports-section">
+        <h3><i class="fas fa-chart-line"></i> التقارير والتحليلات</h3>
+        <div class="reports-grid">
+            <div class="report-card">
+                <h4><i class="fas fa-chart-pie"></i> توزيع المصروفات</h4>
+                <div class="chart-container">
+                    <div class="chart-placeholder" id="expenses-chart">
+                        <i class="fas fa-chart-pie" style="font-size: 3rem; opacity: 0.3;"></i>
+                    </div>
+                </div>
+                <div class="report-stats">
+                    <div class="report-stat">
+                        <div class="report-stat-value" id="highest-category-value">0%</div>
+                        <div class="report-stat-label">أعلى فئة</div>
+                    </div>
+                    <div class="report-stat">
+                        <div class="report-stat-value" id="average-daily-expense">0</div>
+                        <div class="report-stat-label">متوسط يومي</div>
+                    </div>
+                    <div class="report-stat">
+                        <div class="report-stat-value" id="remaining-days">30</div>
+                        <div class="report-stat-label">أيام متبقية</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="report-card">
+                <h4><i class="fas fa-trend-up"></i> الاتجاهات الشهرية</h4>
+                <div class="chart-container">
+                    <div class="chart-placeholder" id="trends-chart">
+                        <i class="fas fa-chart-line" style="font-size: 3rem; opacity: 0.3;"></i>
+                    </div>
+                </div>
+                <div class="report-stats">
+                    <div class="report-stat">
+                        <div class="report-stat-value" id="monthly-trend">0%</div>
+                        <div class="report-stat-label">الاتجاه</div>
+                    </div>
+                    <div class="report-stat">
+                        <div class="report-stat-value" id="projected-expenses">0</div>
+                        <div class="report-stat-label">المتوقع</div>
+                    </div>
+                    <div class="report-stat">
+                        <div class="report-stat-value" id="savings-potential">0</div>
+                        <div class="report-stat-label">مدخرات محتملة</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Recent Expenses -->
+    <div class="recent-expenses">
+        <h3><i class="fas fa-history"></i> آخر المصروفات</h3>
+        <div class="expenses-list" id="recent-expenses">
+            <!-- سيتم تعبئته ديناميكيًا -->
+        </div>
+    </div>
+    
+    <!-- Alerts Section -->
+    <div class="alerts-section">
+        <h3><i class="fas fa-bell"></i> التنبيهات والإشعارات</h3>
+        <div class="alerts-container" id="alerts-container">
+            <!-- سيتم تعبئته ديناميكيًا -->
+        </div>
+    </div>
+    
+    <!-- Admin Button -->
+    <div class="admin-button">
+        <button class="admin-btn" id="admin-btn">
+            <i class="fas fa-cog"></i>
+        </button>
+    </div>
+    
+    <!-- Admin Panel -->
+    <div class="admin-panel" id="admin-panel">
+        <div class="admin-header">
+            <button class="close-admin" id="close-admin">
+                <i class="fas fa-times"></i>
+            </button>
+            <h2><i class="fas fa-cogs"></i> لوحة الإدارة المتطورة</h2>
+            <p>إدارة الفئات والميزانية والإعدادات</p>
+        </div>
+        
+        <div class="admin-content">
+            <!-- سيتم تعبئته ديناميكيًا من الكود الأصلي -->
+        </div>
+    </div>
+    
+    <!-- Notification -->
+    <div class="notification hidden" id="notification">
+        <i class="fas fa-check-circle"></i>
+        <span id="notification-message">تم الحفظ بنجاح!</span>
+    </div>
+
+    <script>
+        // Firebase configuration for Realtime Database
+        const firebaseConfig = {
+            apiKey: "AIzaSyCBVxpqtMCzKH2BTKr70gI9UUlbJuHzFEw",
+            authDomain: "masrof2-9e67a.firebaseapp.com",
+            databaseURL: "https://masrof2-9e67a-default-rtdb.firebaseio.com",
+            projectId: "masrof2-9e67a",
+            storageBucket: "masrof2-9e67a.firebasestorage.app",
+            messagingSenderId: "958997909952",
+            appId: "1:958997909952:web:975ba540314a6389abb825"
+        };
+
+        // Initialize Firebase with Realtime Database
+        firebase.initializeApp(firebaseConfig);
+        const database = firebase.database();
+
+        // App State
+        let categories = [];
+        let expenses = [];
+        let totalBudget = 10000;
+        let currentDate = new Date();
+        let selectedMonth = null;
+        let selectedYear = null;
+        let selectedCategoryId = null;
+        let alerts = [];
+        
+        // ألوان الكرات الإحصائية
+        const categoryColors = [
+            'linear-gradient(135deg, #4361ee 0%, #3a0ca3 100%)',
+            'linear-gradient(135deg, #4cc9f0 0%, #4895ef 100%)',
+            'linear-gradient(135deg, #7209b7 0%, #b5179e 100%)',
+            'linear-gradient(135deg, #f72585 0%, #ef233c 100%)',
+            'linear-gradient(135deg, #f8961e 0%, #f3722c 100%)',
+            'linear-gradient(135deg, #90be6d 0%, #43aa8b 100%)',
+            'linear-gradient(135deg, #577590 0%, #4d908e 100%)',
+            'linear-gradient(135deg, #f94144 0%, #f3722c 100%)',
+            'linear-gradient(135deg, #277da1 0%, #577590 100%)',
+            'linear-gradient(135deg, #f9c74f 0%, #90be6d 100%)'
+        ];
+
+        // DOM Elements
+        const loadingOverlay = document.getElementById('loading-overlay');
+        const monthSelect = document.getElementById('month-select');
+        const currentMonthDisplay = document.getElementById('current-month-display');
+        const currentMonthBtn = document.getElementById('current-month-btn');
+        const totalBudgetAmountEl = document.getElementById('total-budget-amount');
+        const totalExpensesAmountEl = document.getElementById('total-expenses-amount');
+        const remainingBudgetAmountEl = document.getElementById('remaining-budget-amount');
+        const todayExpensesAmountEl = document.getElementById('today-expenses-amount');
+        const categoriesTouchGrid = document.getElementById('categories-touch-grid');
+        const selectedCategoryDisplay = document.getElementById('selected-category-display');
+        const selectedCategoryIcon = document.getElementById('selected-category-icon');
+        const selectedCategoryName = document.getElementById('selected-category-name');
+        const selectedCategoryLimit = document.getElementById('selected-category-limit');
+        const changeCategoryBtn = document.getElementById('change-category-btn');
+        const categoryIdInput = document.getElementById('category-id');
+        const categoryLimitInfo = document.getElementById('category-limit-info');
+        const categoryLimitEl = document.getElementById('category-limit');
+        const categoryRemainingEl = document.getElementById('category-remaining');
+        const addExpenseForm = document.getElementById('add-expense-form');
+        const expenseDateInput = document.getElementById('expense-date');
+        const saveExpenseBtn = document.getElementById('save-expense-btn');
+        const recentExpensesEl = document.getElementById('recent-expenses');
+        const alertsContainer = document.getElementById('alerts-container');
+        const adminBtn = document.getElementById('admin-btn');
+        const adminPanel = document.getElementById('admin-panel');
+        const closeAdminBtn = document.getElementById('close-admin');
+        const notification = document.getElementById('notification');
+        const notificationMessage = document.getElementById('notification-message');
+        
+        // عناصر التقارير
+        const highestCategoryValue = document.getElementById('highest-category-value');
+        const averageDailyExpense = document.getElementById('average-daily-expense');
+        const remainingDays = document.getElementById('remaining-days');
+        const monthlyTrend = document.getElementById('monthly-trend');
+        const projectedExpenses = document.getElementById('projected-expenses');
+        const savingsPotential = document.getElementById('savings-potential');
+        
+        // الشهور العربية
+        const arabicMonths = [
+            'يناير', 'فبراير', 'مارس', 'أبريل', 'مايو', 'يونيو',
+            'يوليو', 'أغسطس', 'سبتمبر', 'أكتوبر', 'نوفمبر', 'ديسمبر'
+        ];
+        
+        // إظهار/إخفاء التحميل
+        function showLoading() {
+            loadingOverlay.classList.add('active');
+        }
+        
+        function hideLoading() {
+            loadingOverlay.classList.remove('active');
+        }
+        
+        // إظهار الإشعار
+        function showNotification(message, type = 'success') {
+            notificationMessage.textContent = message;
+            notification.className = `notification ${type}`;
+            notification.classList.remove('hidden');
+            
+            const icon = notification.querySelector('i');
+            if (type === 'error') {
+                icon.className = 'fas fa-exclamation-circle';
+            } else if (type === 'warning') {
+                icon.className = 'fas fa-exclamation-triangle';
+            } else if (type === 'info') {
+                icon.className = 'fas fa-info-circle';
+            } else {
+                icon.className = 'fas fa-check-circle';
+            }
+            
+            setTimeout(() => {
+                notification.classList.add('hidden');
+            }, 4000);
+        }
+        
+        // تعبئة قائمة الشهور
+        function populateMonthSelect() {
+            monthSelect.innerHTML = '';
+            
+            const today = new Date();
+            const currentMonth = today.getMonth();
+            const currentYear = today.getFullYear();
+            
+            // إضافة خيار "جميع الشهور" أولاً
+            const allOption = document.createElement('option');
+            allOption.value = 'all';
+            allOption.textContent = 'جميع الشهور';
+            monthSelect.appendChild(allOption);
+            
+            // إضافة الشهر الحالي كمختار افتراضي
+            selectedMonth = currentMonth;
+            selectedYear = currentYear;
+            updateMonthDisplay(currentMonth, currentYear);
+            
+            // إضافة 12 شهرًا سابقًا
+            for (let i = 0; i < 12; i++) {
+                let month = currentMonth - i;
+                let year = currentYear;
+                
+                while (month < 0) {
+                    month += 12;
+                    year--;
+                }
+                
+                const option = document.createElement('option');
+                option.value = `${year}-${month}`;
+                option.textContent = `${arabicMonths[month]} ${year}`;
+                
+                if (i === 0) {
+                    option.selected = true;
+                }
+                
+                monthSelect.appendChild(option);
+            }
+        }
+        
+        // تحديث عرض الشهر الحالي
+        function updateMonthDisplay(month, year) {
+            currentMonthDisplay.textContent = `${arabicMonths[month]} ${year}`;
+        }
+        
+        // إعداد تاريخ اليوم كتاريخ افتراضي للمصروف
+        function setDefaultExpenseDate() {
+            const today = new Date();
+            const year = today.getFullYear();
+            const month = String(today.getMonth() + 1).padStart(2, '0');
+            const day = String(today.getDate()).padStart(2, '0');
+            expenseDateInput.value = `${year}-${month}-${day}`;
+        }
+        
+        // تحميل الفئات من قاعدة البيانات
+        async function loadCategories() {
+            try {
+                showLoading();
+                const snapshot = await database.ref('categories').once('value');
+                const categoriesData = snapshot.val();
+                categories = [];
+                
+                if (categoriesData) {
+                    Object.keys(categoriesData).forEach(key => {
+                        categories.push({
+                            id: key,
+                            ...categoriesData[key],
+                            spent: categoriesData[key].spent || 0
+                        });
+                    });
+                }
+                
+                await loadTotalBudget();
+                renderTouchCategories();
+                renderCategorySelection();
+                hideLoading();
+            } catch (error) {
+                console.error('Error loading categories:', error);
+                showNotification('حدث خطأ في تحميل الفئات', 'error');
+                hideLoading();
+            }
+        }
+        
+        // تحميل الميزانية الإجمالية
+        async function loadTotalBudget() {
+            try {
+                const snapshot = await database.ref('totalBudget').once('value');
+                const budgetData = snapshot.val();
+                
+                if (budgetData !== null) {
+                    totalBudget = budgetData;
+                } else {
+                    await database.ref('totalBudget').set(totalBudget);
+                }
+            } catch (error) {
+                console.error('Error loading total budget:', error);
+            }
+        }
+        
+        // تحميل المصروفات من قاعدة البيانات
+        async function loadExpenses() {
+            try {
+                showLoading();
+                const snapshot = await database.ref('expenses').once('value');
+                const expensesData = snapshot.val();
+                expenses = [];
+                
+                if (expensesData) {
+                    Object.keys(expensesData).forEach(key => {
+                        expenses.push({
+                            id: key,
+                            ...expensesData[key]
+                        });
+                    });
+                }
+                
+                filterExpensesByPeriod();
+                updateCategorySpent();
+                updateStats();
+                updateReports();
+                renderRecentExpenses();
+                generateAlerts();
+                hideLoading();
+            } catch (error) {
+                console.error('Error loading expenses:', error);
+                showNotification('حدث خطأ في تحميل المصروفات', 'error');
+                hideLoading();
+            }
+        }
+        
+        // تصفية المصروفات حسب الشهر المحدد
+        function filterExpensesByPeriod() {
+            if (monthSelect.value === 'all') {
+                return; // لا تصفية إذا اختار "جميع الشهور"
+            }
+            
+            if (selectedMonth === null || selectedYear === null) return;
+            
+            const filteredExpenses = expenses.filter(expense => {
+                if (!expense.date) return false;
+                
+                const expenseDate = new Date(expense.date);
+                const expenseMonth = expenseDate.getMonth();
+                const expenseYear = expenseDate.getFullYear();
+                
+                return expenseMonth === selectedMonth && expenseYear === selectedYear;
+            });
+            
+            expenses = filteredExpenses;
+        }
+        
+        // تحديث الإحصائيات
+        function updateStats() {
+            const totalExpenses = calculateTotalExpenses();
+            const remainingBudget = totalBudget - totalExpenses;
+            const today = new Date().toISOString().split('T')[0];
+            
+            const todayExpenses = expenses
+                .filter(expense => expense.date === today)
+                .reduce((total, expense) => total + expense.amount, 0);
+            
+            totalBudgetAmountEl.textContent = totalBudget.toLocaleString('ar-EG') + ' ج.م';
+            totalExpensesAmountEl.textContent = totalExpenses.toLocaleString('ar-EG') + ' ج.م';
+            remainingBudgetAmountEl.textContent = remainingBudget.toLocaleString('ar-EG') + ' ج.م';
+            todayExpensesAmountEl.textContent = todayExpenses.toLocaleString('ar-EG') + ' ج.م';
+            
+            updateCardColors(totalExpenses, remainingBudget, todayExpenses);
+        }
+        
+        function calculateTotalExpenses() {
+            return expenses.reduce((total, expense) => total + expense.amount, 0);
+        }
+        
+        function updateCardColors(totalExpenses, remainingBudget, todayExpenses) {
+            const cards = {
+                'remaining-budget-card': remainingBudget < totalBudget * 0.2,
+                'today-expenses-card': todayExpenses > totalBudget * 0.1,
+                'total-expenses-card': totalExpenses > totalBudget * 0.8
+            };
+            
+            Object.entries(cards).forEach(([cardId, shouldWarn]) => {
+                const card = document.getElementById(cardId);
+                if (shouldWarn) {
+                    card.classList.add('warning');
+                } else {
+                    card.classList.remove('warning');
+                }
+            });
+        }
+        
+        // تحديث المصروفات لكل فئة
+        function updateCategorySpent() {
+            const categorySpent = {};
+            
+            expenses.forEach(expense => {
+                if (categorySpent[expense.categoryId]) {
+                    categorySpent[expense.categoryId] += expense.amount;
+                } else {
+                    categorySpent[expense.categoryId] = expense.amount;
+                }
+            });
+            
+            categories.forEach(category => {
+                category.spent = categorySpent[category.id] || 0;
+            });
+            
+            // تحديث عرض الفئات الملموسة
+            renderTouchCategories();
+        }
+        
+        // عرض الفئات الملموسة
+        function renderTouchCategories() {
+            categoriesTouchGrid.innerHTML = '';
+            
+            if (categories.length === 0) {
+                categoriesTouchGrid.innerHTML = `
+                    <div style="text-align: center; padding: 30px; color: var(--gray); grid-column: 1 / -1;">
+                        <i class="fas fa-tags" style="font-size: 3rem; margin-bottom: 15px; opacity: 0.3;"></i>
+                        <p style="font-size: 1rem; font-weight: 600;">لا توجد فئات بعد. قم بإضافة فئات من لوحة الإدارة.</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            categories.forEach((category, index) => {
+                const spent = category.spent || 0;
+                const remaining = category.limit - spent;
+                const percentage = (spent / category.limit) * 100;
+                const colorIndex = index % categoryColors.length;
+                const isSelected = category.id === selectedCategoryId;
+                
+                const categoryItem = document.createElement('div');
+                categoryItem.className = `category-touch-item ${percentage > 80 ? 'warning' : ''} ${isSelected ? 'selected' : ''}`;
+                categoryItem.dataset.categoryId = category.id;
+                categoryItem.style.animationDelay = `${index * 0.1}s`;
+                categoryItem.innerHTML = `
+                    <div class="category-touch-icon" style="background: ${categoryColors[colorIndex]};">
+                        <i class="${category.icon || 'fas fa-tag'}"></i>
+                    </div>
+                    <div class="category-touch-name">${category.name}</div>
+                    <div class="category-touch-limit">
+                        ${remaining.toLocaleString('ar-EG')} ج.م متبقية
+                    </div>
+                `;
+                
+                categoryItem.addEventListener('click', () => selectCategory(category.id));
+                categoriesTouchGrid.appendChild(categoryItem);
+            });
+        }
+        
+        // عرض اختيار الفئة
+        function renderCategorySelection() {
+            if (selectedCategoryId) {
+                const category = categories.find(c => c.id === selectedCategoryId);
+                if (category) {
+                    const spent = category.spent || 0;
+                    const remaining = category.limit - spent;
+                    const percentage = (spent / category.limit) * 100;
+                    const colorIndex = categories.findIndex(c => c.id === category.id) % categoryColors.length;
+                    
+                    selectedCategoryIcon.style.background = categoryColors[colorIndex];
+                    selectedCategoryIcon.innerHTML = `<i class="${category.icon || 'fas fa-tag'}"></i>`;
+                    selectedCategoryName.textContent = category.name;
+                    selectedCategoryLimit.textContent = `الحد: ${category.limit.toLocaleString('ar-EG')} ج.م | المتبقي: ${remaining.toLocaleString('ar-EG')} ج.م`;
+                    
+                    categoryIdInput.value = category.id;
+                    selectedCategoryDisplay.classList.remove('hidden');
+                    
+                    // تحديث معلومات الحد
+                    categoryLimitInfo.classList.add('show');
+                    categoryLimitEl.textContent = category.limit.toLocaleString();
+                    categoryRemainingEl.textContent = remaining.toLocaleString();
+                    
+                    if (remaining < category.limit * 0.2) {
+                        categoryLimitInfo.style.background = 'rgba(247, 37, 133, 0.15)';
+                        categoryLimitInfo.style.borderRightColor = 'var(--warning)';
+                    } else {
+                        categoryLimitInfo.style.background = 'rgba(67, 97, 238, 0.15)';
+                        categoryLimitInfo.style.borderRightColor = 'var(--primary)';
+                    }
+                }
+            } else {
+                selectedCategoryDisplay.classList.add('hidden');
+                categoryLimitInfo.classList.remove('show');
+            }
+        }
+        
+        // اختيار فئة
+        function selectCategory(categoryId) {
+            selectedCategoryId = categoryId;
+            renderTouchCategories();
+            renderCategorySelection();
+            
+            // إظهار رسالة تأكيد
+            const category = categories.find(c => c.id === categoryId);
+            if (category) {
+                showNotification(`تم اختيار فئة "${category.name}"`, 'info');
+            }
+        }
+        
+        // تغيير الفئة
+        function changeCategory() {
+            selectedCategoryId = null;
+            renderTouchCategories();
+            renderCategorySelection();
+            showNotification('يمكنك الآن اختيار فئة جديدة', 'info');
+        }
+        
+        // عرض المصروفات الحديثة
+        function renderRecentExpenses() {
+            recentExpensesEl.innerHTML = '';
+            
+            if (expenses.length === 0) {
+                recentExpensesEl.innerHTML = `
+                    <div style="text-align: center; padding: 30px; color: var(--gray);">
+                        <i class="fas fa-receipt" style="font-size: 3rem; margin-bottom: 15px; opacity: 0.3;"></i>
+                        <p style="font-size: 1rem; font-weight: 600;">لا توجد مصروفات بعد. ابدأ بإضافة مصروف جديد.</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            const sortedExpenses = [...expenses].sort((a, b) => new Date(b.date) - new Date(a.date));
+            const recentExpenses = sortedExpenses.slice(0, 8);
+            
+            recentExpenses.forEach(expense => {
+                const category = categories.find(c => c.id === expense.categoryId);
+                const expenseDate = new Date(expense.date);
+                const today = new Date();
+                const yesterday = new Date(today);
+                yesterday.setDate(yesterday.getDate() - 1);
+                
+                let displayDate;
+                if (expenseDate.toDateString() === today.toDateString()) {
+                    displayDate = 'اليوم';
+                } else if (expenseDate.toDateString() === yesterday.toDateString()) {
+                    displayDate = 'أمس';
+                } else {
+                    displayDate = expenseDate.toLocaleDateString('ar-EG');
+                }
+                
+                const expenseItem = document.createElement('div');
+                expenseItem.className = 'expense-item';
+                expenseItem.innerHTML = `
+                    <div class="expense-info">
+                        <h4>${category ? category.name : 'فئة غير معروفة'}</h4>
+                        <div class="expense-meta">
+                            <span class="expense-date">
+                                <i class="far fa-calendar"></i>
+                                ${displayDate}
+                            </span>
+                        </div>
+                        ${expense.notes ? `<div class="expense-notes">${expense.notes}</div>` : ''}
+                    </div>
+                    <div class="expense-amount">
+                        ${expense.amount.toLocaleString('ar-EG')} ج.م
+                    </div>
+                    <div class="expense-actions">
+                        <button class="delete-expense-btn" data-id="${expense.id}">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
+                `;
+                
+                recentExpensesEl.appendChild(expenseItem);
+            });
+            
+            // إضافة أحداث الحذف
+            document.querySelectorAll('.delete-expense-btn').forEach(btn => {
+                btn.addEventListener('click', async function() {
+                    const expenseId = this.dataset.id;
+                    await deleteExpense(expenseId);
+                });
+            });
+        }
+        
+        // تحديث التقارير
+        function updateReports() {
+            if (expenses.length === 0) {
+                // قيم افتراضية عندما لا توجد مصروفات
+                highestCategoryValue.textContent = '0%';
+                averageDailyExpense.textContent = '0 ج.م';
+                remainingDays.textContent = '30';
+                monthlyTrend.textContent = '0%';
+                projectedExpenses.textContent = '0 ج.م';
+                savingsPotential.textContent = '0 ج.م';
+                return;
+            }
+            
+            // حساب أعلى فئة
+            const categoryTotals = {};
+            expenses.forEach(expense => {
+                if (categoryTotals[expense.categoryId]) {
+                    categoryTotals[expense.categoryId] += expense.amount;
+                } else {
+                    categoryTotals[expense.categoryId] = expense.amount;
+                }
+            });
+            
+            let highestCategory = { value: 0 };
+            Object.values(categoryTotals).forEach(total => {
+                if (total > highestCategory.value) {
+                    highestCategory.value = total;
+                }
+            });
+            
+            const totalExpenses = calculateTotalExpenses();
+            const highestPercentage = totalExpenses > 0 ? Math.round((highestCategory.value / totalExpenses) * 100) : 0;
+            highestCategoryValue.textContent = `${highestPercentage}%`;
+            
+            // حساب المتوسط اليومي
+            const today = new Date();
+            const firstDayOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
+            const daysPassed = Math.ceil((today - firstDayOfMonth) / (1000 * 60 * 60 * 24));
+            const avgDaily = totalExpenses / Math.max(daysPassed, 1);
+            averageDailyExpense.textContent = `${Math.round(avgDaily).toLocaleString('ar-EG')} ج.م`;
+            
+            // حساب الأيام المتبقية
+            const lastDayOfMonth = new Date(today.getFullYear(), today.getMonth() + 1, 0);
+            const totalDaysInMonth = lastDayOfMonth.getDate();
+            const daysRemaining = totalDaysInMonth - daysPassed;
+            remainingDays.textContent = daysRemaining;
+            
+            // حساب الاتجاه الشهري
+            const monthlyTrendValue = avgDaily > 0 ? Math.round((avgDaily / (totalBudget / 30)) * 100) : 0;
+            monthlyTrend.textContent = `${monthlyTrendValue}%`;
+            monthlyTrend.style.color = monthlyTrendValue > 100 ? 'var(--warning)' : 'var(--success)';
+            
+            // حساب المصروفات المتوقعة
+            const projected = avgDaily * totalDaysInMonth;
+            projectedExpenses.textContent = `${Math.round(projected).toLocaleString('ar-EG')} ج.م`;
+            
+            // حساب المدخرات المحتملة
+            const savings = totalBudget - projected;
+            savingsPotential.textContent = `${Math.round(Math.max(savings, 0)).toLocaleString('ar-EG')} ج.م`;
+            savingsPotential.style.color = savings >= 0 ? 'var(--success)' : 'var(--warning)';
+        }
+        
+        // توليد التنبيهات
+        function generateAlerts() {
+            alerts = [];
+            
+            // التحقق من الميزانية المتبقية
+            const totalExpenses = calculateTotalExpenses();
+            const remainingBudget = totalBudget - totalExpenses;
+            const remainingPercentage = (remainingBudget / totalBudget) * 100;
+            
+            if (remainingPercentage < 20) {
+                alerts.push({
+                    type: 'warning',
+                    title: 'تحذير: الميزانية المتبقية منخفضة',
+                    message: `الميزانية المتبقية ${remainingPercentage.toFixed(1)}% فقط (${remainingBudget.toLocaleString('ar-EG')} ج.م). راجع مصروفاتك.`
+                });
+            }
+            
+            if (remainingPercentage < 10) {
+                alerts.push({
+                    type: 'warning',
+                    title: 'تحذير عاجل: الميزانية على وشك النفاد',
+                    message: `الميزانية المتبقية ${remainingPercentage.toFixed(1)}% فقط! قلل من مصروفاتك.`
+                });
+            }
+            
+            // التحقق من الفئات التي تجاوزت الحد
+            categories.forEach(category => {
+                const spent = category.spent || 0;
+                const percentage = (spent / category.limit) * 100;
+                
+                if (percentage > 90) {
+                    alerts.push({
+                        type: 'warning',
+                        title: `فئة ${category.name} تجاوزت الحد`,
+                        message: `أنفقت ${percentage.toFixed(1)}% من حد الفئة (${spent.toLocaleString('ar-EG')} ج.م من ${category.limit.toLocaleString('ar-EG')} ج.م).`
+                    });
+                } else if (percentage > 70) {
+                    alerts.push({
+                        type: 'info',
+                        title: `فئة ${category.name} قريبة من الحد`,
+                        message: `أنفقت ${percentage.toFixed(1)}% من حد الفئة. المتبقي ${(category.limit - spent).toLocaleString('ar-EG')} ج.م.`
+                    });
+                }
+            });
+            
+            // التحقق من مصروفات اليوم
+            const today = new Date().toISOString().split('T')[0];
+            const todayExpenses = expenses
+                .filter(expense => expense.date === today)
+                .reduce((total, expense) => total + expense.amount, 0);
+            
+            const avgDailyBudget = totalBudget / 30;
+            if (todayExpenses > avgDailyBudget * 1.5) {
+                alerts.push({
+                    type: 'warning',
+                    title: 'مصروفات اليوم مرتفعة',
+                    message: `أنفقت ${todayExpenses.toLocaleString('ar-EG')} ج.م اليوم، وهو أعلى من المتوسط اليومي المتوقع.`
+                });
+            }
+            
+            // إذا لم توجد تنبيهات، إضافة تنبيه تشجيعي
+            if (alerts.length === 0) {
+                alerts.push({
+                    type: 'success',
+                    title: 'أحسنت! أمورك تحت السيطرة',
+                    message: 'جميع فئاتك ضمن الحدود المسموحة والميزانية المتبقية جيدة. استمر في التخطيط الجيد!'
+                });
+            }
+            
+            renderAlerts();
+        }
+        
+        // عرض التنبيهات
+        function renderAlerts() {
+            alertsContainer.innerHTML = '';
+            
+            alerts.forEach((alert, index) => {
+                const alertItem = document.createElement('div');
+                alertItem.className = `alert-item ${alert.type}`;
+                alertItem.style.animationDelay = `${index * 0.1}s`;
+                alertItem.innerHTML = `
+                    <div class="alert-icon">
+                        <i class="fas fa-${alert.type === 'warning' ? 'exclamation-triangle' : alert.type === 'success' ? 'check-circle' : 'info-circle'}"></i>
+                    </div>
+                    <div class="alert-content">
+                        <div class="alert-title">${alert.title}</div>
+                        <div class="alert-message">${alert.message}</div>
+                    </div>
+                `;
+                
+                alertsContainer.appendChild(alertItem);
+            });
+        }
+        
+        // ===== العمليات مع Firebase =====
+        
+        // إضافة مصروف جديد
+        async function addExpense(expenseData) {
+            try {
+                if (!expenseData.categoryId) {
+                    showNotification('يرجى اختيار فئة أولاً', 'warning');
+                    return false;
+                }
+                
+                showLoading();
+                saveExpenseBtn.disabled = true;
+                saveExpenseBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> جاري الحفظ...';
+                
+                // التحقق من الحد المسموح
+                const category = categories.find(c => c.id === expenseData.categoryId);
+                if (!category) {
+                    throw new Error('الفئة غير موجودة');
+                }
+                
+                const categorySpent = category.spent || 0;
+                const categoryRemaining = category.limit - categorySpent;
+                
+                if (expenseData.amount > categoryRemaining) {
+                    showNotification(`هذا المصروف يتجاوز الحد المتبقي للفئة (${categoryRemaining.toLocaleString('ar-EG')} ج.م)`, 'warning');
+                    return false;
+                }
+                
+                // إضافة المصروف إلى قاعدة البيانات
+                const expenseRef = await database.ref('expenses').push(expenseData);
+                
+                // تحديث الواجهة فوراً
+                expenses.push({
+                    id: expenseRef.key,
+                    ...expenseData
+                });
+                
+                // تحديث الفئة المحلية
+                category.spent += expenseData.amount;
+                
+                // تحديث الواجهة
+                updateCategorySpent();
+                updateStats();
+                updateReports();
+                renderRecentExpenses();
+                generateAlerts();
+                
+                // إعادة تعيين النموذج
+                addExpenseForm.reset();
+                setDefaultExpenseDate();
+                selectedCategoryId = null;
+                renderTouchCategories();
+                renderCategorySelection();
+                
+                showNotification('تم إضافة المصروف بنجاح', 'success');
+                
+                // إظهار رسالة تأكيد مع تفاصيل
+                setTimeout(() => {
+                    showNotification(`تم إضافة ${expenseData.amount.toLocaleString('ar-EG')} ج.م إلى ${category.name}`, 'info');
+                }, 1000);
+                
+                return true;
+            } catch (error) {
+                console.error('Error adding expense:', error);
+                showNotification('حدث خطأ في إضافة المصروف', 'error');
+                return false;
+            } finally {
+                saveExpenseBtn.disabled = false;
+                saveExpenseBtn.innerHTML = '<i class="fas fa-save"></i> حفظ المصروف';
+                hideLoading();
+            }
+        }
+        
+        // حذف مصروف
+        async function deleteExpense(expenseId) {
+            try {
+                if (!confirm('هل أنت متأكد من حذف هذا المصروف؟')) return;
+                
+                showLoading();
+                
+                await database.ref(`expenses/${expenseId}`).remove();
+                
+                // تحديث الواجهة فوراً
+                const deletedExpense = expenses.find(e => e.id === expenseId);
+                if (deletedExpense) {
+                    const category = categories.find(c => c.id === deletedExpense.categoryId);
+                    if (category) {
+                        category.spent -= deletedExpense.amount;
+                    }
+                }
+                
+                expenses = expenses.filter(expense => expense.id !== expenseId);
+                
+                updateCategorySpent();
+                updateStats();
+                updateReports();
+                renderRecentExpenses();
+                generateAlerts();
+                
+                showNotification('تم حذف المصروف بنجاح', 'success');
+            } catch (error) {
+                console.error('Error deleting expense:', error);
+                showNotification('حدث خطأ في حذف المصروف', 'error');
+            } finally {
+                hideLoading();
+            }
+        }
+        
+        // ===== إعداد أحداث الاستماع =====
+        
+        function setupEventListeners() {
+            // إضافة مصروف جديد
+            addExpenseForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                
+                if (!selectedCategoryId) {
+                    showNotification('يرجى اختيار فئة أولاً', 'warning');
+                    return;
+                }
+                
+                const expenseData = {
+                    categoryId: selectedCategoryId,
+                    amount: parseFloat(document.getElementById('amount').value),
+                    date: document.getElementById('expense-date').value,
+                    notes: document.getElementById('notes').value,
+                    createdAt: new Date().toISOString()
+                };
+                
+                await addExpense(expenseData);
+            });
+            
+            // تغيير الشهر المحدد
+            monthSelect.addEventListener('change', async function() {
+                if (this.value === 'all') {
+                    selectedMonth = null;
+                    selectedYear = null;
+                    currentMonthDisplay.textContent = 'جميع الشهور';
+                } else {
+                    const [year, month] = this.value.split('-').map(Number);
+                    selectedMonth = month;
+                    selectedYear = year;
+                    updateMonthDisplay(month, year);
+                }
+                
+                await loadExpenses();
+            });
+            
+            // زر العودة للشهر الحالي
+            currentMonthBtn.addEventListener('click', async () => {
+                const today = new Date();
+                const currentMonth = today.getMonth();
+                const currentYear = today.getFullYear();
+                
+                monthSelect.value = `${currentYear}-${currentMonth}`;
+                selectedMonth = currentMonth;
+                selectedYear = currentYear;
+                updateMonthDisplay(currentMonth, currentYear);
+                
+                await loadExpenses();
+            });
+            
+            // زر تغيير الفئة
+            changeCategoryBtn.addEventListener('click', changeCategory);
+            
+            // لوحة الإدارة
+            adminBtn.addEventListener('click', () => {
+                adminPanel.classList.add('active');
+            });
+            
+            closeAdminBtn.addEventListener('click', () => {
+                adminPanel.classList.remove('active');
+            });
+            
+            // إغلاق بـ ESC
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape') {
+                    adminPanel.classList.remove('active');
+                }
+            });
+        }
+        
+        // ===== تهيئة التطبيق =====
+        
+        async function initApp() {
+            setDefaultExpenseDate();
+            populateMonthSelect();
+            setupEventListeners();
+            
+            try {
+                showLoading();
+                await Promise.all([
+                    loadCategories(),
+                    loadExpenses()
+                ]);
+                updateStats();
+                updateReports();
+                generateAlerts();
+                
+                // إضافة أنيميشن للعناصر بعد التحميل
+                setTimeout(() => {
+                    document.querySelectorAll('.category-touch-item').forEach((item, index) => {
+                        item.style.opacity = '1';
+                        item.style.transform = 'scale(1)';
+                    });
+                }, 100);
+                
+            } catch (error) {
+                console.error('Error initializing app:', error);
+                showNotification('حدث خطأ في تحميل التطبيق', 'error');
+            } finally {
+                hideLoading();
+            }
+        }
+        
+        // تشغيل التطبيق عند تحميل الصفحة
+        document.addEventListener('DOMContentLoaded', initApp);
+    </script>
+</body>
+</html>
