@@ -79,10 +79,10 @@
                 radial-gradient(circle at 50% 50%, rgba(54, 211, 153, 0.05) 0%, transparent 50%);
         }
 
-        /* الهيدر الجديد */
+        /* الهيدر الجديد مع زر الإدارة في الأعلى */
         .main-header {
             background: var(--gradient-dark);
-            padding: 24px 20px 20px;
+            padding: 20px 20px 20px;
             border-radius: 0 0 var(--border-radius-lg) var(--border-radius-lg);
             box-shadow: var(--shadow-lg);
             position: relative;
@@ -246,7 +246,7 @@
             color: var(--gray);
         }
 
-        /* اختيار الشهر */
+        /* اختيار الشهر بالصيغة الجديدة */
         .month-selector {
             background: white;
             border-radius: var(--border-radius-md);
@@ -260,14 +260,14 @@
 
         .selector-content {
             display: flex;
-            align-items: center;
+            flex-direction: column;
             gap: 12px;
         }
 
         .month-display {
-            flex: 1;
             display: flex;
             align-items: center;
+            justify-content: center;
             gap: 10px;
         }
 
@@ -279,11 +279,50 @@
         .month-display span {
             font-weight: 700;
             color: var(--dark);
+            font-size: 1.1rem;
+        }
+
+        .salary-months-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 8px;
+        }
+
+        .salary-month-btn {
+            padding: 12px;
+            border: 2px solid var(--gray-light);
+            border-radius: var(--border-radius-xs);
+            background: white;
+            color: var(--gray-dark);
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition-normal);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .salary-month-btn:hover {
+            border-color: var(--primary);
+            color: var(--primary);
+            transform: translateY(-2px);
+        }
+
+        .salary-month-btn.active {
+            background: var(--gradient-primary);
+            color: white;
+            border-color: var(--primary);
+        }
+
+        .salary-month-btn i {
+            font-size: 0.9rem;
         }
 
         .month-actions {
             display: flex;
             gap: 8px;
+            justify-content: center;
         }
 
         .btn-sm {
@@ -607,29 +646,26 @@
             color: white;
         }
 
-        /* زر الإدارة العائم */
-        .fab {
-            position: fixed;
-            bottom: 30px;
-            left: 30px;
-            width: 60px;
-            height: 60px;
-            background: var(--gradient-primary);
+        /* زر الإدارة في الأعلى */
+        .admin-btn-top {
+            background: var(--gradient-secondary);
+            border: none;
             border-radius: 50%;
+            width: 44px;
+            height: 44px;
             display: flex;
             align-items: center;
             justify-content: center;
             color: white;
-            font-size: 1.5rem;
+            font-size: 1.2rem;
             cursor: pointer;
-            box-shadow: var(--shadow-lg);
             transition: var(--transition-normal);
-            z-index: 1000;
+            box-shadow: var(--shadow-md);
         }
 
-        .fab:hover {
+        .admin-btn-top:hover {
             transform: scale(1.1) rotate(90deg);
-            box-shadow: var(--shadow-xl);
+            box-shadow: var(--shadow-lg);
         }
 
         /* لوحة الإدارة */
@@ -957,6 +993,10 @@
             .stat-value {
                 font-size: 1.4rem;
             }
+            
+            .salary-months-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
         }
 
         @media (max-width: 480px) {
@@ -969,8 +1009,8 @@
                 gap: 15px;
             }
             
-            .month-actions {
-                flex-direction: column;
+            .salary-months-grid {
+                grid-template-columns: repeat(2, 1fr);
             }
             
             .app-title h1 {
@@ -1027,11 +1067,8 @@
                 </div>
                 
                 <div class="user-actions">
-                    <button class="icon-btn" id="stats-btn">
-                        <i class="fas fa-chart-bar"></i>
-                    </button>
-                    <button class="icon-btn" id="notifications-btn">
-                        <i class="fas fa-bell"></i>
+                    <button class="admin-btn-top" id="admin-btn-top">
+                        <i class="fas fa-cog"></i>
                     </button>
                 </div>
             </div>
@@ -1073,23 +1110,27 @@
         </div>
     </header>
     
-    <!-- اختيار الشهر -->
+    <!-- اختيار الشهر بالصيغة الجديدة -->
     <div class="month-selector">
         <div class="selector-content">
             <div class="month-display">
                 <i class="fas fa-calendar-alt"></i>
-                <span id="selected-month">يناير 2024</span>
+                <span id="selected-month">مرتب شهر 12</span>
+            </div>
+            
+            <div class="salary-months-grid" id="salary-months-grid">
+                <!-- سيتم تعبئته ديناميكيًا -->
             </div>
             
             <div class="month-actions">
                 <button class="btn-sm btn-outline" id="prev-month">
-                    <i class="fas fa-chevron-right"></i>
+                    <i class="fas fa-chevron-right"></i> الشهر السابق
                 </button>
                 <button class="btn-sm btn-primary" id="current-month">
                     الشهر الحالي
                 </button>
                 <button class="btn-sm btn-outline" id="next-month">
-                    <i class="fas fa-chevron-left"></i>
+                    الشهر التالي <i class="fas fa-chevron-left"></i>
                 </button>
             </div>
         </div>
@@ -1156,11 +1197,6 @@
             <!-- سيتم تعبئته ديناميكيًا -->
         </div>
     </section>
-    
-    <!-- زر الإدارة العائم -->
-    <div class="fab" id="admin-fab">
-        <i class="fas fa-sliders-h"></i>
-    </div>
     
     <!-- لوحة الإدارة -->
     <div class="admin-panel" id="admin-panel">
@@ -1304,7 +1340,7 @@
         let categories = [];
         let expenses = [];
         let totalBudget = 10000;
-        let currentMonth = new Date().getMonth();
+        let currentMonthIndex = 11; // شهر 12 كمثال ابتدائي
         let currentYear = new Date().getFullYear();
 
         // DOM Elements
@@ -1316,11 +1352,12 @@
         const budgetProgressFill = document.getElementById('budget-progress-fill');
         const progressPercentage = document.getElementById('progress-percentage');
         const selectedMonthEl = document.getElementById('selected-month');
+        const salaryMonthsGrid = document.getElementById('salary-months-grid');
         const categoriesContainer = document.getElementById('categories-container');
         const expenseCategorySelect = document.getElementById('expense-category');
         const quickExpenseForm = document.getElementById('quick-expense-form');
         const recentExpensesList = document.getElementById('recent-expenses-list');
-        const adminFab = document.getElementById('admin-fab');
+        const adminBtnTop = document.getElementById('admin-btn-top');
         const adminPanel = document.getElementById('admin-panel');
         const closeAdminBtn = document.getElementById('close-admin');
         const monthlyBudgetInput = document.getElementById('monthly-budget');
@@ -1405,6 +1442,7 @@
                     loadExpenses(),
                     loadTotalBudget()
                 ]);
+                renderSalaryMonths();
                 updateUI();
                 setupRealtimeListeners();
             } catch (error) {
@@ -1456,9 +1494,51 @@
             }
         }
 
+        // عرض شهور المرتب
+        function renderSalaryMonths() {
+            salaryMonthsGrid.innerHTML = '';
+            
+            // نبدأ من شهر 12 ثم 1، 2، 3... إلى 11
+            const monthOrder = [12, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11];
+            
+            monthOrder.forEach((monthNum, index) => {
+                const monthIndex = monthNum - 1; // تحويل لـ 0-based index
+                const monthName = arabicMonths[monthIndex];
+                const year = monthNum === 12 ? currentYear - 1 : currentYear;
+                
+                const monthBtn = document.createElement('button');
+                monthBtn.className = `salary-month-btn ${currentMonthIndex === monthIndex ? 'active' : ''}`;
+                monthBtn.innerHTML = `
+                    <i class="fas fa-calendar"></i>
+                    <span>مرتب شهر ${monthNum}</span>
+                `;
+                monthBtn.dataset.month = monthIndex;
+                monthBtn.dataset.year = year;
+                
+                monthBtn.addEventListener('click', () => {
+                    currentMonthIndex = monthIndex;
+                    const year = monthNum === 12 ? currentYear - 1 : currentYear;
+                    currentYear = year;
+                    updateMonthDisplay();
+                    updateUI();
+                    updateActiveMonthButton();
+                });
+                
+                salaryMonthsGrid.appendChild(monthBtn);
+            });
+        }
+
+        function updateActiveMonthButton() {
+            document.querySelectorAll('.salary-month-btn').forEach(btn => {
+                const month = parseInt(btn.dataset.month);
+                btn.classList.toggle('active', month === currentMonthIndex);
+            });
+        }
+
         // تحديث الواجهة
         function updateUI() {
             updateDateDisplay();
+            updateMonthDisplay();
             updateBudgetStats();
             updateCategorySpent();
             renderCategories();
@@ -1470,13 +1550,17 @@
             const today = new Date();
             const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
             currentDateEl.textContent = today.toLocaleDateString('ar-EG', options);
-            selectedMonthEl.textContent = `${arabicMonths[currentMonth]} ${currentYear}`;
+        }
+
+        function updateMonthDisplay() {
+            const monthNumber = currentMonthIndex + 1;
+            selectedMonthEl.textContent = `مرتب شهر ${monthNumber}`;
         }
 
         function updateBudgetStats() {
             const filteredExpenses = expenses.filter(expense => {
                 const expenseDate = new Date(expense.date);
-                return expenseDate.getMonth() === currentMonth && 
+                return expenseDate.getMonth() === currentMonthIndex && 
                        expenseDate.getFullYear() === currentYear;
             });
             
@@ -1504,7 +1588,7 @@
         function updateCategorySpent() {
             const filteredExpenses = expenses.filter(expense => {
                 const expenseDate = new Date(expense.date);
-                return expenseDate.getMonth() === currentMonth && 
+                return expenseDate.getMonth() === currentMonthIndex && 
                        expenseDate.getFullYear() === currentYear;
             });
             
@@ -1590,7 +1674,7 @@
             const filteredExpenses = expenses
                 .filter(expense => {
                     const expenseDate = new Date(expense.date);
-                    return expenseDate.getMonth() === currentMonth && 
+                    return expenseDate.getMonth() === currentMonthIndex && 
                            expenseDate.getFullYear() === currentYear;
                 })
                 .sort((a, b) => new Date(b.date) - new Date(a.date))
@@ -2198,32 +2282,35 @@
             
             // الشهور
             document.getElementById('prev-month').addEventListener('click', () => {
-                currentMonth--;
-                if (currentMonth < 0) {
-                    currentMonth = 11;
+                currentMonthIndex--;
+                if (currentMonthIndex < 0) {
+                    currentMonthIndex = 11;
                     currentYear--;
                 }
                 updateUI();
+                updateActiveMonthButton();
             });
             
             document.getElementById('next-month').addEventListener('click', () => {
-                currentMonth++;
-                if (currentMonth > 11) {
-                    currentMonth = 0;
+                currentMonthIndex++;
+                if (currentMonthIndex > 11) {
+                    currentMonthIndex = 0;
                     currentYear++;
                 }
                 updateUI();
+                updateActiveMonthButton();
             });
             
             document.getElementById('current-month').addEventListener('click', () => {
                 const now = new Date();
-                currentMonth = now.getMonth();
+                currentMonthIndex = now.getMonth();
                 currentYear = now.getFullYear();
                 updateUI();
+                updateActiveMonthButton();
             });
             
             // لوحة الإدارة
-            adminFab.addEventListener('click', () => {
+            adminBtnTop.addEventListener('click', () => {
                 adminPanel.classList.add('active');
                 renderAdminCategories();
             });
