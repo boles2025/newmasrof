@@ -3,82 +3,129 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
-    <title>مالي - إدارة المصروفات الذكية</title>
+    <title>مالي الذكية - إدارة المصروفات بتقنيات حديثة</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-database-compat.js"></script>
     <style>
         :root {
-            /* الألوان الأساسية - تدرجات داكنة مع ألوان نيون */
-            --primary: #00d4ff;
-            --primary-dark: #0099ff;
+            /* نظام ألوان متكامل - تدرجات نيون ديناميكية */
+            --primary: #00f2fe;
+            --primary-dark: #00b8fe;
             --primary-glow: #00ffea;
+            --primary-light: rgba(0, 242, 254, 0.1);
+            
             --secondary: #ff0080;
             --secondary-dark: #cc0066;
             --secondary-glow: #ff40a3;
-            --success: #00ff88;
-            --success-dark: #00cc6a;
-            --success-glow: #33ffaa;
+            --secondary-light: rgba(255, 0, 128, 0.1);
+            
+            --accent: #ffcc00;
+            --accent-dark: #ff9900;
+            --accent-glow: #ffdd44;
+            --accent-light: rgba(255, 204, 0, 0.1);
+            
+            --success: #00ff9d;
+            --success-dark: #00cc7a;
+            --success-glow: #33ffb5;
+            --success-light: rgba(0, 255, 157, 0.1);
+            
             --warning: #ffaa00;
             --warning-dark: #cc8800;
             --warning-glow: #ffcc44;
+            --warning-light: rgba(255, 170, 0, 0.1);
+            
             --danger: #ff3366;
             --danger-dark: #ff0033;
             --danger-glow: #ff6699;
+            --danger-light: rgba(255, 51, 102, 0.1);
+            
             --info: #33ccff;
             --info-dark: #0099cc;
             --info-glow: #66ddff;
+            --info-light: rgba(51, 204, 255, 0.1);
+            
             --purple: #aa66ff;
             --purple-dark: #8844dd;
             --purple-glow: #cc99ff;
+            --purple-light: rgba(170, 102, 255, 0.1);
             
-            /* الخلفيات */
+            --teal: #00ffcc;
+            --teal-dark: #00ccaa;
+            --teal-glow: #33ffdd;
+            --teal-light: rgba(0, 255, 204, 0.1);
+            
+            /* خلفيات متدرجة ديناميكية */
             --bg-main: #0a0a1a;
-            --bg-card: rgba(16, 18, 36, 0.9);
-            --bg-card-light: rgba(24, 28, 56, 0.7);
+            --bg-secondary: #101024;
+            --bg-tertiary: #1a1a2e;
+            --bg-card: rgba(20, 22, 40, 0.85);
+            --bg-card-light: rgba(30, 32, 60, 0.7);
             --bg-dark: #050510;
-            --bg-gradient: linear-gradient(135deg, #0a0a1a 0%, #141432 50%, #0a0a1a 100%);
+            --bg-darker: #020208;
             
-            /* التدرجات */
-            --gradient-primary: linear-gradient(135deg, var(--primary), var(--secondary));
-            --gradient-success: linear-gradient(135deg, var(--success), var(--info));
-            --gradient-warning: linear-gradient(135deg, var(--warning), var(--danger));
-            --gradient-danger: linear-gradient(135deg, var(--danger), var(--purple));
-            --gradient-card: linear-gradient(135deg, rgba(16, 18, 36, 0.9), rgba(10, 12, 28, 0.9));
+            --gradient-main: linear-gradient(135deg, #0a0a1a 0%, #141432 50%, #0a0a1a 100%);
+            --gradient-dynamic: linear-gradient(135deg, 
+                rgba(10, 10, 26, 0.95) 0%, 
+                rgba(20, 20, 50, 0.95) 50%, 
+                rgba(10, 10, 26, 0.95) 100%);
             
-            /* التأثيرات */
-            --glow-primary: 0 0 25px rgba(0, 212, 255, 0.5);
-            --glow-secondary: 0 0 25px rgba(255, 0, 128, 0.5);
-            --glow-success: 0 0 25px rgba(0, 255, 136, 0.5);
-            --glow-danger: 0 0 25px rgba(255, 51, 102, 0.5);
+            /* تدرجات ديناميكية */
+            --gradient-primary: linear-gradient(135deg, var(--primary), var(--secondary), var(--accent));
+            --gradient-success: linear-gradient(135deg, var(--success), var(--teal), var(--info));
+            --gradient-warning: linear-gradient(135deg, var(--warning), var(--accent), var(--danger));
+            --gradient-danger: linear-gradient(135deg, var(--danger), var(--secondary), var(--purple));
+            --gradient-card: linear-gradient(135deg, rgba(20, 22, 40, 0.85), rgba(15, 17, 35, 0.85));
+            --gradient-glass: linear-gradient(135deg, 
+                rgba(255, 255, 255, 0.05), 
+                rgba(255, 255, 255, 0.02), 
+                rgba(255, 255, 255, 0.05));
+            --gradient-rainbow: linear-gradient(90deg, 
+                var(--primary), var(--secondary), var(--accent), 
+                var(--success), var(--info), var(--purple), 
+                var(--primary));
             
-            /* الظلال */
-            --shadow-soft: 0 5px 15px rgba(0, 0, 0, 0.4);
-            --shadow-medium: 0 10px 30px rgba(0, 0, 0, 0.5);
-            --shadow-hard: 0 20px 60px rgba(0, 0, 0, 0.6);
-            --shadow-glow: 0 0 40px rgba(0, 212, 255, 0.3);
+            /* تأثيرات إشعاعية */
+            --glow-primary: 0 0 30px rgba(0, 242, 254, 0.6), 0 0 60px rgba(0, 242, 254, 0.3);
+            --glow-secondary: 0 0 30px rgba(255, 0, 128, 0.6), 0 0 60px rgba(255, 0, 128, 0.3);
+            --glow-success: 0 0 30px rgba(0, 255, 157, 0.6), 0 0 60px rgba(0, 255, 157, 0.3);
+            --glow-danger: 0 0 30px rgba(255, 51, 102, 0.6), 0 0 60px rgba(255, 51, 102, 0.3);
+            --glow-accent: 0 0 30px rgba(255, 204, 0, 0.6), 0 0 60px rgba(255, 204, 0, 0.3);
+            --glow-white: 0 0 40px rgba(255, 255, 255, 0.4);
             
-            /* تأثيرات زجاجية */
-            --glass-bg: rgba(16, 18, 36, 0.7);
-            --glass-border: rgba(0, 212, 255, 0.2);
-            --glass-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+            /* الظلال المعززة */
+            --shadow-soft: 0 8px 30px rgba(0, 0, 0, 0.4);
+            --shadow-medium: 0 15px 40px rgba(0, 0, 0, 0.6);
+            --shadow-hard: 0 25px 80px rgba(0, 0, 0, 0.7);
+            --shadow-glow: 0 0 60px rgba(0, 242, 254, 0.4);
+            --shadow-glow-secondary: 0 0 60px rgba(255, 0, 128, 0.4);
+            --shadow-glow-success: 0 0 60px rgba(0, 255, 157, 0.4);
             
-            /* الأنيميشن */
-            --transition-fast: 0.25s cubic-bezier(0.4, 0, 0.2, 1);
-            --transition-normal: 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-            --transition-slow: 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+            /* تأثيرات زجاجية معززة */
+            --glass-bg: rgba(25, 27, 50, 0.75);
+            --glass-border: rgba(0, 242, 254, 0.25);
+            --glass-shadow: 0 15px 50px rgba(0, 0, 0, 0.6);
+            --glass-highlight: inset 0 1px 0 rgba(255, 255, 255, 0.1);
+            
+            /* أنيميشن */
+            --transition-fast: 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+            --transition-normal: 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+            --transition-slow: 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+            --transition-bounce: 0.5s cubic-bezier(0.68, -0.55, 0.27, 1.55);
             
             /* الزوايا */
-            --radius-small: 14px;
-            --radius-medium: 20px;
-            --radius-large: 28px;
+            --radius-small: 16px;
+            --radius-medium: 24px;
+            --radius-large: 32px;
             --radius-circle: 50%;
+            --radius-pill: 100px;
             
-            /* البلور */
-            --blur-light: blur(10px);
-            --blur-medium: blur(15px);
-            --blur-heavy: blur(25px);
+            /* تأثيرات ضبابية */
+            --blur-light: blur(12px);
+            --blur-medium: blur(20px);
+            --blur-heavy: blur(35px);
         }
 
         * {
@@ -91,10 +138,11 @@
 
         html {
             scroll-behavior: smooth;
+            overflow-x: hidden;
         }
 
         body {
-            background: var(--bg-gradient);
+            background: var(--bg-main);
             color: #e0e0ff;
             min-height: 100vh;
             overflow-x: hidden;
@@ -102,58 +150,66 @@
             font-size: 16px;
             line-height: 1.6;
             opacity: 0;
-            animation: bodyFadeIn 1s ease 0.5s forwards;
+            animation: bodyFadeIn 1.2s ease 0.5s forwards;
+            background-image: 
+                radial-gradient(circle at 20% 30%, rgba(0, 242, 254, 0.1) 0%, transparent 40%),
+                radial-gradient(circle at 80% 70%, rgba(255, 0, 128, 0.1) 0%, transparent 40%),
+                radial-gradient(circle at 40% 80%, rgba(255, 204, 0, 0.1) 0%, transparent 40%);
         }
 
-        /* خلفية جسيمات متحركة */
-        .particles-bg {
+        /* خلفية جسيمات متحركة متقدمة */
+        #particles-js {
             position: fixed;
-            top: 0;
-            left: 0;
             width: 100%;
             height: 100%;
-            z-index: -3;
-            overflow: hidden;
+            z-index: -2;
+            opacity: 0.5;
         }
 
-        .particle {
-            position: absolute;
-            border-radius: 50%;
-            background: var(--primary);
-            filter: blur(1px);
-            animation: floatParticle infinite linear;
-            opacity: 0.3;
-        }
-
-        /* إنشاء 15 جسيماً بأحجام وألوان وحركات مختلفة */
-        .particle:nth-child(1) { width: 120px; height: 120px; top: 10%; right: 5%; background: var(--primary); animation-duration: 25s; }
-        .particle:nth-child(2) { width: 80px; height: 80px; top: 60%; left: 10%; background: var(--secondary); animation-duration: 30s; }
-        .particle:nth-child(3) { width: 150px; height: 150px; top: 30%; right: 30%; background: var(--success); animation-duration: 35s; }
-        .particle:nth-child(4) { width: 60px; height: 60px; top: 80%; right: 20%; background: var(--warning); animation-duration: 20s; }
-        .particle:nth-child(5) { width: 100px; height: 100px; top: 40%; left: 5%; background: var(--danger); animation-duration: 28s; }
-        .particle:nth-child(6) { width: 90px; height: 90px; top: 70%; left: 30%; background: var(--info); animation-duration: 32s; }
-        .particle:nth-child(7) { width: 110px; height: 110px; top: 20%; left: 25%; background: var(--purple); animation-duration: 26s; }
-        .particle:nth-child(8) { width: 70px; height: 70px; top: 85%; right: 35%; background: var(--primary-glow); animation-duration: 22s; }
-        .particle:nth-child(9) { width: 130px; height: 130px; top: 15%; left: 40%; background: var(--secondary-glow); animation-duration: 38s; }
-        .particle:nth-child(10) { width: 95px; height: 95px; top: 65%; right: 10%; background: var(--success-glow); animation-duration: 29s; }
-
-        /* شبكة خلفية */
+        /* شبكة خلفية متحركة */
         .grid-bg {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            z-index: -2;
+            z-index: -1;
             background-image: 
-                linear-gradient(rgba(0, 212, 255, 0.05) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(0, 212, 255, 0.05) 1px, transparent 1px);
-            background-size: 50px 50px;
-            opacity: 0.3;
-            animation: gridMove 20s linear infinite;
+                linear-gradient(rgba(0, 242, 254, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0, 242, 254, 0.03) 1px, transparent 1px);
+            background-size: 60px 60px;
+            opacity: 0.4;
+            animation: gridMove 30s linear infinite;
         }
 
-        /* شريط المصمم */
+        /* خطوط ديناميكية خلفية */
+        .dynamic-lines {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            overflow: hidden;
+            pointer-events: none;
+        }
+
+        .line {
+            position: absolute;
+            background: linear-gradient(90deg, transparent, var(--primary), transparent);
+            width: 100%;
+            height: 1px;
+            opacity: 0.1;
+            animation: lineFloat 20s linear infinite;
+        }
+
+        .line:nth-child(1) { top: 20%; animation-delay: 0s; animation-duration: 25s; }
+        .line:nth-child(2) { top: 40%; animation-delay: 5s; animation-duration: 30s; }
+        .line:nth-child(3) { top: 60%; animation-delay: 10s; animation-duration: 20s; }
+        .line:nth-child(4) { top: 80%; animation-delay: 15s; animation-duration: 35s; }
+        .line:nth-child(5) { top: 30%; animation-delay: 2s; animation-duration: 28s; }
+
+        /* شريط مصمم محسّن */
         .designer-bar {
             position: fixed;
             top: 0;
@@ -162,56 +218,61 @@
             height: 70px;
             background: linear-gradient(90deg, 
                 transparent 0%, 
-                rgba(0, 212, 255, 0.3) 20%,
-                rgba(255, 0, 128, 0.3) 50%,
-                rgba(0, 212, 255, 0.3) 80%,
+                rgba(0, 242, 254, 0.4) 20%,
+                rgba(255, 0, 128, 0.4) 40%,
+                rgba(255, 204, 0, 0.4) 60%,
+                rgba(0, 242, 254, 0.4) 80%,
                 transparent 100%);
             background-size: 400% 100%;
-            animation: bannerFlow 10s linear infinite;
+            animation: bannerFlow 8s linear infinite;
             display: flex;
             align-items: center;
             justify-content: center;
             z-index: 1000;
             backdrop-filter: var(--blur-medium);
             border-bottom: 1px solid var(--glass-border);
-            clip-path: polygon(0 0, 100% 0, 97% 100%, 3% 100%);
+            clip-path: polygon(0 0, 100% 0, 98% 100%, 2% 100%);
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
         }
 
         .designer-text {
             color: white;
             font-weight: 900;
-            font-size: 1.3rem;
-            text-shadow: 0 0 20px var(--primary);
+            font-size: 1.4rem;
+            text-shadow: 0 0 20px var(--primary), 0 0 40px var(--primary);
             display: flex;
             align-items: center;
-            gap: 15px;
-            padding: 10px 30px;
-            background: rgba(0, 0, 0, 0.3);
-            border-radius: 50px;
+            gap: 20px;
+            padding: 12px 40px;
+            background: rgba(0, 0, 0, 0.4);
+            border-radius: 100px;
             border: 1px solid var(--glass-border);
             backdrop-filter: var(--blur-light);
-            animation: textPulse 3s ease-in-out infinite;
+            animation: textPulse 4s ease-in-out infinite;
+            transform-style: preserve-3d;
+            perspective: 1000px;
         }
 
         .designer-text i {
-            color: var(--primary);
-            animation: iconSpin 5s linear infinite;
+            color: var(--accent);
+            animation: iconSpin 8s linear infinite;
+            text-shadow: 0 0 15px var(--accent);
         }
 
-        /* شاشة التحميل */
+        /* شاشة تحميل متطورة */
         .loading-screen {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background: var(--bg-main);
+            background: var(--bg-darker);
             display: flex;
             flex-direction: column;
             justify-content: center;
             align-items: center;
             z-index: 9999;
-            transition: opacity 0.5s ease, visibility 0.5s ease;
+            transition: opacity 0.8s ease, visibility 0.8s ease;
         }
 
         .loading-screen.hidden {
@@ -221,71 +282,97 @@
 
         .loader-container {
             position: relative;
-            width: 200px;
-            height: 200px;
-            margin-bottom: 30px;
+            width: 250px;
+            height: 250px;
+            margin-bottom: 40px;
+            transform-style: preserve-3d;
+            perspective: 1000px;
         }
 
-        .loader {
+        .orbital-loader {
             position: absolute;
             width: 100%;
             height: 100%;
             border-radius: 50%;
-            border: 4px solid transparent;
-            animation: loaderRotate 2s linear infinite;
+            animation: orbitalSpin 4s linear infinite;
+            border: 2px solid transparent;
         }
 
-        .loader:nth-child(1) {
+        .orbital-loader:nth-child(1) {
             border-top-color: var(--primary);
             animation-delay: 0.1s;
+            box-shadow: 0 0 30px var(--primary);
         }
 
-        .loader:nth-child(2) {
-            border-top-color: var(--secondary);
+        .orbital-loader:nth-child(2) {
+            border-right-color: var(--secondary);
             animation-delay: 0.2s;
+            box-shadow: 0 0 30px var(--secondary);
         }
 
-        .loader:nth-child(3) {
-            border-top-color: var(--success);
+        .orbital-loader:nth-child(3) {
+            border-bottom-color: var(--accent);
             animation-delay: 0.3s;
+            box-shadow: 0 0 30px var(--accent);
         }
 
         .loader-text {
-            font-size: 1.5rem;
-            font-weight: 700;
-            color: var(--primary);
+            font-size: 2rem;
+            font-weight: 900;
+            color: transparent;
+            background: var(--gradient-rainbow);
+            -webkit-background-clip: text;
+            background-clip: text;
             text-transform: uppercase;
-            letter-spacing: 3px;
-            animation: textGlow 2s ease-in-out infinite;
+            letter-spacing: 4px;
+            animation: textGlow 3s ease-in-out infinite;
+            text-shadow: 0 0 30px rgba(0, 242, 254, 0.5);
+            margin-bottom: 20px;
         }
 
         .loading-progress {
-            width: 200px;
-            height: 4px;
+            width: 300px;
+            height: 6px;
             background: rgba(255, 255, 255, 0.1);
-            border-radius: 2px;
-            margin-top: 20px;
+            border-radius: 3px;
+            margin-top: 30px;
             overflow: hidden;
+            box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.5);
         }
 
         .progress-fill {
             height: 100%;
-            background: var(--gradient-primary);
-            border-radius: 2px;
+            background: var(--gradient-rainbow);
+            border-radius: 3px;
             width: 0%;
-            animation: loadingProgress 2s ease-in-out forwards;
+            animation: loadingProgress 2.5s ease-in-out forwards;
+            position: relative;
+            overflow: hidden;
         }
 
-        /* الهيدر الرئيسي */
+        .progress-fill::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+            animation: shimmer 2s infinite;
+        }
+
+        /* الهيدر الرئيسي - تصميم ثلاثي الأبعاد */
         .main-header {
             background: var(--glass-bg);
             padding: 25px 30px; /* تصغير الحجم */
             margin-top: 70px;
-            backdrop-filter: var(--blur-medium);
+            backdrop-filter: var(--blur-heavy);
             border-bottom: 1px solid var(--glass-border);
             position: relative;
             overflow: hidden;
-            animation: headerSlideIn 1s ease-out 1s both;
+            animation: headerSlideIn 1.2s ease-out 1s both;
+            transform-style: preserve-3d;
+            perspective: 1000px;
         }
 
         .main-header::before {
@@ -294,19 +381,28 @@
             top: 0;
             left: 0;
             right: 0;
-            height: 1px;
-            background: linear-gradient(90deg, 
-                transparent, 
-                var(--primary), 
-                var(--secondary), 
-                var(--primary), 
-                transparent);
-            animation: headerShine 3s infinite;
+            height: 3px;
+            background: var(--gradient-rainbow);
+            background-size: 400% 100%;
+            animation: headerShine 4s infinite linear;
+            z-index: 2;
+        }
+
+        .main-header::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at 50% 0%, rgba(0, 242, 254, 0.2), transparent 70%);
+            opacity: 0.5;
+            z-index: 1;
         }
 
         .header-content {
             position: relative;
-            z-index: 2;
+            z-index: 3;
             max-width: 1400px;
             margin: 0 auto;
         }
@@ -315,37 +411,39 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 25px; /* تصغير */
-            animation: fadeIn 0.8s ease-out 1.2s both;
+            margin-bottom: 20px; /* تصغير المسافة */
+            animation: fadeIn 1s ease-out 1.2s both;
         }
 
         .app-logo {
             display: flex;
             align-items: center;
-            gap: 25px;
+            gap: 20px; /* تصغير المسافة */
             cursor: pointer;
-            transition: var(--transition-normal);
+            transition: var(--transition-bounce);
             position: relative;
+            transform-style: preserve-3d;
         }
 
         .app-logo:hover {
-            transform: translateY(-5px);
+            transform: translateY(-8px) rotateX(10deg);
         }
 
         .logo-icon {
-            width: 70px; /* تصغير */
-            height: 70px; /* تصغير */
+            width: 70px; /* تصغير الحجم */
+            height: 70px; /* تصغير الحجم */
             background: var(--gradient-primary);
             border-radius: var(--radius-large);
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 1.8rem; /* تصغير */
+            font-size: 1.8rem; /* تصغير الحجم */
             color: white;
             box-shadow: var(--glow-primary);
-            transition: var(--transition-normal);
+            transition: var(--transition-bounce);
             position: relative;
             overflow: hidden;
+            transform-style: preserve-3d;
         }
 
         .logo-icon::before {
@@ -355,54 +453,74 @@
             left: -50%;
             width: 200%;
             height: 200%;
-            background: linear-gradient(45deg, transparent, rgba(255,255,255,0.2), transparent);
-            animation: shine 3s infinite;
+            background: linear-gradient(45deg, transparent, rgba(255,255,255,0.3), transparent);
+            animation: shine 4s infinite linear;
+            transform: rotate(45deg);
+        }
+
+        .logo-icon::after {
+            content: '';
+            position: absolute;
+            inset: 2px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: calc(var(--radius-large) - 2px);
+            z-index: 1;
+        }
+
+        .logo-icon i {
+            position: relative;
+            z-index: 2;
+            animation: iconFloat 3s ease-in-out infinite;
         }
 
         .app-logo:hover .logo-icon {
-            transform: rotate(20deg) scale(1.1);
-            box-shadow: 0 0 40px var(--primary);
+            transform: rotate(20deg) scale(1.15);
+            box-shadow: var(--glow-primary), 0 0 80px var(--primary);
         }
 
         .app-title h1 {
             color: white;
-            font-size: 1.8rem; /* تصغير */
+            font-size: 1.8rem; /* تصغير الحجم */
             font-weight: 900;
-            margin-bottom: 5px; /* تصغير */
-            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            margin-bottom: 6px; /* تصغير المسافة */
+            background: var(--gradient-rainbow);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
-            text-shadow: 0 0 20px rgba(0, 212, 255, 0.3);
+            text-shadow: 0 0 30px rgba(0, 242, 254, 0.4);
+            letter-spacing: 1px;
         }
 
         .app-title p {
             color: #a0a0ff;
-            font-size: 1rem; /* تصغير */
+            font-size: 1rem; /* تصغير الحجم */
             font-weight: 300;
+            text-shadow: 0 0 10px rgba(0, 242, 254, 0.3);
         }
 
         .user-actions {
             display: flex;
-            gap: 20px;
+            gap: 20px; /* تصغير المسافة */
         }
 
         .icon-btn {
-            width: 55px; /* تصغير */
-            height: 55px; /* تصغير */
+            width: 60px; /* تصغير الحجم */
+            height: 60px; /* تصغير الحجم */
             border-radius: var(--radius-circle);
-            background: rgba(255, 255, 255, 0.1);
+            background: var(--gradient-glass);
             border: 1px solid var(--glass-border);
             color: white;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 1.5rem; /* تصغير */
+            font-size: 1.6rem; /* تصغير الحجم */
             cursor: pointer;
-            transition: var(--transition-normal);
+            transition: var(--transition-bounce);
             backdrop-filter: var(--blur-light);
             position: relative;
             overflow: hidden;
+            box-shadow: var(--shadow-soft);
+            transform-style: preserve-3d;
         }
 
         .icon-btn::before {
@@ -412,37 +530,131 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: linear-gradient(45deg, transparent, rgba(255,255,255,0.1), transparent);
+            background: linear-gradient(45deg, transparent, rgba(255,255,255,0.15), transparent);
             transform: translateX(-100%);
-            transition: transform 0.6s;
+            transition: transform 0.8s;
         }
 
         .icon-btn:hover {
-            background: rgba(255, 255, 255, 0.2);
-            transform: translateY(-5px) scale(1.1);
+            background: var(--gradient-primary);
+            transform: translateY(-8px) rotateY(15deg) scale(1.15);
             box-shadow: var(--glow-primary);
+            border-color: transparent;
         }
 
         .icon-btn:hover::before {
             transform: translateX(100%);
         }
 
-        /* بطاقة الميزانية */
+        .icon-btn i {
+            position: relative;
+            z-index: 1;
+            animation: iconPulse 2s ease-in-out infinite;
+        }
+
+        /* بطاقة الميزانية - تصميم ثلاثي الأبعاد */
         .budget-card {
             background: var(--gradient-card);
             border-radius: var(--radius-large);
-            padding: 30px; /* تصغير */
-            margin: 20px auto; /* تصغير */
+            padding: 30px; /* تصغير الحجم */
+            margin: 20px auto; /* تصغير المسافة */
             max-width: 1400px;
             backdrop-filter: var(--blur-medium);
             border: 1px solid var(--glass-border);
-            box-shadow: var(--shadow-medium);
+            box-shadow: var(--shadow-medium), inset 0 1px 0 rgba(255,255,255,0.1);
             position: relative;
             overflow: hidden;
-            animation: cardSlideIn 0.8s ease-out 1.4s both;
+            animation: cardSlideIn 1s ease-out 1.4s both;
+            transform-style: preserve-3d;
+            transform: translateZ(0);
         }
 
         .budget-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: var(--gradient-rainbow);
+            background-size: 400% 100%;
+            animation: rainbowSlide 4s linear infinite;
+            z-index: 2;
+        }
+
+        .budget-card::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at 80% 20%, rgba(0, 242, 254, 0.1), transparent 50%),
+                        radial-gradient(circle at 20% 80%, rgba(255, 0, 128, 0.1), transparent 50%);
+            opacity: 0.5;
+            z-index: 1;
+        }
+
+        .budget-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px; /* تصغير المسافة */
+            position: relative;
+            z-index: 3;
+        }
+
+        .budget-header h2 {
+            font-size: 1.5rem; /* تصغير الحجم */
+            font-weight: 900;
+            color: white;
+            display: flex;
+            align-items: center;
+            gap: 15px; /* تصغير المسافة */
+            text-shadow: 0 0 20px rgba(0, 242, 254, 0.4);
+        }
+
+        .budget-header h2 i {
+            color: var(--accent);
+            background: rgba(255, 204, 0, 0.15);
+            padding: 15px; /* تصغير الحجم */
+            border-radius: 15px; /* تصغير الحجم */
+            animation: iconBounce 3s ease-in-out infinite;
+            box-shadow: var(--glow-accent);
+        }
+
+        .budget-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 25px; /* تصغير المسافة */
+            margin-bottom: 25px; /* تصغير المسافة */
+            position: relative;
+            z-index: 3;
+        }
+
+        .budget-stat {
+            background: var(--glass-bg);
+            border-radius: var(--radius-large);
+            padding: 25px; /* تصغير الحجم */
+            text-align: center;
+            transition: var(--transition-bounce);
+            border: 1px solid transparent;
+            position: relative;
+            overflow: hidden;
+            backdrop-filter: var(--blur-light);
+            animation: statFadeIn 0.8s ease-out;
+            transform-style: preserve-3d;
+            box-shadow: var(--shadow-soft);
+        }
+
+        .budget-stat:hover {
+            transform: translateY(-15px) scale(1.05) rotateX(5deg);
+            border-color: var(--primary);
+            box-shadow: var(--shadow-glow);
+            z-index: 2;
+        }
+
+        .budget-stat::before {
             content: '';
             position: absolute;
             top: 0;
@@ -453,78 +665,20 @@
             animation: widthPulse 3s infinite;
         }
 
-        .budget-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 30px; /* تصغير */
-        }
-
-        .budget-header h2 {
-            font-size: 1.4rem; /* تصغير */
-            font-weight: 800;
-            color: white;
-            display: flex;
-            align-items: center;
-            gap: 15px; /* تصغير */
-        }
-
-        .budget-header h2 i {
-            color: var(--primary);
-            background: rgba(0, 212, 255, 0.2);
-            padding: 12px; /* تصغير */
-            border-radius: 14px; /* تصغير */
-            animation: iconPulse 2s infinite;
-        }
-
-        .budget-stats {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); /* تصغير */
-            gap: 25px; /* تصغير */
-            margin-bottom: 30px; /* تصغير */
-        }
-
-        .budget-stat {
-            background: rgba(16, 18, 36, 0.6);
-            border-radius: var(--radius-medium);
-            padding: 25px; /* تصغير */
-            text-align: center;
-            transition: var(--transition-normal);
-            border: 1px solid transparent;
-            position: relative;
-            overflow: hidden;
-            backdrop-filter: var(--blur-light);
-            animation: statFadeIn 0.6s ease-out;
-        }
-
-        .budget-stat:hover {
-            transform: translateY(-10px) scale(1.02);
-            border-color: var(--primary);
-            box-shadow: var(--shadow-glow);
-        }
-
-        .budget-stat::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 3px;
-            background: var(--gradient-primary);
-        }
-
         .stat-icon {
-            width: 70px; /* تصغير */
-            height: 70px; /* تصغير */
-            margin: 0 auto 20px; /* تصغير */
+            width: 70px; /* تصغير الحجم */
+            height: 70px; /* تصغير الحجم */
+            margin: 0 auto 15px; /* تصغير المسافة */
             border-radius: var(--radius-circle);
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 1.8rem; /* تصغير */
+            font-size: 1.8rem; /* تصغير الحجم */
             color: white;
             position: relative;
             overflow: hidden;
+            transition: var(--transition-bounce);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
         }
 
         .stat-icon::before {
@@ -533,69 +687,95 @@
             width: 100%;
             height: 100%;
             background: inherit;
-            opacity: 0.5;
-            filter: blur(15px);
+            opacity: 0.7;
+            filter: blur(20px);
+            z-index: -1;
         }
 
-        .stat-total .stat-icon { background: var(--gradient-primary); }
-        .stat-spent .stat-icon { background: var(--gradient-danger); }
-        .stat-remaining .stat-icon { background: var(--gradient-success); }
+        .stat-total .stat-icon { 
+            background: var(--gradient-primary);
+            box-shadow: var(--glow-primary);
+        }
+        
+        .stat-spent .stat-icon { 
+            background: var(--gradient-danger);
+            box-shadow: var(--glow-danger);
+        }
+        
+        .stat-remaining .stat-icon { 
+            background: var(--gradient-success);
+            box-shadow: var(--glow-success);
+        }
 
         .budget-stat:hover .stat-icon {
-            animation: iconBounce 0.6s ease;
+            animation: iconBounce 0.6s ease, iconSpin 1s ease;
+            transform: scale(1.2);
         }
 
         .stat-value {
-            font-size: 2rem; /* تصغير */
+            font-size: 2.2rem; /* تصغير الحجم */
             font-weight: 900;
-            margin-bottom: 10px; /* تصغير */
-            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            margin-bottom: 10px; /* تصغير المسافة */
+            background: var(--gradient-rainbow);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
+            text-shadow: 0 0 30px rgba(0, 242, 254, 0.3);
+            transition: var(--transition-normal);
+        }
+
+        .budget-stat:hover .stat-value {
+            transform: scale(1.1);
         }
 
         .stat-label {
-            font-size: 1.1rem; /* تصغير */
+            font-size: 1.1rem; /* تصغير الحجم */
             color: #a0a0ff;
             font-weight: 600;
+            text-shadow: 0 0 10px rgba(0, 242, 254, 0.2);
         }
 
-        /* شريط التقدم */
+        /* شريط التقدم المتحسن */
         .budget-progress {
-            margin-top: 30px; /* تصغير */
-            background: rgba(16, 18, 36, 0.6);
-            padding: 25px; /* تصغير */
-            border-radius: var(--radius-medium);
+            margin-top: 25px; /* تصغير المسافة */
+            background: var(--glass-bg);
+            padding: 25px; /* تصغير الحجم */
+            border-radius: var(--radius-large);
             border: 1px solid var(--glass-border);
+            position: relative;
+            z-index: 3;
+            box-shadow: inset 0 2px 10px rgba(0, 0, 0, 0.3);
         }
 
         .progress-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 15px; /* تصغير */
+            margin-bottom: 15px; /* تصغير المسافة */
         }
 
         .progress-header span {
-            font-size: 1.1rem; /* تصغير */
+            font-size: 1.1rem; /* تصغير الحجم */
             font-weight: 600;
             color: #a0a0ff;
+            text-shadow: 0 0 10px rgba(0, 242, 254, 0.2);
         }
 
         .progress-percentage {
-            font-size: 1.3rem; /* تصغير */
+            font-size: 1.5rem; /* تصغير الحجم */
             font-weight: 900;
             color: var(--primary);
             animation: percentagePulse 2s infinite;
+            text-shadow: 0 0 20px var(--primary);
         }
 
         .progress-bar-container {
-            height: 12px; /* تصغير */
+            height: 16px;
             background: rgba(16, 18, 36, 0.8);
-            border-radius: 6px; /* تصغير */
+            border-radius: 10px;
             overflow: hidden;
             position: relative;
+            box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.5);
         }
 
         .progress-bar-container::before {
@@ -605,59 +785,91 @@
             left: 0;
             right: 0;
             bottom: 0;
-            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
-            animation: shimmer 2s infinite;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.15), transparent);
+            animation: shimmer 3s infinite;
+            z-index: 1;
         }
 
         .progress-bar {
             height: 100%;
             background: var(--gradient-primary);
-            border-radius: 6px; /* تصغير */
+            border-radius: 10px;
             width: 0%;
-            transition: width 1s cubic-bezier(0.34, 1.56, 0.64, 1);
+            transition: width 1.2s cubic-bezier(0.34, 1.56, 0.64, 1);
             position: relative;
-            z-index: 1;
+            z-index: 2;
+            box-shadow: 0 0 20px var(--primary);
+        }
+
+        .progress-bar::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+            animation: shimmer 2s infinite;
         }
 
         /* المحتوى الرئيسي */
         .main-content {
             max-width: 1400px;
             margin: 0 auto;
-            padding: 25px; /* تصغير */
+            padding: 30px; /* تصغير الحجم */
+            position: relative;
+            z-index: 1;
         }
 
-        /* شريط الشهر */
+        /* شريط الشهر - تصميم ثلاثي الأبعاد */
         .month-navigation {
             background: var(--gradient-card);
             border-radius: var(--radius-large);
-            padding: 25px; /* تصغير */
-            margin: 25px 0; /* تصغير */
+            padding: 30px; /* تصغير الحجم */
+            margin: 30px 0; /* تصغير المسافة */
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 40px; /* تصغير */
+            gap: 50px; /* تصغير المسافة */
             backdrop-filter: var(--blur-light);
             border: 1px solid var(--glass-border);
-            box-shadow: var(--shadow-soft);
-            animation: monthSlideIn 0.8s ease-out 1.6s both;
+            box-shadow: var(--shadow-medium), inset 0 1px 0 rgba(255,255,255,0.1);
+            animation: monthSlideIn 1s ease-out 1.6s both;
+            transform-style: preserve-3d;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .month-navigation::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at 50% 50%, rgba(0, 242, 254, 0.1), transparent 70%);
+            opacity: 0.5;
+            z-index: 1;
         }
 
         .nav-btn {
-            width: 65px; /* تصغير */
-            height: 65px; /* تصغير */
+            width: 70px; /* تصغير الحجم */
+            height: 70px; /* تصغير الحجم */
             border-radius: var(--radius-circle);
-            background: rgba(255, 255, 255, 0.1);
+            background: var(--gradient-glass);
             border: 1px solid var(--glass-border);
             color: var(--primary);
-            font-size: 1.7rem; /* تصغير */
+            font-size: 1.8rem; /* تصغير الحجم */
             cursor: pointer;
-            transition: var(--transition-normal);
+            transition: var(--transition-bounce);
             display: flex;
             align-items: center;
             justify-content: center;
             backdrop-filter: var(--blur-light);
             position: relative;
             overflow: hidden;
+            z-index: 2;
+            box-shadow: var(--shadow-soft);
         }
 
         .nav-btn::before {
@@ -667,13 +879,15 @@
             height: 100%;
             background: var(--gradient-primary);
             opacity: 0;
-            transition: opacity 0.3s;
+            transition: opacity 0.4s;
+            border-radius: inherit;
         }
 
         .nav-btn:hover {
             color: white;
-            transform: translateY(-5px) scale(1.1);
+            transform: translateY(-10px) rotateY(20deg) scale(1.15);
             box-shadow: var(--glow-primary);
+            border-color: transparent;
         }
 
         .nav-btn:hover::before {
@@ -683,126 +897,161 @@
         .nav-btn i {
             position: relative;
             z-index: 1;
+            animation: iconFloat 3s ease-in-out infinite;
         }
 
         .month-display {
             text-align: center;
-            padding: 0 30px; /* تصغير */
+            padding: 0 30px; /* تصغير الحجم */
+            position: relative;
+            z-index: 2;
         }
 
         .month-title {
-            font-size: 1.1rem; /* تصغير */
+            font-size: 1.2rem; /* تصغير الحجم */
             color: #8a8aff;
-            margin-bottom: 10px; /* تصغير */
+            margin-bottom: 10px; /* تصغير المسافة */
             font-weight: 600;
+            text-shadow: 0 0 15px rgba(0, 242, 254, 0.3);
         }
 
         .month-name {
-            font-size: 2.5rem; /* تصغير */
+            font-size: 2.8rem; /* تصغير الحجم */
             font-weight: 900;
-            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            background: var(--gradient-rainbow);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
-            text-shadow: 0 0 30px rgba(0, 212, 255, 0.4);
+            text-shadow: 0 0 40px rgba(0, 242, 254, 0.5);
+            letter-spacing: 1px;
+            animation: textGlowSlow 6s ease-in-out infinite;
         }
 
-        /* الإضافة السريعة */
+        /* الإضافة السريعة - تصميم ثلاثي الأبعاد */
         .quick-add {
             background: var(--gradient-card);
             border-radius: var(--radius-large);
-            padding: 30px; /* تصغير */
-            margin: 25px 0; /* تصغير */
+            padding: 35px; /* تصغير الحجم */
+            margin: 30px 0; /* تصغير المسافة */
             backdrop-filter: var(--blur-medium);
             border: 1px solid var(--glass-border);
-            box-shadow: var(--shadow-medium);
-            animation: quickAddSlideIn 0.8s ease-out 1.8s both;
+            box-shadow: var(--shadow-medium), inset 0 1px 0 rgba(255,255,255,0.1);
+            animation: quickAddSlideIn 1s ease-out 1.8s both;
+            transform-style: preserve-3d;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .quick-add::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at 30% 30%, rgba(255, 0, 128, 0.1), transparent 60%);
+            opacity: 0.5;
+            z-index: 1;
         }
 
         .quick-add-header {
             display: flex;
             align-items: center;
-            gap: 20px; /* تصغير */
-            margin-bottom: 25px; /* تصغير */
+            gap: 20px; /* تصغير المسافة */
+            margin-bottom: 25px; /* تصغير المسافة */
+            position: relative;
+            z-index: 2;
         }
 
         .quick-add-header i {
-            font-size: 1.8rem; /* تصغير */
-            color: var(--primary);
-            background: rgba(0, 212, 255, 0.2);
-            padding: 18px; /* تصغير */
-            border-radius: 18px; /* تصغير */
-            animation: boltPulse 2s infinite;
+            font-size: 1.8rem; /* تصغير الحجم */
+            color: var(--accent);
+            background: rgba(255, 204, 0, 0.15);
+            padding: 20px; /* تصغير الحجم */
+            border-radius: 20px; /* تصغير الحجم */
+            animation: boltPulse 2.5s infinite;
+            box-shadow: var(--glow-accent);
         }
 
         .quick-add-header h3 {
-            font-size: 1.4rem; /* تصغير */
-            font-weight: 800;
+            font-size: 1.5rem; /* تصغير الحجم */
+            font-weight: 900;
             color: white;
+            text-shadow: 0 0 20px rgba(0, 242, 254, 0.4);
         }
 
         .quick-form {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); /* تصغير */
-            gap: 20px; /* تصغير */
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 25px; /* تصغير المسافة */
+            position: relative;
+            z-index: 2;
         }
 
         .form-group {
             position: relative;
+            transform-style: preserve-3d;
         }
 
         .form-label {
             display: block;
-            margin-bottom: 12px; /* تصغير */
-            font-size: 1rem; /* تصغير */
+            margin-bottom: 10px; /* تصغير المسافة */
+            font-size: 1rem; /* تصغير الحجم */
             font-weight: 700;
             color: white;
             display: flex;
             align-items: center;
-            gap: 10px; /* تصغير */
+            gap: 12px; /* تصغير المسافة */
+            text-shadow: 0 0 10px rgba(0, 242, 254, 0.3);
         }
 
         .form-label i {
-            color: var(--primary);
+            color: var(--accent);
+            animation: iconPulse 3s infinite;
         }
 
         .form-control {
             width: 100%;
-            padding: 18px; /* تصغير */
-            background: rgba(16, 18, 36, 0.8);
+            padding: 18px; /* تصغير الحجم */
+            background: var(--glass-bg);
             border: 2px solid transparent;
             border-radius: var(--radius-medium);
-            font-size: 1.1rem; /* تصغير */
-            transition: var(--transition-normal);
+            font-size: 1.1rem; /* تصغير الحجم */
+            transition: var(--transition-bounce);
             color: white;
             backdrop-filter: var(--blur-light);
+            box-shadow: var(--shadow-soft), inset 0 2px 8px rgba(0, 0, 0, 0.2);
+            border-image: linear-gradient(45deg, var(--primary), var(--secondary)) 1;
         }
 
         .form-control:focus {
             outline: none;
             border-color: var(--primary);
-            box-shadow: var(--glow-primary);
-            transform: translateY(-3px);
+            box-shadow: var(--glow-primary), inset 0 2px 8px rgba(0, 0, 0, 0.3);
+            transform: translateY(-5px) scale(1.02);
+            background: rgba(20, 22, 40, 0.95);
         }
 
         .btn-quick {
-            padding: 18px 35px; /* تصغير */
+            padding: 18px 35px; /* تصغير الحجم */
             background: var(--gradient-primary);
             color: white;
             border: none;
             border-radius: var(--radius-medium);
-            font-weight: 800;
-            font-size: 1.1rem; /* تصغير */
+            font-weight: 900;
+            font-size: 1.1rem; /* تصغير الحجم */
             cursor: pointer;
-            transition: var(--transition-normal);
+            transition: var(--transition-bounce);
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 12px; /* تصغير */
+            gap: 12px; /* تصغير المسافة */
             align-self: flex-end;
             backdrop-filter: var(--blur-light);
             position: relative;
             overflow: hidden;
+            box-shadow: var(--shadow-medium);
+            transform-style: preserve-3d;
         }
 
         .btn-quick::before {
@@ -812,13 +1061,13 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: linear-gradient(45deg, transparent, rgba(255,255,255,0.2), transparent);
+            background: linear-gradient(45deg, transparent, rgba(255,255,255,0.25), transparent);
             transform: translateX(-100%);
-            transition: transform 0.6s;
+            transition: transform 0.8s;
         }
 
         .btn-quick:hover {
-            transform: translateY(-5px) scale(1.05);
+            transform: translateY(-8px) scale(1.08) rotateX(10deg);
             box-shadow: var(--shadow-glow);
         }
 
@@ -826,51 +1075,59 @@
             transform: translateX(100%);
         }
 
-        /* الفئات */
-        .categories-section {
-            margin: 35px 0; /* تصغير */
-            animation: sectionFadeIn 0.8s ease-out 2s both;
+        /* المصروفات الحديثة - تصميم ثلاثي الأبعاد */
+        .recent-expenses {
+            margin: 40px 0; /* تصغير المسافة */
+            animation: sectionFadeIn 1s ease-out 2s both;
+            transform-style: preserve-3d;
         }
 
         .section-title {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 30px; /* تصغير */
+            margin-bottom: 30px; /* تصغير المسافة */
+            position: relative;
+            z-index: 2;
         }
 
         .section-title h2 {
-            font-size: 1.6rem; /* تصغير */
+            font-size: 1.8rem; /* تصغير الحجم */
             font-weight: 900;
             color: white;
             display: flex;
             align-items: center;
-            gap: 15px; /* تصغير */
+            gap: 15px; /* تصغير المسافة */
+            text-shadow: 0 0 25px rgba(0, 242, 254, 0.5);
         }
 
         .section-title h2 i {
-            color: var(--primary);
-            background: rgba(0, 212, 255, 0.2);
-            padding: 16px; /* تصغير */
-            border-radius: 16px; /* تصغير */
+            color: var(--accent);
+            background: rgba(255, 204, 0, 0.15);
+            padding: 18px; /* تصغير الحجم */
+            border-radius: 18px; /* تصغير الحجم */
+            animation: iconBounce 3s infinite;
+            box-shadow: var(--glow-accent);
         }
 
         .add-category-btn {
-            padding: 16px 30px; /* تصغير */
+            padding: 18px 35px; /* تصغير الحجم */
             background: var(--gradient-primary);
             color: white;
             border: none;
             border-radius: var(--radius-medium);
-            font-weight: 800;
-            font-size: 1.1rem; /* تصغير */
+            font-weight: 900;
+            font-size: 1.1rem; /* تصغير الحجم */
             cursor: pointer;
-            transition: var(--transition-normal);
+            transition: var(--transition-bounce);
             display: flex;
             align-items: center;
-            gap: 12px; /* تصغير */
+            gap: 12px; /* تصغير المسافة */
             backdrop-filter: var(--blur-light);
             position: relative;
             overflow: hidden;
+            box-shadow: var(--shadow-medium);
+            transform-style: preserve-3d;
         }
 
         .add-category-btn::before {
@@ -878,43 +1135,55 @@
             position: absolute;
             width: 100%;
             height: 100%;
-            background: linear-gradient(45deg, transparent, rgba(255,255,255,0.2), transparent);
+            background: linear-gradient(45deg, transparent, rgba(255,255,255,0.25), transparent);
             transform: translateX(-100%);
         }
 
         .add-category-btn:hover {
-            transform: translateY(-5px) scale(1.05);
+            transform: translateY(-8px) scale(1.08) rotateY(10deg);
             box-shadow: var(--shadow-glow);
         }
 
         .add-category-btn:hover::before {
-            animation: buttonShine 0.8s;
+            animation: buttonShine 1s;
+        }
+
+        /* الفئات - تصميم ثلاثي الأبعاد */
+        .categories-section {
+            margin: 40px 0; /* تصغير المسافة */
+            animation: sectionFadeIn 1s ease-out 2.2s both;
+            transform-style: preserve-3d;
         }
 
         .categories-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); /* تصغير */
-            gap: 25px; /* تصغير */
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); /* تصغير الحجم */
+            gap: 25px; /* تصغير المسافة */
+            position: relative;
+            z-index: 1;
         }
 
         .category-card {
             background: var(--gradient-card);
             border-radius: var(--radius-large);
-            padding: 30px; /* تصغير */
-            box-shadow: var(--shadow-soft);
-            transition: var(--transition-normal);
+            padding: 30px; /* تصغير الحجم */
+            box-shadow: var(--shadow-medium), inset 0 1px 0 rgba(255,255,255,0.1);
+            transition: var(--transition-bounce);
             cursor: pointer;
             position: relative;
             overflow: hidden;
             backdrop-filter: var(--blur-light);
             border: 1px solid transparent;
-            animation: cardFadeIn 0.6s ease-out;
+            animation: cardFadeIn 0.8s ease-out;
+            transform-style: preserve-3d;
+            transform: translateZ(0);
         }
 
         .category-card:hover {
-            transform: translateY(-15px) scale(1.03);
+            transform: translateY(-20px) scale(1.05) rotateX(5deg);
             border-color: var(--primary);
             box-shadow: var(--shadow-glow);
+            z-index: 2;
         }
 
         .category-card::before {
@@ -923,22 +1192,25 @@
             top: 0;
             left: 0;
             right: 0;
-            height: 4px;
+            height: 5px;
             background: var(--gradient-primary);
+            animation: widthPulse 4s infinite;
         }
 
         .category-icon {
-            width: 80px; /* تصغير */
-            height: 80px; /* تصغير */
+            width: 80px; /* تصغير الحجم */
+            height: 80px; /* تصغير الحجم */
             border-radius: var(--radius-large);
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 2rem; /* تصغير */
+            font-size: 2rem; /* تصغير الحجم */
             color: white;
-            margin-bottom: 25px; /* تصغير */
+            margin-bottom: 20px; /* تصغير المسافة */
             position: relative;
             overflow: hidden;
+            transition: var(--transition-bounce);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.4);
         }
 
         .category-icon::before {
@@ -947,39 +1219,49 @@
             width: 100%;
             height: 100%;
             background: inherit;
-            opacity: 0.5;
-            filter: blur(20px);
+            opacity: 0.7;
+            filter: blur(25px);
+            z-index: -1;
         }
 
         .category-card:hover .category-icon {
-            animation: iconBounce 0.6s ease;
+            animation: iconBounce 0.8s ease, iconSpin 1s ease;
+            transform: scale(1.2) rotate(10deg);
         }
 
         .category-info h3 {
-            font-size: 1.3rem; /* تصغير */
-            font-weight: 800;
+            font-size: 1.3rem; /* تصغير الحجم */
+            font-weight: 900;
             color: white;
-            margin-bottom: 15px; /* تصغير */
+            margin-bottom: 15px; /* تصغير المسافة */
+            text-shadow: 0 0 15px rgba(0, 242, 254, 0.4);
         }
 
         .category-amount {
-            font-size: 1.8rem; /* تصغير */
+            font-size: 1.8rem; /* تصغير الحجم */
             font-weight: 900;
             color: white;
-            margin-bottom: 15px; /* تصغير */
-            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            margin-bottom: 15px; /* تصغير المسافة */
+            background: var(--gradient-rainbow);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
+            text-shadow: 0 0 30px rgba(0, 242, 254, 0.4);
+            transition: var(--transition-normal);
+        }
+
+        .category-card:hover .category-amount {
+            transform: scale(1.1);
         }
 
         .category-progress {
-            height: 10px;
-            background: rgba(16, 18, 36, 0.8);
-            border-radius: 5px;
-            margin: 20px 0; /* تصغير */
+            height: 10px; /* تصغير الحجم */
+            background: var(--glass-bg);
+            border-radius: 5px; /* تصغير الحجم */
+            margin: 20px 0; /* تصغير المسافة */
             overflow: hidden;
             position: relative;
+            box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.4);
         }
 
         .category-progress::before {
@@ -989,15 +1271,17 @@
             left: 0;
             right: 0;
             bottom: 0;
-            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
-            animation: shimmer 2s infinite;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.15), transparent);
+            animation: shimmer 3s infinite;
+            z-index: 1;
         }
 
         .category-progress-fill {
             height: 100%;
-            border-radius: 5px;
+            border-radius: 5px; /* تصغير الحجم */
             position: relative;
-            z-index: 1;
+            z-index: 2;
+            box-shadow: 0 0 20px rgba(0, 242, 254, 0.5);
         }
 
         .category-progress-fill::after {
@@ -1007,39 +1291,36 @@
             left: 0;
             right: 0;
             bottom: 0;
-            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
             animation: shimmer 2s infinite;
         }
 
         .category-remaining {
-            font-size: 1rem; /* تصغير */
+            font-size: 1rem; /* تصغير الحجم */
             color: #8a8aff;
             font-weight: 600;
-        }
-
-        /* المصروفات الحديثة */
-        .recent-expenses {
-            margin: 35px 0; /* تصغير */
-            animation: sectionFadeIn 0.8s ease-out 2.2s both;
+            text-shadow: 0 0 10px rgba(0, 242, 254, 0.3);
         }
 
         .expenses-list {
             background: var(--gradient-card);
             border-radius: var(--radius-large);
             overflow: hidden;
-            box-shadow: var(--shadow-medium);
+            box-shadow: var(--shadow-medium), inset 0 1px 0 rgba(255,255,255,0.1);
             backdrop-filter: var(--blur-light);
             border: 1px solid var(--glass-border);
+            transform-style: preserve-3d;
         }
 
         .expense-item {
             display: flex;
             align-items: center;
-            padding: 25px; /* تصغير */
+            padding: 25px; /* تصغير الحجم */
             border-bottom: 1px solid var(--glass-border);
-            transition: var(--transition-normal);
+            transition: var(--transition-bounce);
             position: relative;
             overflow: hidden;
+            transform-style: preserve-3d;
         }
 
         .expense-item:last-child {
@@ -1051,16 +1332,17 @@
             position: absolute;
             top: 0;
             left: 0;
-            width: 5px;
+            width: 6px;
             height: 100%;
             background: var(--gradient-primary);
             transform: scaleY(0);
-            transition: transform 0.3s;
+            transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
         }
 
         .expense-item:hover {
-            background: rgba(16, 18, 36, 0.6);
-            transform: translateX(-10px);
+            background: rgba(20, 22, 40, 0.7);
+            transform: translateX(-15px) rotateY(5deg);
+            z-index: 2;
         }
 
         .expense-item:hover::before {
@@ -1068,18 +1350,20 @@
         }
 
         .expense-icon {
-            width: 65px; /* تصغير */
-            height: 65px; /* تصغير */
+            width: 70px; /* تصغير الحجم */
+            height: 70px; /* تصغير الحجم */
             border-radius: var(--radius-medium);
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 1.6rem; /* تصغير */
+            font-size: 1.8rem; /* تصغير الحجم */
             color: white;
-            margin-left: 25px; /* تصغير */
+            margin-left: 25px; /* تصغير المسافة */
             position: relative;
             overflow: hidden;
             z-index: 2;
+            transition: var(--transition-bounce);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
         }
 
         .expense-icon::before {
@@ -1088,77 +1372,87 @@
             width: 100%;
             height: 100%;
             background: inherit;
-            opacity: 0.5;
-            filter: blur(15px);
+            opacity: 0.7;
+            filter: blur(20px);
+            z-index: -1;
         }
 
         .expense-item:hover .expense-icon {
-            animation: iconBounce 0.6s ease;
+            animation: iconBounce 0.8s ease, iconSpin 0.8s ease;
+            transform: scale(1.2) rotate(10deg);
         }
 
         .expense-details {
             flex: 1;
+            transform-style: preserve-3d;
         }
 
         .expense-title {
-            font-size: 1.2rem; /* تصغير */
-            font-weight: 800;
+            font-size: 1.2rem; /* تصغير الحجم */
+            font-weight: 900;
             color: white;
-            margin-bottom: 8px; /* تصغير */
+            margin-bottom: 8px; /* تصغير المسافة */
+            text-shadow: 0 0 15px rgba(0, 242, 254, 0.4);
         }
 
         .expense-meta {
             display: flex;
             align-items: center;
-            gap: 20px; /* تصغير */
-            font-size: 1rem; /* تصغير */
+            gap: 20px; /* تصغير المسافة */
+            font-size: 1rem; /* تصغير الحجم */
             color: #8a8aff;
+            text-shadow: 0 0 10px rgba(0, 242, 254, 0.3);
         }
 
         .expense-date {
             display: flex;
             align-items: center;
-            gap: 8px; /* تصغير */
+            gap: 8px; /* تصغير المسافة */
         }
 
         .expense-amount {
             font-weight: 900;
-            font-size: 1.6rem; /* تصغير */
-            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            font-size: 1.8rem; /* تصغير الحجم */
+            background: var(--gradient-rainbow);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
-            padding: 10px 20px; /* تصغير */
-            border-radius: 30px;
-            transition: var(--transition-normal);
+            padding: 12px 25px; /* تصغير الحجم */
+            border-radius: 50px;
+            transition: var(--transition-bounce);
             border: 1px solid transparent;
-            margin-left: 20px; /* تصغير */
+            margin-left: 20px; /* تصغير المسافة */
+            text-shadow: 0 0 25px rgba(0, 242, 254, 0.5);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
         }
 
         .expense-item:hover .expense-amount {
             border-color: var(--primary);
             box-shadow: var(--glow-primary);
-            transform: scale(1.1);
+            transform: scale(1.15) rotateY(10deg);
         }
 
         .expense-actions {
             display: flex;
-            gap: 12px; /* تصغير */
+            gap: 12px; /* تصغير المسافة */
+            transform-style: preserve-3d;
         }
 
         .action-btn {
-            width: 45px; /* تصغير */
-            height: 45px; /* تصغير */
+            width: 50px; /* تصغير الحجم */
+            height: 50px; /* تصغير الحجم */
             border-radius: var(--radius-circle);
             border: none;
             display: flex;
             align-items: center;
             justify-content: center;
             cursor: pointer;
-            transition: var(--transition-normal);
+            transition: var(--transition-bounce);
             backdrop-filter: var(--blur-light);
             position: relative;
             overflow: hidden;
+            box-shadow: var(--shadow-soft);
+            transform-style: preserve-3d;
         }
 
         .action-btn::before {
@@ -1167,37 +1461,40 @@
             width: 100%;
             height: 100%;
             background: inherit;
-            opacity: 0.5;
-            filter: blur(8px);
+            opacity: 0.7;
+            filter: blur(12px);
+            z-index: -1;
         }
 
         .delete-btn {
-            background: rgba(255, 51, 102, 0.2);
+            background: rgba(255, 51, 102, 0.25);
             color: var(--danger-glow);
-            border: 1px solid rgba(255, 51, 102, 0.3);
+            border: 1px solid rgba(255, 51, 102, 0.4);
         }
 
         .delete-btn:hover {
             background: var(--danger);
             color: white;
-            transform: rotate(15deg) scale(1.1);
+            transform: rotate(20deg) scale(1.15);
             box-shadow: var(--glow-danger);
+            border-color: transparent;
         }
 
-        /* لوحة الإدارة */
+        /* لوحة الإدارة - تصميم ثلاثي الأبعاد */
         .admin-panel {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(5, 5, 16, 0.9);
-            backdrop-filter: blur(30px);
+            background: rgba(5, 5, 16, 0.95);
+            backdrop-filter: blur(40px);
             z-index: 2000;
             display: flex;
             opacity: 0;
             visibility: hidden;
             transition: var(--transition-normal);
+            transform-style: preserve-3d;
         }
 
         .admin-panel.active {
@@ -1207,155 +1504,188 @@
 
         .admin-content {
             width: 90%;
-            max-width: 650px;
+            max-width: 700px;
             background: var(--gradient-card);
             border-radius: var(--radius-large);
             margin: auto;
             overflow: hidden;
-            box-shadow: var(--shadow-hard);
-            transform: translateY(60px) scale(0.9);
-            transition: transform var(--transition-normal);
+            box-shadow: var(--shadow-hard), inset 0 1px 0 rgba(255,255,255,0.1);
+            transform: translateY(80px) scale(0.9) rotateX(15deg);
+            transition: transform var(--transition-bounce);
             backdrop-filter: var(--blur-heavy);
             border: 1px solid var(--glass-border);
             max-height: 90vh;
             overflow-y: auto;
+            transform-style: preserve-3d;
         }
 
         .admin-panel.active .admin-content {
-            transform: translateY(0) scale(1);
+            transform: translateY(0) scale(1) rotateX(0);
         }
 
         .admin-header {
             background: var(--gradient-primary);
             color: white;
-            padding: 40px; /* تصغير */
+            padding: 40px; /* تصغير الحجم */
             text-align: center;
             position: relative;
+            overflow: hidden;
+        }
+
+        .admin-header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(45deg, transparent, rgba(255,255,255,0.2), transparent);
+            animation: shine 5s infinite linear;
         }
 
         .admin-header h2 {
-            font-size: 1.8rem; /* تصغير */
+            font-size: 1.8rem; /* تصغير الحجم */
             font-weight: 900;
-            margin-bottom: 15px; /* تصغير */
+            margin-bottom: 15px; /* تصغير المسافة */
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 20px; /* تصغير */
+            gap: 20px; /* تصغير المسافة */
+            position: relative;
+            z-index: 1;
+            text-shadow: 0 0 30px rgba(0, 0, 0, 0.5);
         }
 
         .admin-header p {
             opacity: 0.95;
-            font-size: 1.1rem; /* تصغير */
+            font-size: 1.1rem; /* تصغير الحجم */
             font-weight: 300;
+            position: relative;
+            z-index: 1;
+            text-shadow: 0 0 20px rgba(0, 0, 0, 0.4);
         }
 
         .close-admin {
             position: absolute;
-            top: 30px; /* تصغير */
-            right: 30px; /* تصغير */
-            background: rgba(255, 255, 255, 0.1);
-            border: 1px solid rgba(255, 255, 255, 0.2);
+            top: 30px; /* تصغير المسافة */
+            right: 30px; /* تصغير المسافة */
+            background: rgba(255, 255, 255, 0.15);
+            border: 1px solid rgba(255, 255, 255, 0.3);
             color: white;
-            width: 55px; /* تصغير */
-            height: 55px; /* تصغير */
+            width: 60px; /* تصغير الحجم */
+            height: 60px; /* تصغير الحجم */
             border-radius: var(--radius-circle);
             display: flex;
             align-items: center;
             justify-content: center;
             cursor: pointer;
-            transition: var(--transition-normal);
+            transition: var(--transition-bounce);
             backdrop-filter: var(--blur-light);
+            z-index: 2;
+            box-shadow: var(--shadow-soft);
         }
 
         .close-admin:hover {
-            background: rgba(255, 255, 255, 0.2);
-            transform: rotate(90deg) scale(1.1);
+            background: rgba(255, 255, 255, 0.25);
+            transform: rotate(90deg) scale(1.15);
             box-shadow: var(--glow-primary);
+            border-color: transparent;
         }
 
         .admin-body {
-            padding: 40px; /* تصغير */
-            max-height: calc(90vh - 150px);
+            padding: 40px; /* تصغير الحجم */
+            max-height: calc(90vh - 160px); /* تصغير الحجم */
             overflow-y: auto;
+            position: relative;
+            z-index: 1;
         }
 
         .admin-section {
-            margin-bottom: 40px; /* تصغير */
-            animation: adminFadeIn 0.6s ease-out;
+            margin-bottom: 40px; /* تصغير المسافة */
+            animation: adminFadeIn 0.8s ease-out;
+            transform-style: preserve-3d;
         }
 
         .admin-section h3 {
-            font-size: 1.4rem; /* تصغير */
-            font-weight: 800;
+            font-size: 1.4rem; /* تصغير الحجم */
+            font-weight: 900;
             color: white;
-            margin-bottom: 25px; /* تصغير */
+            margin-bottom: 25px; /* تصغير المسافة */
             display: flex;
             align-items: center;
-            gap: 15px; /* تصغير */
+            gap: 15px; /* تصغير المسافة */
+            text-shadow: 0 0 20px rgba(0, 242, 254, 0.4);
         }
 
         .admin-section h3 i {
-            color: var(--primary);
-            background: rgba(0, 212, 255, 0.2);
-            padding: 14px; /* تصغير */
-            border-radius: 14px; /* تصغير */
+            color: var(--accent);
+            background: rgba(255, 204, 0, 0.15);
+            padding: 18px; /* تصغير الحجم */
+            border-radius: 18px; /* تصغير الحجم */
+            animation: iconPulse 3s infinite;
+            box-shadow: var(--glow-accent);
         }
 
         .btn-block {
             width: 100%;
-            padding: 20px; /* تصغير */
+            padding: 20px; /* تصغير الحجم */
             border: none;
             border-radius: var(--radius-medium);
-            font-weight: 800;
+            font-weight: 900;
             cursor: pointer;
-            transition: var(--transition-normal);
+            transition: var(--transition-bounce);
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 15px; /* تصغير */
+            gap: 15px; /* تصغير المسافة */
             backdrop-filter: var(--blur-light);
-            margin-top: 20px;
-            font-size: 1.1rem; /* تصغير */
+            margin-top: 20px; /* تصغير المسافة */
+            font-size: 1.1rem; /* تصغير الحجم */
+            box-shadow: var(--shadow-medium);
+            transform-style: preserve-3d;
         }
 
-        /* الإشعارات */
+        /* الإشعارات المحسنة */
         .notification {
             position: fixed;
-            bottom: 50px;
-            right: 50px;
+            bottom: 60px;
+            right: 60px;
             background: var(--gradient-card);
             border-radius: var(--radius-large);
-            padding: 25px 30px; /* تصغير */
+            padding: 25px 30px; /* تصغير الحجم */
             box-shadow: var(--shadow-hard);
             display: flex;
             align-items: center;
-            gap: 20px; /* تصغير */
-            transform: translateX(100%) translateY(30px);
+            gap: 20px; /* تصغير المسافة */
+            transform: translateX(100%) translateY(40px) rotateY(45deg);
             opacity: 0;
-            transition: var(--transition-normal);
+            transition: var(--transition-bounce);
             z-index: 3000;
             backdrop-filter: var(--blur-medium);
             border: 1px solid var(--glass-border);
-            max-width: 450px;
-            animation: notificationSlideIn 0.4s ease-out forwards;
+            max-width: 500px;
+            transform-style: preserve-3d;
+            animation: notificationSlideIn 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
         }
 
         .notification.show {
-            transform: translateX(0) translateY(0);
+            transform: translateX(0) translateY(0) rotateY(0);
             opacity: 1;
         }
 
         .notification-icon {
-            width: 55px; /* تصغير */
-            height: 55px; /* تصغير */
+            width: 60px; /* تصغير الحجم */
+            height: 60px; /* تصغير الحجم */
             border-radius: var(--radius-circle);
             display: flex;
             align-items: center;
             justify-content: center;
             color: white;
-            font-size: 1.4rem; /* تصغير */
+            font-size: 1.6rem; /* تصغير الحجم */
             position: relative;
             overflow: hidden;
+            flex-shrink: 0;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
         }
 
         .notification-icon::before {
@@ -1364,101 +1694,109 @@
             width: 100%;
             height: 100%;
             background: inherit;
-            opacity: 0.5;
-            filter: blur(12px);
+            opacity: 0.7;
+            filter: blur(15px);
+            z-index: -1;
         }
 
         .notification.success .notification-icon {
             background: var(--gradient-success);
+            box-shadow: var(--glow-success);
         }
 
         .notification.error .notification-icon {
             background: var(--gradient-danger);
+            box-shadow: var(--glow-danger);
         }
 
         .notification.warning .notification-icon {
             background: var(--gradient-warning);
+            box-shadow: var(--glow-warning);
         }
 
         .notification.info .notification-icon {
             background: var(--gradient-primary);
+            box-shadow: var(--glow-primary);
         }
 
         .notification-content h4 {
-            font-size: 1.2rem; /* تصغير */
-            font-weight: 800;
+            font-size: 1.2rem; /* تصغير الحجم */
+            font-weight: 900;
             color: white;
-            margin-bottom: 8px; /* تصغير */
+            margin-bottom: 8px; /* تصغير المسافة */
+            text-shadow: 0 0 15px rgba(0, 242, 254, 0.4);
         }
 
         .notification-content p {
-            font-size: 1rem; /* تصغير */
+            font-size: 1rem; /* تصغير الحجم */
             color: #a0a0ff;
+            text-shadow: 0 0 10px rgba(0, 242, 254, 0.3);
         }
 
-        /* زر العودة للأعلى */
+        /* زر العودة للأعلى - تصميم ثلاثي الأبعاد */
         .scroll-top {
             position: fixed;
-            bottom: 30px;
-            left: 30px;
-            width: 55px; /* تصغير */
-            height: 55px; /* تصغير */
+            bottom: 40px;
+            left: 40px;
+            width: 60px; /* تصغير الحجم */
+            height: 60px; /* تصغير الحجم */
             background: var(--gradient-primary);
             border-radius: var(--radius-circle);
             display: flex;
             align-items: center;
             justify-content: center;
             color: white;
-            font-size: 1.4rem; /* تصغير */
+            font-size: 1.6rem; /* تصغير الحجم */
             cursor: pointer;
-            transition: var(--transition-normal);
+            transition: var(--transition-bounce);
             box-shadow: var(--glow-primary);
             opacity: 0;
             visibility: hidden;
             z-index: 1000;
-            transform: translateY(20px);
+            transform: translateY(30px) rotateX(45deg);
+            transform-style: preserve-3d;
         }
 
         .scroll-top.show {
             opacity: 1;
             visibility: visible;
-            transform: translateY(0);
+            transform: translateY(0) rotateX(0);
         }
 
         .scroll-top:hover {
-            transform: translateY(-5px) scale(1.1);
-            box-shadow: 0 0 30px var(--primary);
+            transform: translateY(-10px) scale(1.15) rotateY(20deg);
+            box-shadow: 0 0 50px var(--primary);
         }
 
-        /* الأنيميشن */
+        /* أنيميشن جديدة ومحسنة */
         @keyframes bodyFadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
         }
 
         @keyframes headerSlideIn {
-            from { opacity: 0; transform: translateY(-30px); }
-            to { opacity: 1; transform: translateY(0); }
+            from { opacity: 0; transform: translateY(-50px) rotateX(-15deg); }
+            to { opacity: 1; transform: translateY(0) rotateX(0); }
         }
 
         @keyframes cardSlideIn {
-            from { opacity: 0; transform: translateY(40px); }
-            to { opacity: 1; transform: translateY(0); }
+            from { opacity: 0; transform: translateY(60px) scale(0.95) rotateX(-10deg); }
+            to { opacity: 1; transform: translateY(0) scale(1) rotateX(0); }
         }
 
         @keyframes monthSlideIn {
-            from { opacity: 0; transform: translateY(50px); }
-            to { opacity: 1; transform: translateY(0); }
+            from { opacity: 0; transform: translateY(80px) scale(0.9); }
+            to { opacity: 1; transform: translateY(0) scale(1); }
         }
 
         @keyframes quickAddSlideIn {
-            from { opacity: 0; transform: translateY(60px); }
-            to { opacity: 1; transform: translateY(0); }
+            from { opacity: 0; transform: translateY(100px) rotateX(-15deg); }
+            to { opacity: 1; transform: translateY(0) rotateX(0); }
         }
 
         @keyframes sectionFadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
+            from { opacity: 0; transform: translateY(40px) scale(0.98); }
+            to { opacity: 1; transform: translateY(0) scale(1); }
         }
 
         @keyframes fadeIn {
@@ -1467,38 +1805,38 @@
         }
 
         @keyframes fadeInUp {
-            from { opacity: 0; transform: translateY(30px); }
+            from { opacity: 0; transform: translateY(50px); }
             to { opacity: 1; transform: translateY(0); }
         }
 
         @keyframes fadeInRight {
-            from { opacity: 0; transform: translateX(30px); }
+            from { opacity: 0; transform: translateX(50px); }
             to { opacity: 1; transform: translateX(0); }
         }
 
         @keyframes statFadeIn {
-            from { opacity: 0; transform: scale(0.9); }
-            to { opacity: 1; transform: scale(1); }
+            from { opacity: 0; transform: scale(0.8) rotateY(45deg); }
+            to { opacity: 1; transform: scale(1) rotateY(0); }
         }
 
         @keyframes cardFadeIn {
-            from { opacity: 0; transform: translateY(20px) scale(0.95); }
-            to { opacity: 1; transform: translateY(0) scale(1); }
+            from { opacity: 0; transform: translateY(40px) scale(0.9) rotateX(-10deg); }
+            to { opacity: 1; transform: translateY(0) scale(1) rotateX(0); }
         }
 
         @keyframes adminFadeIn {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
+            from { opacity: 0; transform: translateY(40px) rotateX(-10deg); }
+            to { opacity: 1; transform: translateY(0) rotateX(0); }
         }
 
         @keyframes notificationSlideIn {
-            from { transform: translateX(100%) translateY(30px); opacity: 0; }
-            to { transform: translateX(0) translateY(0); opacity: 1; }
+            from { transform: translateX(100%) translateY(40px) rotateY(45deg); opacity: 0; }
+            to { transform: translateX(0) translateY(0) rotateY(0); opacity: 1; }
         }
 
-        @keyframes loaderRotate {
-            from { transform: rotate(0deg); }
-            to { transform: rotate(360deg); }
+        @keyframes orbitalSpin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
         }
 
         @keyframes loadingProgress {
@@ -1507,13 +1845,23 @@
         }
 
         @keyframes textGlow {
-            0%, 100% { text-shadow: 0 0 10px var(--primary); }
-            50% { text-shadow: 0 0 20px var(--primary), 0 0 30px var(--primary); }
+            0%, 100% { text-shadow: 0 0 20px rgba(0, 242, 254, 0.5), 0 0 40px rgba(0, 242, 254, 0.3); }
+            50% { text-shadow: 0 0 40px rgba(0, 242, 254, 0.8), 0 0 80px rgba(0, 242, 254, 0.5); }
+        }
+
+        @keyframes textGlowSlow {
+            0%, 100% { filter: brightness(1); }
+            50% { filter: brightness(1.2); }
         }
 
         @keyframes headerShine {
-            0% { background-position: -200px 0; }
-            100% { background-position: calc(100% + 200px) 0; }
+            0% { background-position: -400px 0; }
+            100% { background-position: calc(100% + 400px) 0; }
+        }
+
+        @keyframes rainbowSlide {
+            0% { background-position: 0% 0%; }
+            100% { background-position: 400% 0%; }
         }
 
         @keyframes widthPulse {
@@ -1533,8 +1881,8 @@
 
         @keyframes floatParticle {
             0% { transform: translateY(0) rotate(0deg); }
-            33% { transform: translateY(-100px) rotate(120deg); }
-            66% { transform: translateY(100px) rotate(240deg); }
+            33% { transform: translateY(-150px) rotate(120deg); }
+            66% { transform: translateY(150px) rotate(240deg); }
             100% { transform: translateY(0) rotate(360deg); }
         }
 
@@ -1544,8 +1892,8 @@
         }
 
         @keyframes textPulse {
-            0%, 100% { transform: scale(1); text-shadow: 0 0 20px var(--primary); }
-            50% { transform: scale(1.05); text-shadow: 0 0 30px var(--primary); }
+            0%, 100% { transform: scale(1); text-shadow: 0 0 30px var(--primary); }
+            50% { transform: scale(1.05); text-shadow: 0 0 50px var(--primary); }
         }
 
         @keyframes iconSpin {
@@ -1553,24 +1901,29 @@
             to { transform: rotate(360deg); }
         }
 
-        @keyframes iconPulse {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.1); }
-        }
-
-        @keyframes iconBounce {
+        @keyframes iconFloat {
             0%, 100% { transform: translateY(0); }
             50% { transform: translateY(-10px); }
         }
 
+        @keyframes iconPulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.15); }
+        }
+
+        @keyframes iconBounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-15px); }
+        }
+
         @keyframes percentagePulse {
             0%, 100% { opacity: 1; transform: scale(1); }
-            50% { opacity: 0.8; transform: scale(1.1); }
+            50% { opacity: 0.9; transform: scale(1.2); }
         }
 
         @keyframes boltPulse {
-            0%, 100% { transform: scale(1); box-shadow: 0 0 20px var(--primary); }
-            50% { transform: scale(1.1); box-shadow: 0 0 40px var(--primary); }
+            0%, 100% { transform: scale(1); box-shadow: var(--glow-accent); }
+            50% { transform: scale(1.2); box-shadow: 0 0 60px var(--accent); }
         }
 
         @keyframes shimmer {
@@ -1580,69 +1933,109 @@
 
         @keyframes gridMove {
             0% { background-position: 0 0; }
-            100% { background-position: 50px 50px; }
+            100% { background-position: 60px 60px; }
+        }
+
+        @keyframes lineFloat {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
         }
 
         /* التصميم المتجاوب */
+        @media (max-width: 1400px) {
+            .header-content, .main-content, .budget-card {
+                max-width: 1200px;
+            }
+        }
+
         @media (max-width: 1200px) {
             .categories-grid {
-                grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+                grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); /* تصغير الحجم */
             }
             
             .budget-stats {
                 grid-template-columns: repeat(2, 1fr);
             }
+            
+            .month-navigation {
+                gap: 30px; /* تصغير المسافة */
+            }
+            
+            .nav-btn {
+                width: 60px; /* تصغير الحجم */
+                height: 60px; /* تصغير الحجم */
+            }
         }
 
         @media (max-width: 992px) {
             .main-header {
-                padding: 20px 20px;
+                padding: 20px 25px;
             }
             
             .logo-icon {
-                width: 60px;
-                height: 60px;
-                font-size: 1.8rem;
+                width: 60px; /* تصغير الحجم */
+                height: 60px; /* تصغير الحجم */
+                font-size: 1.8rem; /* تصغير الحجم */
             }
             
             .app-title h1 {
-                font-size: 1.6rem;
+                font-size: 1.6rem; /* تصغير الحجم */
+            }
+            
+            .icon-btn {
+                width: 55px; /* تصغير الحجم */
+                height: 55px; /* تصغير الحجم */
+                font-size: 1.5rem; /* تصغير الحجم */
             }
             
             .month-navigation {
-                padding: 20px;
-                gap: 25px;
+                padding: 25px; /* تصغير الحجم */
+                gap: 25px; /* تصغير المسافة */
             }
             
             .nav-btn {
-                width: 55px;
-                height: 55px;
-                font-size: 1.5rem;
+                width: 55px; /* تصغير الحجم */
+                height: 55px; /* تصغير الحجم */
+                font-size: 1.6rem; /* تصغير الحجم */
             }
             
             .month-name {
-                font-size: 2.2rem;
+                font-size: 2.4rem; /* تصغير الحجم */
+            }
+            
+            .budget-card, .quick-add {
+                padding: 25px; /* تصغير الحجم */
+            }
+            
+            .stat-icon {
+                width: 70px; /* تصغير الحجم */
+                height: 70px; /* تصغير الحجم */
+                font-size: 1.8rem; /* تصغير الحجم */
+            }
+            
+            .stat-value {
+                font-size: 2rem; /* تصغير الحجم */
             }
         }
 
         @media (max-width: 768px) {
             .designer-bar {
-                height: 60px;
+                height: 60px; /* تصغير الحجم */
             }
             
             .designer-text {
-                font-size: 1rem;
-                padding: 8px 20px;
+                font-size: 1rem; /* تصغير الحجم */
+                padding: 8px 25px; /* تصغير الحجم */
             }
             
             .main-header {
-                margin-top: 60px;
-                padding: 15px 15px;
+                margin-top: 60px; /* تصغير الحجم */
+                padding: 15px 20px; /* تصغير الحجم */
             }
             
             .header-top {
                 flex-direction: column;
-                gap: 20px;
+                gap: 20px; /* تصغير المسافة */
             }
             
             .user-actions {
@@ -1651,12 +2044,17 @@
             }
             
             .budget-card {
-                padding: 20px;
+                padding: 20px; /* تصغير الحجم */
+                margin: 15px auto; /* تصغير المسافة */
             }
             
             .budget-stats {
                 grid-template-columns: 1fr;
-                gap: 15px;
+                gap: 15px; /* تصغير المسافة */
+            }
+            
+            .budget-stat {
+                padding: 25px; /* تصغير الحجم */
             }
             
             .quick-form {
@@ -1667,9 +2065,20 @@
                 grid-template-columns: 1fr;
             }
             
+            .section-title {
+                flex-direction: column;
+                gap: 15px; /* تصغير المسافة */
+                align-items: flex-start;
+            }
+            
+            .add-category-btn {
+                width: 100%;
+                justify-content: center;
+            }
+            
             .expense-item {
                 flex-direction: column;
-                gap: 15px;
+                gap: 15px; /* تصغير المسافة */
                 text-align: center;
             }
             
@@ -1682,91 +2091,212 @@
             }
             
             .scroll-top {
-                bottom: 20px;
-                left: 20px;
-                width: 45px;
-                height: 45px;
-                font-size: 1.2rem;
+                bottom: 20px; /* تصغير المسافة */
+                left: 20px; /* تصغير المسافة */
+                width: 50px; /* تصغير الحجم */
+                height: 50px; /* تصغير الحجم */
+                font-size: 1.5rem; /* تصغير الحجم */
             }
             
             .notification {
-                right: 20px;
-                left: 20px;
-                bottom: 20px;
+                right: 20px; /* تصغير المسافة */
+                left: 20px; /* تصغير المسافة */
+                bottom: 20px; /* تصغير المسافة */
                 max-width: none;
+            }
+            
+            .admin-content {
+                width: 95%;
             }
         }
 
         @media (max-width: 576px) {
+            .loader-container {
+                width: 180px; /* تصغير الحجم */
+                height: 180px; /* تصغير الحجم */
+            }
+            
+            .loader-text {
+                font-size: 1.4rem; /* تصغير الحجم */
+            }
+            
+            .loading-progress {
+                width: 200px; /* تصغير الحجم */
+            }
+            
             .month-name {
-                font-size: 1.8rem;
+                font-size: 2rem; /* تصغير الحجم */
             }
             
             .stat-value {
-                font-size: 1.8rem;
+                font-size: 1.8rem; /* تصغير الحجم */
             }
             
             .category-card {
-                padding: 20px;
+                padding: 25px; /* تصغير الحجم */
+            }
+            
+            .category-icon {
+                width: 70px; /* تصغير الحجم */
+                height: 70px; /* تصغير الحجم */
+                font-size: 1.8rem; /* تصغير الحجم */
             }
             
             .admin-header {
-                padding: 25px 15px;
+                padding: 30px 15px; /* تصغير الحجم */
             }
             
             .admin-body {
-                padding: 25px 15px;
+                padding: 30px 15px; /* تصغير الحجم */
+            }
+            
+            .admin-header h2 {
+                font-size: 1.6rem; /* تصغير الحجم */
+            }
+            
+            .btn-quick, .btn-block {
+                padding: 18px; /* تصغير الحجم */
+                font-size: 1rem; /* تصغير الحجم */
             }
         }
 
         /* شريط التمرير المخصص */
         ::-webkit-scrollbar {
-            width: 12px;
+            width: 12px; /* تصغير الحجم */
         }
 
         ::-webkit-scrollbar-track {
-            background: rgba(16, 18, 36, 0.5);
-            border-radius: 6px;
+            background: rgba(16, 18, 36, 0.6);
+            border-radius: 6px; /* تصغير الحجم */
+            border: 1px solid var(--glass-border);
         }
 
         ::-webkit-scrollbar-thumb {
             background: var(--gradient-primary);
-            border-radius: 6px;
-            transition: var(--transition-normal);
+            border-radius: 6px; /* تصغير الحجم */
+            border: 2px solid rgba(16, 18, 36, 0.8);
+            transition: var(--transition-bounce);
+            box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.3);
         }
 
         ::-webkit-scrollbar-thumb:hover {
-            background: var(--primary);
+            background: var(--gradient-rainbow);
             transform: scale(1.1);
+        }
+
+        /* تأثيرات Parallax للعناصر */
+        .parallax-layer {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -3;
+            pointer-events: none;
+        }
+
+        .layer-1 {
+            background: radial-gradient(circle at 20% 30%, rgba(0, 242, 254, 0.15) 0%, transparent 50%);
+            animation: parallaxMove 20s ease-in-out infinite alternate;
+        }
+
+        .layer-2 {
+            background: radial-gradient(circle at 80% 70%, rgba(255, 0, 128, 0.1) 0%, transparent 50%);
+            animation: parallaxMove 25s ease-in-out infinite alternate-reverse;
+        }
+
+        .layer-3 {
+            background: radial-gradient(circle at 40% 80%, rgba(255, 204, 0, 0.1) 0%, transparent 50%);
+            animation: parallaxMove 30s ease-in-out infinite alternate;
+        }
+
+        @keyframes parallaxMove {
+            0% { transform: translate(0, 0) scale(1); }
+            100% { transform: translate(-50px, -50px) scale(1.1); }
+        }
+
+        /* تأثيرات عند الظهور */
+        .reveal {
+            position: relative;
+            transform: translateY(50px);
+            opacity: 0;
+            transition: transform 0.8s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.8s ease;
+        }
+
+        .reveal.active {
+            transform: translateY(0);
+            opacity: 1;
+        }
+
+        /* تأثيرات نصية إضافية */
+        .text-gradient {
+            background: var(--gradient-rainbow);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        /* تأثيرات زر إضافية */
+        .btn-3d {
+            position: relative;
+            transform-style: preserve-3d;
+            transition: transform 0.3s ease;
+        }
+
+        .btn-3d:hover {
+            transform: translateY(-5px) rotateX(10deg);
+        }
+
+        /* تأثيرات إضافية للبطاقات */
+        .card-hover-3d {
+            transform-style: preserve-3d;
+            transition: transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        .card-hover-3d:hover {
+            transform: translateY(-10px) rotateX(5deg) rotateY(5deg);
+        }
+
+        /* تأثيرات الظل المتحرك */
+        .moving-shadow {
+            animation: shadowMove 4s ease-in-out infinite alternate;
+        }
+
+        @keyframes shadowMove {
+            0% { box-shadow: var(--shadow-medium); }
+            100% { box-shadow: var(--shadow-glow); }
         }
     </style>
 </head>
 <body>
-    <!-- خلفية جسيمات متحركة -->
-    <div class="particles-bg">
-        <div class="particle"></div>
-        <div class="particle"></div>
-        <div class="particle"></div>
-        <div class="particle"></div>
-        <div class="particle"></div>
-        <div class="particle"></div>
-        <div class="particle"></div>
-        <div class="particle"></div>
-        <div class="particle"></div>
-        <div class="particle"></div>
-    </div>
+    <!-- طبقات Parallax للخلفية -->
+    <div class="parallax-layer layer-1"></div>
+    <div class="parallax-layer layer-2"></div>
+    <div class="parallax-layer layer-3"></div>
     
-    <!-- شبكة خلفية -->
+    <!-- نظام الجسيمات المتقدمة -->
+    <div id="particles-js"></div>
+    
+    <!-- شبكة خلفية متحركة -->
     <div class="grid-bg"></div>
+    
+    <!-- خطوط ديناميكية -->
+    <div class="dynamic-lines">
+        <div class="line"></div>
+        <div class="line"></div>
+        <div class="line"></div>
+        <div class="line"></div>
+        <div class="line"></div>
+    </div>
     
     <!-- شاشة التحميل -->
     <div class="loading-screen" id="loading-screen">
         <div class="loader-container">
-            <div class="loader"></div>
-            <div class="loader"></div>
-            <div class="loader"></div>
+            <div class="orbital-loader"></div>
+            <div class="orbital-loader"></div>
+            <div class="orbital-loader"></div>
         </div>
-        <div class="loader-text">جاري التحميل...</div>
+        <div class="loader-text">جاري تحميل التطبيق...</div>
         <div class="loading-progress">
             <div class="progress-fill"></div>
         </div>
@@ -1775,9 +2305,9 @@
     <!-- شريط المصمم -->
     <div class="designer-bar">
         <div class="designer-text">
-            <i class="fas fa-star"></i>
-            تصميم حديث بإبداع - مهندس بولس سمير
-            <i class="fas fa-star"></i>
+            <i class="fas fa-sparkles"></i>
+            تصميم ثلاثي الأبعاد بإبداع - مهندس بولس سمير
+            <i class="fas fa-sparkles"></i>
         </div>
     </div>
     
@@ -1808,14 +2338,14 @@
             </div>
             
             <!-- نظرة سريعة على الميزانية -->
-            <div class="budget-card">
+            <div class="budget-card card-hover-3d">
                 <div class="budget-header">
                     <h2><i class="fas fa-chart-pie"></i> لوحة التحكم المالية</h2>
                     <span class="date-display" id="current-date"></span>
                 </div>
                 
                 <div class="budget-stats">
-                    <div class="budget-stat stat-total">
+                    <div class="budget-stat stat-total card-hover-3d">
                         <div class="stat-icon">
                             <i class="fas fa-wallet"></i>
                         </div>
@@ -1823,7 +2353,7 @@
                         <div class="stat-label">إجمالي الميزانية</div>
                     </div>
                     
-                    <div class="budget-stat stat-spent">
+                    <div class="budget-stat stat-spent card-hover-3d">
                         <div class="stat-icon">
                             <i class="fas fa-money-bill-wave"></i>
                         </div>
@@ -1831,7 +2361,7 @@
                         <div class="stat-label">إجمالي المصروفات</div>
                     </div>
                     
-                    <div class="budget-stat stat-remaining">
+                    <div class="budget-stat stat-remaining card-hover-3d">
                         <div class="stat-icon">
                             <i class="fas fa-coins"></i>
                         </div>
@@ -1840,7 +2370,7 @@
                     </div>
                 </div>
                 
-                <div class="budget-progress">
+                <div class="budget-progress moving-shadow">
                     <div class="progress-header">
                         <span>نسبة الإنفاق الشهري</span>
                         <span class="progress-percentage" id="progress-percentage">0%</span>
@@ -1856,7 +2386,7 @@
     <!-- المحتوى الرئيسي -->
     <div class="main-content">
         <!-- شريط اختيار الشهر -->
-        <div class="month-navigation">
+        <div class="month-navigation card-hover-3d">
             <button class="nav-btn" id="prev-month">
                 <i class="fas fa-chevron-right"></i>
             </button>
@@ -1872,7 +2402,7 @@
         </div>
         
         <!-- الإضافة السريعة -->
-        <section class="quick-add">
+        <section class="quick-add card-hover-3d">
             <div class="quick-add-header">
                 <i class="fas fa-bolt"></i>
                 <h3>إضافة مصروف سريع</h3>
@@ -1904,25 +2434,11 @@
                            placeholder="ملاحظات اختيارية">
                 </div>
                 
-                <button type="submit" class="btn-quick">
+                <button type="submit" class="btn-quick btn-3d">
                     <i class="fas fa-plus-circle"></i>
                     إضافة المصروف
                 </button>
             </form>
-        </section>
-        
-        <!-- الفئات -->
-        <section class="categories-section">
-            <div class="section-title">
-                <h2><i class="fas fa-layer-group"></i> فئات المصروفات</h2>
-                <button class="add-category-btn" id="add-category-btn">
-                    <i class="fas fa-plus"></i> إضافة فئة جديدة
-                </button>
-            </div>
-            
-            <div class="categories-grid" id="categories-container">
-                <!-- سيتم تعبئته ديناميكيًا -->
-            </div>
         </section>
         
         <!-- المصروفات الحديثة -->
@@ -1935,19 +2451,31 @@
                 <!-- سيتم تعبئته ديناميكيًا -->
             </div>
         </section>
+        
+        <!-- الفئات -->
+        <section class="categories-section">
+            <div class="section-title">
+                <h2><i class="fas fa-layer-group"></i> فئات المصروفات</h2>
+                <button class="add-category-btn btn-3d" id="add-category-btn">
+                    <i class="fas fa-plus"></i> إضافة فئة جديدة
+                </button>
+            </div>
+            
+            <div class="categories-grid" id="categories-container">
+                <!-- سيتم تعبئته ديناميكيًا -->
+            </div>
+        </section>
     </div>
     
-    
-
     <!-- لوحة الإدارة -->
     <div class="admin-panel" id="admin-panel">
-        <div class="admin-content">
+        <div class="admin-content card-hover-3d">
             <div class="admin-header">
                 <button class="close-admin" id="close-admin">
                     <i class="fas fa-times"></i>
                 </button>
-                <h2><i class="fas fa-sliders-h"></i> لوحة التحكم</h2>
-                <p>إدارة متقدمة للميزانية والفئات</p>
+                <h2><i class="fas fa-sliders-h"></i> لوحة التحكم المتقدمة</h2>
+                <p>إدارة متقدمة للميزانية والفئات بتقنيات ثلاثية الأبعاد</p>
             </div>
             
             <div class="admin-body">
@@ -1958,7 +2486,7 @@
                         <input type="number" class="form-control" id="monthly-budget" 
                                placeholder="أدخل الميزانية" value="10000" min="1">
                     </div>
-                    <button class="btn-quick" id="save-budget">
+                    <button class="btn-block btn-3d" id="save-budget">
                         <i class="fas fa-save"></i> تحديث الميزانية
                     </button>
                 </div>
@@ -1990,7 +2518,7 @@
                             <option value="fas fa-tag">🏷️ أخرى</option>
                         </select>
                     </div>
-                    <button class="btn-quick" id="save-category">
+                    <button class="btn-block btn-3d" id="save-category">
                         <i class="fas fa-plus"></i> إنشاء الفئة
                     </button>
                 </div>
@@ -2002,6 +2530,17 @@
                     </div>
                 </div>
             </div>
+        </div>
+    </div>
+
+    <!-- إشعارات ديناميكية -->
+    <div class="notification" id="notification">
+        <div class="notification-icon">
+            <i class="fas fa-check"></i>
+        </div>
+        <div class="notification-content">
+            <h4 id="notification-title">تمت العملية بنجاح</h4>
+            <p id="notification-message">تم حفظ التغييرات بنجاح</p>
         </div>
     </div>
 
@@ -2025,7 +2564,7 @@
         let categories = [];
         let expenses = [];
         let totalBudget = 10000;
-        let currentMonthIndex = 11;
+        let currentMonthIndex = new Date().getMonth();
         let currentYear = new Date().getFullYear();
 
         // DOM Elements
@@ -2058,18 +2597,18 @@
         const prevMonthBtn = document.getElementById('prev-month');
         const nextMonthBtn = document.getElementById('next-month');
 
-        // ألوان الفئات
+        // ألوان الفئات - نظام ألوان متطور
         const categoryColors = [
-            'linear-gradient(135deg, var(--primary), var(--secondary))',
-            'linear-gradient(135deg, var(--secondary), var(--purple))',
-            'linear-gradient(135deg, var(--success), var(--info))',
-            'linear-gradient(135deg, var(--warning), var(--danger))',
-            'linear-gradient(135deg, var(--info), var(--primary))',
-            'linear-gradient(135deg, var(--purple), var(--secondary))',
-            'linear-gradient(135deg, var(--danger), var(--warning))',
-            'linear-gradient(135deg, #ff6b6b, #ffa726)',
-            'linear-gradient(135deg, #26c6da, #42a5f5)',
-            'linear-gradient(135deg, #ab47bc, #7e57c2)'
+            'linear-gradient(135deg, var(--primary), var(--secondary), var(--accent))',
+            'linear-gradient(135deg, var(--secondary), var(--purple), var(--danger))',
+            'linear-gradient(135deg, var(--success), var(--teal), var(--info))',
+            'linear-gradient(135deg, var(--warning), var(--accent), var(--danger))',
+            'linear-gradient(135deg, var(--info), var(--primary), var(--teal))',
+            'linear-gradient(135deg, var(--purple), var(--secondary), var(--primary))',
+            'linear-gradient(135deg, var(--danger), var(--warning), var(--accent))',
+            'linear-gradient(135deg, #ff6b6b, #ffa726, #ffee58)',
+            'linear-gradient(135deg, #26c6da, #42a5f5, #7e57c2)',
+            'linear-gradient(135deg, #ab47bc, #7e57c2, #5c6bc0)'
         ];
 
         // شهور السنة العربية
@@ -2078,16 +2617,57 @@
             'يوليو', 'أغسطس', 'سبتمبر', 'أكتوبر', 'نوفمبر', 'ديسمبر'
         ];
 
+        // تهيئة الجسيمات
+        function initParticles() {
+            particlesJS('particles-js', {
+                particles: {
+                    number: { value: 80, density: { enable: true, value_area: 800 } },
+                    color: { value: ['#00f2fe', '#ff0080', '#ffcc00', '#00ff9d'] },
+                    shape: { type: 'circle' },
+                    opacity: { value: 0.5, random: true },
+                    size: { value: 3, random: true },
+                    line_linked: {
+                        enable: true,
+                        distance: 150,
+                        color: '#00f2fe',
+                        opacity: 0.2,
+                        width: 1
+                    },
+                    move: {
+                        enable: true,
+                        speed: 2,
+                        direction: 'none',
+                        random: true,
+                        straight: false,
+                        out_mode: 'out',
+                        bounce: false,
+                        attract: { enable: false, rotateX: 600, rotateY: 1200 }
+                    }
+                },
+                interactivity: {
+                    detect_on: 'canvas',
+                    events: {
+                        onhover: { enable: true, mode: 'repulse' },
+                        onclick: { enable: true, mode: 'push' },
+                        resize: true
+                    }
+                },
+                retina_detect: true
+            });
+        }
+
         // إخفاء شاشة التحميل
         setTimeout(() => {
             loadingScreen.classList.add('hidden');
-        }, 2000);
+            initParticles();
+        }, 2500);
 
         // تهيئة التطبيق
         function initApp() {
             setupEventListeners();
             loadData();
             setupScrollTop();
+            setupRevealAnimations();
             applyStaggeredAnimations();
         }
 
@@ -2101,10 +2681,6 @@
                 ]);
                 updateUI();
                 setupRealtimeListeners();
-                // إزالة إشعار مرحباً بك
-                // setTimeout(() => {
-                //     showNotification('مرحباً بك!', 'تم تحميل البيانات بنجاح', 'info');
-                // }, 1000);
             } catch (error) {
                 console.error('Error loading data:', error);
                 showNotification('خطأ في التحميل', 'حدث خطأ في تحميل البيانات', 'error');
@@ -2223,7 +2799,7 @@
 
         function updateMonthDisplay() {
             const monthNumber = currentMonthIndex + 1;
-            selectedMonthEl.textContent = `مرتب شهر ${monthNumber}`;
+            selectedMonthEl.textContent = `${arabicMonths[currentMonthIndex]} ${currentYear}`;
         }
 
         function updateBudgetStats() {
@@ -2247,12 +2823,15 @@
             if (percentage > 90) {
                 budgetProgressFill.style.background = 'var(--gradient-danger)';
                 progressPercentage.style.color = 'var(--danger)';
+                progressPercentage.style.textShadow = '0 0 20px var(--danger)';
             } else if (percentage > 70) {
                 budgetProgressFill.style.background = 'var(--gradient-warning)';
                 progressPercentage.style.color = 'var(--warning)';
+                progressPercentage.style.textShadow = '0 0 20px var(--warning)';
             } else {
                 budgetProgressFill.style.background = 'var(--gradient-primary)';
                 progressPercentage.style.color = 'var(--primary)';
+                progressPercentage.style.textShadow = '0 0 20px var(--primary)';
             }
         }
 
@@ -2276,11 +2855,11 @@
             if (categories.length === 0) {
                 categoriesContainer.innerHTML = `
                     <div style="grid-column: 1 / -1; text-align: center; padding: 50px 25px;">
-                        <div style="width: 80px; height: 80px; margin: 0 auto 25px; border-radius: var(--radius-circle); background: var(--glass-bg); display: flex; align-items: center; justify-content: center; font-size: 2rem; color: var(--primary); box-shadow: var(--glow-primary); backdrop-filter: var(--blur-light);">
+                        <div style="width: 80px; height: 80px; margin: 0 auto 25px; border-radius: var(--radius-circle); background: var(--glass-bg); display: flex; align-items: center; justify-content: center; font-size: 2rem; color: var(--primary); box-shadow: var(--glow-primary); backdrop-filter: var(--blur-light); animation: iconFloat 3s ease-in-out infinite;">
                             <i class="fas fa-tags"></i>
                         </div>
-                        <h3 style="color: white; margin-bottom: 12px; font-size: 1.4rem;">لا توجد فئات بعد</h3>
-                        <p style="color: #a0a0ff; font-size: 1rem;">اضغط على زر "إضافة فئة" لتبدأ</p>
+                        <h3 style="color: white; margin-bottom: 12px; font-size: 1.4rem; text-shadow: 0 0 20px rgba(0, 242, 254, 0.5);">لا توجد فئات بعد</h3>
+                        <p style="color: #a0a0ff; font-size: 1rem; text-shadow: 0 0 10px rgba(0, 242, 254, 0.3);">اضغط على زر "إضافة فئة" لتبدأ</p>
                     </div>
                 `;
                 return;
@@ -2292,7 +2871,7 @@
                 const colorIndex = index % categoryColors.length;
                 
                 const categoryCard = document.createElement('div');
-                categoryCard.className = 'category-card';
+                categoryCard.className = 'category-card card-hover-3d';
                 categoryCard.style.animationDelay = `${index * 0.1}s`;
                 
                 categoryCard.innerHTML = `
@@ -2301,12 +2880,12 @@
                     </div>
                     <div class="category-info">
                         <h3>${category.name}</h3>
-                        <div class="category-amount">${formatCurrency(category.spent)}</div>
+                        <div class="category-amount">${formatCurrency(category.spent)} / ${formatCurrency(category.limit)}</div>
                         <div class="category-progress">
                             <div class="category-progress-fill" style="width: ${Math.min(percentage, 100)}%; background: ${categoryColors[colorIndex]}"></div>
                         </div>
                         <div class="category-remaining">
-                            ${formatCurrency(remaining)} متبقي
+                            متبقي: ${formatCurrency(remaining)}
                         </div>
                     </div>
                 `;
@@ -2333,8 +2912,8 @@
             if (categories.length === 0) {
                 adminCategoriesList.innerHTML = `
                     <div style="text-align: center; padding: 35px 25px; color: #a0a0ff;">
-                        <i class="fas fa-tags" style="font-size: 2.2rem; margin-bottom: 18px; display: block; color: var(--primary);"></i>
-                        <p style="font-size: 1.1rem;">لا توجد فئات بعد</p>
+                        <i class="fas fa-tags" style="font-size: 2.2rem; margin-bottom: 18px; display: block; color: var(--primary); animation: iconFloat 3s ease-in-out infinite;"></i>
+                        <p style="font-size: 1.1rem; text-shadow: 0 0 10px rgba(0, 242, 254, 0.3);">لا توجد فئات بعد</p>
                     </div>
                 `;
                 return;
@@ -2342,16 +2921,23 @@
             
             categories.forEach((category, index) => {
                 const colorIndex = index % categoryColors.length;
+                const remaining = category.limit - (category.spent || 0);
                 
                 const categoryItem = document.createElement('div');
                 categoryItem.className = 'category-list-item';
+                categoryItem.style.cssText = 'display: flex; justify-content: space-between; align-items: center; padding: 20px; background: var(--glass-bg); border-radius: var(--radius-medium); margin-bottom: 15px; border: 1px solid var(--glass-border);';
                 categoryItem.innerHTML = `
-                    <div class="category-list-info">
-                        <h4><i class="${category.icon || 'fas fa-tag'}" style="color: ${getColorFromGradient(categoryColors[colorIndex])}"></i> ${category.name}</h4>
-                        <span>الحد: ${formatCurrency(category.limit)} | المصروف: ${formatCurrency(category.spent || 0)}</span>
+                    <div class="category-list-info" style="flex: 1;">
+                        <h4 style="font-size: 1.2rem; margin-bottom: 8px; color: white; display: flex; align-items: center; gap: 12px;">
+                            <i class="${category.icon || 'fas fa-tag'}" style="color: ${getColorFromGradient(categoryColors[colorIndex])}"></i> 
+                            ${category.name}
+                        </h4>
+                        <span style="font-size: 1rem; color: #a0a0ff;">
+                            الحد: ${formatCurrency(category.limit)} | المصروف: ${formatCurrency(category.spent || 0)} | المتبقي: ${formatCurrency(remaining)}
+                        </span>
                     </div>
-                    <div class="category-list-actions">
-                        <button class="action-btn edit-btn edit-category-btn" data-id="${category.id}">
+                    <div class="category-list-actions" style="display: flex; gap: 12px;">
+                        <button class="action-btn edit-btn edit-category-btn" data-id="${category.id}" style="background: rgba(0, 242, 254, 0.25); color: var(--primary-glow); border: 1px solid rgba(0, 242, 254, 0.4);">
                             <i class="fas fa-edit"></i>
                         </button>
                         <button class="action-btn delete-btn delete-category-btn" data-id="${category.id}">
@@ -2383,29 +2969,31 @@
         function renderRecentExpenses() {
             recentExpensesList.innerHTML = '';
             
-            const filteredExpenses = expenses
-                .filter(expense => {
-                    const expenseDate = new Date(expense.date);
-                    return expenseDate.getMonth() === currentMonthIndex && 
-                           expenseDate.getFullYear() === currentYear;
-                })
-                .sort((a, b) => new Date(b.date) - new Date(a.date))
-                .slice(0, 8);
+            const filteredExpenses = expenses.filter(expense => {
+                const expenseDate = new Date(expense.date);
+                return expenseDate.getMonth() === currentMonthIndex && 
+                       expenseDate.getFullYear() === currentYear;
+            });
             
-            if (filteredExpenses.length === 0) {
+            // ترتيب من الأحدث إلى الأقدم
+            filteredExpenses.sort((a, b) => new Date(b.date) - new Date(a.date));
+            
+            const limitedExpenses = filteredExpenses.slice(0, 8);
+            
+            if (limitedExpenses.length === 0) {
                 recentExpensesList.innerHTML = `
                     <div style="text-align: center; padding: 50px 25px;">
-                        <div style="width: 80px; height: 80px; margin: 0 auto 25px; border-radius: var(--radius-circle); background: var(--glass-bg); display: flex; align-items: center; justify-content: center; font-size: 2rem; color: var(--primary); box-shadow: var(--glow-primary); backdrop-filter: var(--blur-light);">
+                        <div style="width: 80px; height: 80px; margin: 0 auto 25px; border-radius: var(--radius-circle); background: var(--glass-bg); display: flex; align-items: center; justify-content: center; font-size: 2rem; color: var(--primary); box-shadow: var(--glow-primary); backdrop-filter: var(--blur-light); animation: iconFloat 3s ease-in-out infinite;">
                             <i class="fas fa-receipt"></i>
                         </div>
-                        <h3 style="color: white; margin-bottom: 12px; font-size: 1.4rem;">لا توجد مصروفات</h3>
-                        <p style="color: #a0a0ff; font-size: 1rem;">أضف أول مصروف لديك</p>
+                        <h3 style="color: white; margin-bottom: 12px; font-size: 1.4rem; text-shadow: 0 0 20px rgba(0, 242, 254, 0.5);">لا توجد مصروفات</h3>
+                        <p style="color: #a0a0ff; font-size: 1rem; text-shadow: 0 0 10px rgba(0, 242, 254, 0.3);">أضف أول مصروف لديك</p>
                     </div>
                 `;
                 return;
             }
             
-            filteredExpenses.forEach((expense, index) => {
+            limitedExpenses.forEach((expense, index) => {
                 const category = categories.find(c => c.id === expense.categoryId);
                 const date = new Date(expense.date);
                 const today = new Date();
@@ -2424,8 +3012,15 @@
                 const categoryIndex = categories.findIndex(c => c.id === expense.categoryId);
                 const colorIndex = categoryIndex % categoryColors.length;
                 
+                // حساب المتبقي في الفئة
+                const categorySpent = filteredExpenses
+                    .filter(e => e.categoryId === expense.categoryId)
+                    .reduce((sum, e) => sum + e.amount, 0);
+                const categoryLimit = category ? category.limit : 0;
+                const categoryRemaining = categoryLimit - categorySpent;
+                
                 const expenseItem = document.createElement('div');
-                expenseItem.className = 'expense-item';
+                expenseItem.className = 'expense-item card-hover-3d';
                 expenseItem.style.animationDelay = `${index * 0.1}s`;
                 expenseItem.innerHTML = `
                     <div class="expense-icon" style="background: ${categoryColors[colorIndex]}">
@@ -2439,6 +3034,7 @@
                                 ${dateText}
                             </span>
                             ${expense.notes ? `<span><i class="far fa-sticky-note"></i> ${expense.notes}</span>` : ''}
+                            ${category ? `<span><i class="fas fa-coins"></i> متبقي: ${formatCurrency(categoryRemaining)}</span>` : ''}
                         </div>
                     </div>
                     <div class="expense-amount">${formatCurrency(expense.amount)}</div>
@@ -2479,6 +3075,8 @@
             if (gradient.includes('danger')) return 'var(--danger)';
             if (gradient.includes('info')) return 'var(--info)';
             if (gradient.includes('purple')) return 'var(--purple)';
+            if (gradient.includes('accent')) return 'var(--accent)';
+            if (gradient.includes('teal')) return 'var(--teal)';
             return 'var(--primary)';
         }
 
@@ -2502,12 +3100,11 @@
             
             setTimeout(() => {
                 notification.classList.remove('show');
-            }, 4000);
+            }, 4000); // تصغير وقت الإشعار
         }
 
         function showWelcome() {
-            // إزالة إشعار مرحباً بك
-            // showNotification('أهلاً بك!', 'تطبيق مالي لإدارة المصروفات الذكية', 'info');
+            showNotification('مرحباً بك!', 'تطبيق مالي الذكية لإدارة المصروفات بتقنيات ثلاثية الأبعاد', 'info');
         }
 
         function toggleAdminPanel() {
@@ -2671,7 +3268,7 @@
                                         <option value="fas fa-tag" ${category.icon === 'fas fa-tag' || !category.icon ? 'selected' : ''}>🏷️ أخرى</option>
                                     </select>
                                 </div>
-                                <button class="btn-quick" id="update-category-btn" data-id="${categoryId}">
+                                <button class="btn-block btn-3d" id="update-category-btn" data-id="${categoryId}">
                                     <i class="fas fa-save"></i> حفظ التعديلات
                                 </button>
                             </div>
@@ -2728,54 +3325,54 @@
                             <p>تفاصيل الفئة والتقارير</p>
                         </div>
                         <div class="admin-body">
-                            <div style="text-align: center; margin-bottom: 25px;">
-                                <div style="width: 80px; height: 80px; margin: 0 auto 15px; border-radius: var(--radius-large); background: ${categoryColors[colorIndex]}; display: flex; align-items: center; justify-content: center; font-size: 2rem; color: white; box-shadow: var(--shadow-glow);">
+                            <div style="text-align: center; margin-bottom: 30px;">
+                                <div style="width: 80px; height: 80px; margin: 0 auto 18px; border-radius: var(--radius-large); background: ${categoryColors[colorIndex]}; display: flex; align-items: center; justify-content: center; font-size: 2rem; color: white; box-shadow: var(--shadow-glow); animation: iconFloat 3s ease-in-out infinite;">
                                     <i class="${category.icon || 'fas fa-tag'}"></i>
                                 </div>
-                                <h3 style="font-size: 1.4rem; margin-bottom: 8px; color: white; font-weight: 900;">${category.name}</h3>
-                                <p style="color: #a0a0ff; font-size: 1rem;">الحد الشهري: ${formatCurrency(category.limit)}</p>
+                                <h3 style="font-size: 1.4rem; margin-bottom: 10px; color: white; font-weight: 900; text-shadow: 0 0 20px rgba(0, 242, 254, 0.5);">${category.name}</h3>
+                                <p style="color: #a0a0ff; font-size: 1rem; text-shadow: 0 0 10px rgba(0, 242, 254, 0.3);">الحد الشهري: ${formatCurrency(category.limit)}</p>
                             </div>
                             
-                            <div style="background: var(--glass-bg); padding: 25px; border-radius: var(--radius-medium); margin-bottom: 25px; border: 1px solid var(--glass-border);">
+                            <div style="background: var(--glass-bg); padding: 25px; border-radius: var(--radius-large); margin-bottom: 25px; border: 1px solid var(--glass-border); box-shadow: var(--shadow-soft);">
                                 <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; text-align: center;">
                                     <div>
-                                        <div style="font-size: 1.4rem; font-weight: 900; color: var(--secondary);">${formatCurrency(spent)}</div>
+                                        <div style="font-size: 1.4rem; font-weight: 900; color: var(--secondary); text-shadow: 0 0 20px var(--secondary);">${formatCurrency(spent)}</div>
                                         <div style="font-size: 0.9rem; color: #a0a0ff;">المصروف</div>
                                     </div>
                                     <div>
-                                        <div style="font-size: 1.4rem; font-weight: 900; color: var(--success);">${formatCurrency(remaining)}</div>
+                                        <div style="font-size: 1.4rem; font-weight: 900; color: var(--success); text-shadow: 0 0 20px var(--success);">${formatCurrency(remaining)}</div>
                                         <div style="font-size: 0.9rem; color: #a0a0ff;">المتبقي</div>
                                     </div>
                                     <div>
-                                        <div style="font-size: 1.4rem; font-weight: 900; color: var(--primary);">${percentage.toFixed(1)}%</div>
+                                        <div style="font-size: 1.4rem; font-weight: 900; color: var(--primary); text-shadow: 0 0 20px var(--primary);">${percentage.toFixed(1)}%</div>
                                         <div style="font-size: 0.9rem; color: #a0a0ff;">النسبة</div>
                                     </div>
                                 </div>
                                 
                                 <div style="margin-top: 20px;">
-                                    <div style="height: 10px; background: var(--bg-card); border-radius: 5px; overflow: hidden; position: relative;">
-                                        <div style="height: 100%; width: ${Math.min(percentage, 100)}%; background: ${categoryColors[colorIndex]}; border-radius: 5px; transition: width 0.6s ease;"></div>
+                                    <div style="height: 10px; background: var(--bg-card); border-radius: 5px; overflow: hidden; position: relative; box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.4);">
+                                        <div style="height: 100%; width: ${Math.min(percentage, 100)}%; background: ${categoryColors[colorIndex]}; border-radius: 5px; transition: width 0.8s ease; box-shadow: 0 0 20px rgba(0, 242, 254, 0.5);"></div>
                                     </div>
                                 </div>
                             </div>
                             
-                            <h3 style="font-size: 1.2rem; margin-bottom: 20px; display: flex; align-items: center; gap: 10px; color: white; font-weight: 900;">
+                            <h3 style="font-size: 1.2rem; margin-bottom: 20px; display: flex; align-items: center; gap: 12px; color: white; font-weight: 900; text-shadow: 0 0 15px rgba(0, 242, 254, 0.4);">
                                 <i class="fas fa-history"></i>
                                 <span>المصروفات الحديثة</span>
                             </h3>
                             
-                            <div style="max-height: 300px; overflow-y: auto; padding-right: 10px;">
+                            <div style="max-height: 250px; overflow-y: auto; padding-right: 10px;">
                                 ${categoryExpenses.length > 0 
                                     ? categoryExpenses.map(expense => `
-                                        <div style="display: flex; justify-content: space-between; align-items: center; padding: 12px 15px; border-bottom: 1px solid var(--glass-border); background: var(--glass-bg); border-radius: var(--radius-small); margin-bottom: 8px; transition: var(--transition-fast);">
+                                        <div style="display: flex; justify-content: space-between; align-items: center; padding: 15px 18px; border-bottom: 1px solid var(--glass-border); background: var(--glass-bg); border-radius: var(--radius-small); margin-bottom: 10px; transition: var(--transition-fast); backdrop-filter: var(--blur-light);" class="card-hover-3d">
                                             <div style="flex: 1;">
-                                                <div style="font-weight: 800; color: white; font-size: 1rem;">${new Date(expense.date).toLocaleDateString('ar-EG')}</div>
-                                                ${expense.notes ? `<div style="font-size: 0.9rem; color: #a0a0ff; margin-top: 4px;">${expense.notes}</div>` : ''}
+                                                <div style="font-weight: 800; color: white; font-size: 1rem; text-shadow: 0 0 10px rgba(0, 242, 254, 0.3);">${new Date(expense.date).toLocaleDateString('ar-EG')}</div>
+                                                ${expense.notes ? `<div style="font-size: 0.9rem; color: #a0a0ff; margin-top: 6px;">${expense.notes}</div>` : ''}
                                             </div>
-                                            <div style="font-weight: 900; font-size: 1.2rem; color: var(--primary); margin-left: 15px;">${formatCurrency(expense.amount)}</div>
+                                            <div style="font-weight: 900; font-size: 1.2rem; color: var(--primary); margin-left: 15px; text-shadow: 0 0 15px var(--primary);">${formatCurrency(expense.amount)}</div>
                                         </div>
                                     `).join('')
-                                    : '<div style="text-align: center; padding: 35px; color: #a0a0ff; font-size: 1rem;">لا توجد مصروفات لهذه الفئة</div>'
+                                    : '<div style="text-align: center; padding: 35px; color: #a0a0ff; font-size: 1rem; text-shadow: 0 0 10px rgba(0, 242, 254, 0.3);">لا توجد مصروفات لهذه الفئة</div>'
                                 }
                             </div>
                         </div>
@@ -2871,7 +3468,7 @@
         // إعداد زر العودة للأعلى
         function setupScrollTop() {
             window.addEventListener('scroll', () => {
-                if (window.pageYOffset > 300) {
+                if (window.pageYOffset > 400) {
                     scrollTopBtn.classList.add('show');
                 } else {
                     scrollTopBtn.classList.remove('show');
@@ -2880,6 +3477,23 @@
             
             scrollTopBtn.addEventListener('click', () => {
                 window.scrollTo({ top: 0, behavior: 'smooth' });
+            });
+        }
+
+        // إعداد تأثيرات الظهور عند التمرير
+        function setupRevealAnimations() {
+            const reveals = document.querySelectorAll('.reveal');
+            
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('active');
+                    }
+                });
+            }, { threshold: 0.1 });
+            
+            reveals.forEach(element => {
+                observer.observe(element);
             });
         }
 
