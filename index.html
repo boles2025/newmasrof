@@ -10,38 +10,45 @@
     <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-database-compat.js"></script>
     <style>
         :root {
-            /* ألوان هادئة ومتنوعة */
-            --primary: #5D6D7E;
-            --secondary: #58D68D;
-            --accent: #F39C12;
-            --success: #27AE60;
-            --warning: #E67E22;
-            --danger: #E74C3C;
-            --info: #3498DB;
+            /* ألوان ناعمة وجذابة */
+            --primary: #6C63FF;
+            --secondary: #36D1DC;
+            --accent: #FF6B8B;
+            --success: #4CAF50;
+            --warning: #FF9800;
+            --danger: #F44336;
+            --info: #2196F3;
             
-            /* خلفيات */
-            --bg-main: #F5F7FA;
-            --bg-secondary: #FFFFFF;
-            --bg-tertiary: #ECF0F1;
+            /* خلفيات متدرجة */
+            --bg-main: linear-gradient(135deg, #f5f7fa 0%, #e4e8f0 100%);
+            --bg-secondary: rgba(255, 255, 255, 0.95);
+            --bg-tertiary: rgba(255, 255, 255, 0.8);
+            --bg-card: linear-gradient(135deg, rgba(255,255,255,0.95) 0%, rgba(248,249,252,0.95) 100%);
             
             /* النصوص */
-            --text-primary: #2C3E50;
-            --text-secondary: #34495E;
-            --text-light: #7F8C8D;
+            --text-primary: #2D3748;
+            --text-secondary: #4A5568;
+            --text-light: #718096;
             
-            /* ظلال */
-            --shadow-soft: 0 2px 10px rgba(0, 0, 0, 0.08);
-            --shadow-medium: 0 4px 15px rgba(0, 0, 0, 0.12);
-            --shadow-hard: 0 8px 25px rgba(0, 0, 0, 0.16);
+            /* ظلال ناعمة */
+            --shadow-soft: 0 4px 20px rgba(108, 99, 255, 0.08);
+            --shadow-medium: 0 8px 30px rgba(108, 99, 255, 0.12);
+            --shadow-hard: 0 15px 40px rgba(108, 99, 255, 0.15);
+            --shadow-inset: inset 0 2px 10px rgba(0, 0, 0, 0.05);
             
-            /* زوايا */
-            --radius-small: 10px;
-            --radius-medium: 15px;
-            --radius-large: 20px;
+            /* زوايا ناعمة */
+            --radius-small: 12px;
+            --radius-medium: 18px;
+            --radius-large: 24px;
+            --radius-full: 50px;
             
-            /* انتقالات */
-            --transition-fast: 0.2s ease;
-            --transition-normal: 0.3s ease;
+            /* انتقالات متحركة */
+            --transition-fast: 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            --transition-normal: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            --transition-slow: 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+            
+            /* حدود زجاجية */
+            --glass-border: 1px solid rgba(255, 255, 255, 0.2);
         }
 
         * {
@@ -57,6 +64,61 @@
             line-height: 1.6;
             font-size: 16px;
             padding-top: 70px;
+            min-height: 100vh;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        /* خلفية متحركة */
+        .bg-animation {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            overflow: hidden;
+        }
+
+        .bg-circle {
+            position: absolute;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            opacity: 0.05;
+            animation: float 20s infinite ease-in-out;
+        }
+
+        .bg-circle:nth-child(1) {
+            width: 300px;
+            height: 300px;
+            top: 10%;
+            right: 10%;
+            animation-delay: 0s;
+        }
+
+        .bg-circle:nth-child(2) {
+            width: 200px;
+            height: 200px;
+            bottom: 15%;
+            left: 10%;
+            animation-delay: 5s;
+        }
+
+        .bg-circle:nth-child(3) {
+            width: 150px;
+            height: 150px;
+            top: 40%;
+            right: 20%;
+            animation-delay: 10s;
+        }
+
+        @keyframes float {
+            0%, 100% {
+                transform: translateY(0) scale(1);
+            }
+            50% {
+                transform: translateY(-20px) scale(1.05);
+            }
         }
 
         /* شريط التصميم */
@@ -66,37 +128,91 @@
             right: 0;
             left: 0;
             height: 60px;
-            background: var(--bg-secondary);
-            box-shadow: var(--shadow-soft);
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            backdrop-filter: blur(10px);
             display: flex;
             align-items: center;
             justify-content: center;
             z-index: 1000;
-            border-bottom: 1px solid #E0E0E0;
+            border-bottom: var(--glass-border);
+            box-shadow: var(--shadow-medium);
+            animation: slideDown 0.5s ease-out;
+        }
+
+        @keyframes slideDown {
+            from {
+                transform: translateY(-100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
         }
 
         .designer-text {
-            color: var(--primary);
+            color: white;
             font-weight: 700;
             font-size: 0.9rem;
             display: flex;
             align-items: center;
-            gap: 8px;
+            gap: 12px;
+            padding: 8px 16px;
+            border-radius: var(--radius-full);
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(5px);
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% {
+                box-shadow: 0 0 0 0 rgba(255, 255, 255, 0.2);
+            }
+            50% {
+                box-shadow: 0 0 0 10px rgba(255, 255, 255, 0);
+            }
         }
 
         .designer-text i {
-            color: var(--accent);
+            color: white;
         }
 
         /* الهيدر الرئيسي */
         .main-header {
-            background: var(--bg-secondary);
-            padding: 20px;
-            margin-bottom: 20px;
-            border-radius: var(--radius-medium);
-            box-shadow: var(--shadow-soft);
+            background: var(--bg-card);
+            padding: 25px;
             margin: 20px auto;
+            border-radius: var(--radius-large);
+            box-shadow: var(--shadow-medium);
             max-width: 1200px;
+            backdrop-filter: blur(10px);
+            border: var(--glass-border);
+            animation: fadeInUp 0.6s ease-out;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .main-header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 100px;
+            height: 100px;
+            background: linear-gradient(135deg, var(--primary), transparent);
+            border-radius: 0 0 0 100px;
+            opacity: 0.1;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
 
         .header-content {
@@ -105,30 +221,52 @@
             align-items: center;
             flex-wrap: wrap;
             gap: 20px;
+            position: relative;
+            z-index: 1;
         }
 
         .app-logo {
             display: flex;
             align-items: center;
-            gap: 15px;
+            gap: 20px;
+            transition: var(--transition-normal);
+        }
+
+        .app-logo:hover {
+            transform: translateX(-5px);
         }
 
         .logo-icon {
-            width: 50px;
-            height: 50px;
-            background: linear-gradient(135deg, var(--primary), var(--info));
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
             border-radius: var(--radius-medium);
             display: flex;
             align-items: center;
             justify-content: center;
             color: white;
-            font-size: 1.2rem;
+            font-size: 1.5rem;
+            box-shadow: var(--shadow-medium);
+            animation: rotate 20s linear infinite;
+        }
+
+        @keyframes rotate {
+            from {
+                transform: rotate(0deg);
+            }
+            to {
+                transform: rotate(360deg);
+            }
         }
 
         .app-title h1 {
-            font-size: 1.4rem;
+            font-size: 1.6rem;
             color: var(--primary);
-            margin-bottom: 4px;
+            margin-bottom: 5px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
         }
 
         .app-title p {
@@ -138,158 +276,260 @@
 
         .user-actions {
             display: flex;
-            gap: 10px;
+            gap: 12px;
         }
 
         .icon-btn {
-            width: 40px;
-            height: 40px;
+            width: 48px;
+            height: 48px;
             border-radius: 50%;
-            background: var(--bg-tertiary);
-            border: none;
+            background: linear-gradient(135deg, var(--bg-tertiary), white);
+            border: var(--glass-border);
             color: var(--primary);
-            font-size: 1.1rem;
+            font-size: 1.2rem;
             cursor: pointer;
             transition: var(--transition-normal);
             display: flex;
             align-items: center;
             justify-content: center;
+            box-shadow: var(--shadow-soft);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .icon-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            opacity: 0;
+            transition: var(--transition-normal);
+            z-index: 1;
+        }
+
+        .icon-btn i {
+            position: relative;
+            z-index: 2;
         }
 
         .icon-btn:hover {
-            background: var(--primary);
+            transform: translateY(-5px) scale(1.1);
+            box-shadow: var(--shadow-hard);
+        }
+
+        .icon-btn:hover::before {
+            opacity: 1;
+        }
+
+        .icon-btn:hover i {
             color: white;
-            transform: translateY(-2px);
         }
 
         /* بطاقة الميزانية */
         .budget-card {
-            background: var(--bg-secondary);
+            background: var(--bg-card);
             border-radius: var(--radius-large);
-            padding: 25px;
+            padding: 30px;
             margin: 20px auto;
             max-width: 1200px;
             box-shadow: var(--shadow-medium);
+            backdrop-filter: blur(10px);
+            border: var(--glass-border);
+            animation: fadeInUp 0.8s ease-out 0.2s both;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .budget-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 100%;
+            height: 4px;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
         }
 
         .budget-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 25px;
-            border-bottom: 1px solid #E0E0E0;
-            padding-bottom: 15px;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid rgba(108, 99, 255, 0.1);
         }
 
         .budget-header h2 {
-            font-size: 1.3rem;
+            font-size: 1.4rem;
             color: var(--primary);
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 12px;
         }
 
         .date-display {
             color: var(--text-light);
             font-size: 0.9rem;
+            padding: 8px 16px;
+            background: var(--bg-tertiary);
+            border-radius: var(--radius-full);
+            border: var(--glass-border);
         }
 
         .budget-stats {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 20px;
-            margin-bottom: 25px;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 25px;
+            margin-bottom: 30px;
         }
 
         .budget-stat {
-            background: var(--bg-tertiary);
+            background: linear-gradient(135deg, rgba(255,255,255,0.9), rgba(248,249,252,0.9));
             border-radius: var(--radius-medium);
-            padding: 20px;
+            padding: 25px;
             text-align: center;
             transition: var(--transition-normal);
-            border: 2px solid transparent;
+            border: var(--glass-border);
+            box-shadow: var(--shadow-soft);
             cursor: pointer;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .budget-stat::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, rgba(108, 99, 255, 0.05), rgba(54, 209, 220, 0.05));
+            opacity: 0;
+            transition: var(--transition-normal);
         }
 
         .budget-stat:hover {
-            border-color: var(--primary);
-            transform: translateY(-5px);
+            transform: translateY(-10px) scale(1.02);
+            box-shadow: var(--shadow-hard);
+        }
+
+        .budget-stat:hover::before {
+            opacity: 1;
         }
 
         .stat-icon {
-            width: 50px;
-            height: 50px;
-            margin: 0 auto 15px;
+            width: 70px;
+            height: 70px;
+            margin: 0 auto 20px;
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 1.3rem;
+            font-size: 1.5rem;
             color: white;
+            position: relative;
+            z-index: 1;
+            box-shadow: var(--shadow-medium);
         }
 
         .stat-total .stat-icon {
-            background: linear-gradient(135deg, var(--primary), var(--info));
+            background: linear-gradient(135deg, var(--primary), #8A84FF);
         }
         
         .stat-spent .stat-icon {
-            background: linear-gradient(135deg, var(--accent), var(--warning));
+            background: linear-gradient(135deg, var(--accent), #FF9EB5);
         }
         
         .stat-remaining .stat-icon {
-            background: linear-gradient(135deg, var(--secondary), var(--success));
+            background: linear-gradient(135deg, var(--success), #81C784);
         }
 
         .stat-value {
-            font-size: 1.8rem;
-            font-weight: 700;
-            margin-bottom: 8px;
+            font-size: 2rem;
+            font-weight: 800;
+            margin-bottom: 10px;
             color: var(--text-primary);
+            position: relative;
+            z-index: 1;
         }
 
         .stat-label {
-            font-size: 0.9rem;
+            font-size: 0.95rem;
             color: var(--text-light);
+            position: relative;
+            z-index: 1;
         }
 
         /* شريط التقدم */
         .budget-progress {
-            background: var(--bg-tertiary);
-            padding: 20px;
+            background: linear-gradient(135deg, rgba(255,255,255,0.8), rgba(248,249,252,0.8));
+            padding: 25px;
             border-radius: var(--radius-medium);
-            margin-top: 20px;
+            margin-top: 25px;
+            border: var(--glass-border);
+            box-shadow: var(--shadow-inset);
         }
 
         .progress-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 12px;
+            margin-bottom: 15px;
         }
 
         .progress-header span {
             color: var(--text-secondary);
-            font-weight: 500;
+            font-weight: 600;
         }
 
         .progress-percentage {
-            font-weight: 700;
-            color: var(--primary);
+            font-weight: 800;
+            font-size: 1.2rem;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
         }
 
         .progress-bar-container {
-            height: 10px;
-            background: #E0E0E0;
-            border-radius: 5px;
+            height: 12px;
+            background: rgba(108, 99, 255, 0.1);
+            border-radius: var(--radius-full);
             overflow: hidden;
+            position: relative;
         }
 
         .progress-bar {
             height: 100%;
-            background: linear-gradient(90deg, var(--primary), var(--info));
-            border-radius: 5px;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            border-radius: var(--radius-full);
             width: 0%;
-            transition: width 0.6s ease;
+            transition: width 1s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .progress-bar::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 30px;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+            animation: shine 2s infinite;
+        }
+
+        @keyframes shine {
+            0% {
+                transform: translateX(100%);
+            }
+            100% {
+                transform: translateX(-200%);
+            }
         }
 
         /* المحتوى الرئيسي */
@@ -301,155 +541,182 @@
 
         /* شريط الشهر */
         .month-navigation {
-            background: var(--bg-secondary);
+            background: var(--bg-card);
             border-radius: var(--radius-medium);
-            padding: 20px;
+            padding: 25px;
             margin: 20px 0;
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 30px;
-            box-shadow: var(--shadow-soft);
+            gap: 40px;
+            box-shadow: var(--shadow-medium);
+            backdrop-filter: blur(10px);
+            border: var(--glass-border);
+            animation: fadeInUp 0.7s ease-out 0.3s both;
         }
 
         .nav-btn {
-            width: 40px;
-            height: 40px;
+            width: 50px;
+            height: 50px;
             border-radius: 50%;
-            background: var(--bg-tertiary);
-            border: none;
+            background: linear-gradient(135deg, var(--bg-tertiary), white);
+            border: var(--glass-border);
             color: var(--primary);
-            font-size: 1.2rem;
+            font-size: 1.3rem;
             cursor: pointer;
             transition: var(--transition-normal);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: var(--shadow-soft);
         }
 
         .nav-btn:hover {
-            background: var(--primary);
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
             color: white;
+            transform: scale(1.1);
+            box-shadow: 0 5px 20px rgba(108, 99, 255, 0.3);
         }
 
         .month-display {
             text-align: center;
+            padding: 15px 30px;
+            background: linear-gradient(135deg, rgba(108, 99, 255, 0.1), rgba(54, 209, 220, 0.1));
+            border-radius: var(--radius-medium);
+            border: var(--glass-border);
         }
 
         .month-title {
-            font-size: 0.9rem;
+            font-size: 0.95rem;
             color: var(--text-light);
-            margin-bottom: 5px;
+            margin-bottom: 8px;
         }
 
         .month-name {
-            font-size: 1.5rem;
-            font-weight: 700;
-            color: var(--primary);
+            font-size: 1.6rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
         }
 
         /* الإضافة السريعة */
         .quick-add {
-            background: var(--bg-secondary);
-            border-radius: var(--radius-medium);
-            padding: 25px;
-            margin: 20px 0;
-            box-shadow: var(--shadow-soft);
+            background: var(--bg-card);
+            border-radius: var(--radius-large);
+            padding: 30px;
+            margin: 25px 0;
+            box-shadow: var(--shadow-medium);
+            backdrop-filter: blur(10px);
+            border: var(--glass-border);
+            animation: fadeInUp 0.8s ease-out 0.4s both;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .quick-add::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: linear-gradient(90deg, var(--accent), #FF9EB5);
         }
 
         .quick-add-header {
             display: flex;
             align-items: center;
-            gap: 10px;
-            margin-bottom: 20px;
-            padding-bottom: 15px;
-            border-bottom: 1px solid #E0E0E0;
+            gap: 15px;
+            margin-bottom: 25px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid rgba(255, 107, 139, 0.1);
         }
 
         .quick-add-header i {
             color: var(--accent);
+            font-size: 1.5rem;
+            animation: bounce 2s infinite;
+        }
+
+        @keyframes bounce {
+            0%, 100% {
+                transform: translateY(0);
+            }
+            50% {
+                transform: translateY(-5px);
+            }
         }
 
         .quick-add-header h3 {
-            font-size: 1.2rem;
+            font-size: 1.3rem;
             color: var(--primary);
+            font-weight: 700;
         }
 
         .quick-form {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 15px;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
         }
 
         .form-group {
-            margin-bottom: 15px;
+            margin-bottom: 20px;
             position: relative;
         }
 
         .form-label {
             display: block;
-            margin-bottom: 8px;
-            font-weight: 600;
+            margin-bottom: 12px;
+            font-weight: 700;
             color: var(--text-secondary);
             display: flex;
             align-items: center;
-            gap: 8px;
+            gap: 10px;
+            font-size: 0.95rem;
         }
 
         .form-control {
             width: 100%;
-            padding: 12px 15px;
-            border: 1px solid #E0E0E0;
-            border-radius: var(--radius-small);
+            padding: 16px 20px;
+            border: 2px solid rgba(108, 99, 255, 0.1);
+            border-radius: var(--radius-medium);
             font-size: 1rem;
-            transition: var(--transition-fast);
-            background: white;
+            transition: var(--transition-normal);
+            background: linear-gradient(135deg, rgba(255,255,255,0.9), rgba(248,249,252,0.9));
+            color: var(--text-primary);
+            font-weight: 500;
         }
 
         .form-control:focus {
             outline: none;
             border-color: var(--primary);
-            box-shadow: 0 0 0 3px rgba(93, 109, 126, 0.1);
+            box-shadow: 0 0 0 3px rgba(108, 99, 255, 0.1);
+            background: white;
+            transform: translateY(-2px);
         }
 
         /* تلميح المتبقي في الفئة */
         .category-remaining-hint {
             position: absolute;
-            bottom: -25px;
+            bottom: -35px;
             right: 0;
-            font-size: 0.8rem;
-            padding: 4px 10px;
-            border-radius: 12px;
+            font-size: 0.85rem;
+            padding: 8px 16px;
+            border-radius: var(--radius-full);
             display: none;
             align-items: center;
-            gap: 5px;
-            font-weight: 600;
+            gap: 8px;
+            font-weight: 700;
             z-index: 10;
             transition: var(--transition-fast);
             box-shadow: var(--shadow-soft);
+            backdrop-filter: blur(10px);
+            animation: slideUpHint 0.3s ease-out;
         }
 
-        .category-remaining-hint.show {
-            display: flex;
-            animation: slideUp 0.3s ease;
-        }
-
-        .category-remaining-hint.positive {
-            background: rgba(39, 174, 96, 0.1);
-            color: var(--success);
-            border: 1px solid rgba(39, 174, 96, 0.2);
-        }
-
-        .category-remaining-hint.warning {
-            background: rgba(230, 126, 34, 0.1);
-            color: var(--warning);
-            border: 1px solid rgba(230, 126, 34, 0.2);
-        }
-
-        .category-remaining-hint.danger {
-            background: rgba(231, 76, 60, 0.1);
-            color: var(--danger);
-            border: 1px solid rgba(231, 76, 60, 0.2);
-        }
-
-        @keyframes slideUp {
+        @keyframes slideUpHint {
             from {
                 opacity: 0;
                 transform: translateY(10px);
@@ -460,19 +727,42 @@
             }
         }
 
+        .category-remaining-hint.show {
+            display: flex;
+        }
+
+        .category-remaining-hint.positive {
+            background: linear-gradient(135deg, rgba(76, 175, 80, 0.15), rgba(129, 199, 132, 0.15));
+            color: var(--success);
+            border: 1px solid rgba(76, 175, 80, 0.2);
+        }
+
+        .category-remaining-hint.warning {
+            background: linear-gradient(135deg, rgba(255, 152, 0, 0.15), rgba(255, 193, 7, 0.15));
+            color: var(--warning);
+            border: 1px solid rgba(255, 152, 0, 0.2);
+        }
+
+        .category-remaining-hint.danger {
+            background: linear-gradient(135deg, rgba(244, 67, 54, 0.15), rgba(229, 115, 115, 0.15));
+            color: var(--danger);
+            border: 1px solid rgba(244, 67, 54, 0.2);
+        }
+
         .date-display-text {
             position: absolute;
-            left: 15px;
+            left: 20px;
             top: 50%;
             transform: translateY(-50%);
             color: var(--text-light);
             font-size: 0.9rem;
             pointer-events: none;
             background: white;
-            padding: 2px 8px;
-            border-radius: 4px;
-            border: 1px solid #E0E0E0;
+            padding: 6px 12px;
+            border-radius: var(--radius-small);
+            border: 1px solid rgba(108, 99, 255, 0.1);
             display: none;
+            box-shadow: var(--shadow-soft);
         }
 
         .date-input-container {
@@ -485,160 +775,295 @@
         }
 
         .btn-quick {
-            padding: 12px 25px;
-            background: var(--primary);
+            padding: 16px 32px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
             color: white;
             border: none;
-            border-radius: var(--radius-small);
-            font-weight: 600;
+            border-radius: var(--radius-medium);
+            font-weight: 700;
             font-size: 1rem;
             cursor: pointer;
             transition: var(--transition-normal);
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 10px;
+            gap: 12px;
             align-self: flex-end;
+            box-shadow: var(--shadow-medium);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn-quick::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, var(--secondary), var(--primary));
+            opacity: 0;
+            transition: var(--transition-normal);
+        }
+
+        .btn-quick span {
+            position: relative;
+            z-index: 1;
+        }
+
+        .btn-quick i {
+            position: relative;
+            z-index: 1;
         }
 
         .btn-quick:hover {
-            background: var(--info);
-            transform: translateY(-2px);
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-hard);
+        }
+
+        .btn-quick:hover::before {
+            opacity: 1;
         }
 
         /* المصروفات الحديثة */
         .recent-expenses {
-            margin: 30px 0;
+            margin: 35px 0;
+            animation: fadeInUp 0.8s ease-out 0.5s both;
         }
 
         .section-title {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 20px;
+            margin-bottom: 25px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid rgba(108, 99, 255, 0.1);
         }
 
         .section-title h2 {
-            font-size: 1.3rem;
+            font-size: 1.4rem;
             color: var(--primary);
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 15px;
+            font-weight: 800;
         }
 
         .add-category-btn {
-            padding: 10px 20px;
-            background: var(--secondary);
+            padding: 12px 24px;
+            background: linear-gradient(135deg, var(--success), #81C784);
             color: white;
             border: none;
-            border-radius: var(--radius-small);
-            font-weight: 600;
-            font-size: 0.9rem;
+            border-radius: var(--radius-medium);
+            font-weight: 700;
+            font-size: 0.95rem;
             cursor: pointer;
             transition: var(--transition-normal);
             display: flex;
             align-items: center;
-            gap: 8px;
+            gap: 10px;
+            box-shadow: var(--shadow-medium);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .add-category-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #81C784, var(--success));
+            opacity: 0;
+            transition: var(--transition-normal);
+        }
+
+        .add-category-btn span {
+            position: relative;
+            z-index: 1;
+        }
+
+        .add-category-btn i {
+            position: relative;
+            z-index: 1;
         }
 
         .add-category-btn:hover {
-            background: var(--success);
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-hard);
+        }
+
+        .add-category-btn:hover::before {
+            opacity: 1;
         }
 
         /* الفئات */
         .categories-section {
-            margin: 30px 0;
+            margin: 35px 0;
+            animation: fadeInUp 0.8s ease-out 0.6s both;
         }
 
         .categories-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-            gap: 20px;
+            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+            gap: 25px;
         }
 
         .category-card {
-            background: var(--bg-secondary);
+            background: var(--bg-card);
             border-radius: var(--radius-medium);
-            padding: 20px;
-            box-shadow: var(--shadow-soft);
+            padding: 25px;
+            box-shadow: var(--shadow-medium);
             transition: var(--transition-normal);
             cursor: pointer;
             text-align: center;
-            border: 1px solid transparent;
+            border: var(--glass-border);
             position: relative;
+            overflow: hidden;
+            backdrop-filter: blur(10px);
+        }
+
+        .category-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, rgba(108, 99, 255, 0.05), rgba(54, 209, 220, 0.05));
+            opacity: 0;
+            transition: var(--transition-normal);
         }
 
         .category-card:hover {
-            transform: translateY(-5px);
-            box-shadow: var(--shadow-medium);
+            transform: translateY(-10px) scale(1.03);
+            box-shadow: var(--shadow-hard);
+        }
+
+        .category-card:hover::before {
+            opacity: 1;
         }
 
         .category-icon {
-            width: 60px;
-            height: 60px;
+            width: 70px;
+            height: 70px;
             border-radius: var(--radius-medium);
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 1.5rem;
+            font-size: 1.6rem;
             color: white;
-            margin: 0 auto 15px;
-            box-shadow: var(--shadow-soft);
+            margin: 0 auto 20px;
+            box-shadow: var(--shadow-medium);
+            position: relative;
+            z-index: 1;
+            transition: var(--transition-normal);
+        }
+
+        .category-card:hover .category-icon {
+            transform: scale(1.1) rotate(5deg);
         }
 
         .category-info h3 {
-            font-size: 1rem;
-            font-weight: 700;
+            font-size: 1.1rem;
+            font-weight: 800;
             color: var(--text-primary);
-            margin-bottom: 10px;
+            margin-bottom: 15px;
+            position: relative;
+            z-index: 1;
         }
 
         .category-amount {
-            font-size: 1.2rem;
-            font-weight: 700;
+            font-size: 1.3rem;
+            font-weight: 800;
             color: var(--primary);
-            margin-bottom: 10px;
+            margin-bottom: 15px;
+            position: relative;
+            z-index: 1;
         }
 
         .category-progress {
-            height: 8px;
-            background: #E0E0E0;
-            border-radius: 4px;
-            margin: 15px 0;
+            height: 10px;
+            background: rgba(108, 99, 255, 0.1);
+            border-radius: var(--radius-full);
+            margin: 20px 0;
             overflow: hidden;
+            position: relative;
+            z-index: 1;
         }
 
         .category-progress-fill {
             height: 100%;
-            border-radius: 4px;
-            transition: width 0.6s ease;
+            border-radius: var(--radius-full);
+            transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+        }
+
+        .category-progress-fill::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 20px;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+            animation: shine 2s infinite;
         }
 
         .category-remaining {
-            font-size: 0.85rem;
+            font-size: 0.9rem;
             color: var(--text-light);
-            font-weight: 500;
+            font-weight: 600;
+            position: relative;
+            z-index: 1;
         }
 
         /* قائمة المصروفات */
         .expenses-list {
-            background: var(--bg-secondary);
-            border-radius: var(--radius-medium);
+            background: var(--bg-card);
+            border-radius: var(--radius-large);
             overflow: hidden;
-            box-shadow: var(--shadow-soft);
+            box-shadow: var(--shadow-medium);
+            backdrop-filter: blur(10px);
+            border: var(--glass-border);
+            animation: fadeInUp 0.8s ease-out 0.7s both;
         }
 
         .expense-item {
             display: flex;
             align-items: center;
-            padding: 15px;
-            border-bottom: 1px solid #F0F0F0;
+            padding: 20px;
+            border-bottom: 1px solid rgba(108, 99, 255, 0.1);
             transition: var(--transition-normal);
             position: relative;
+            animation: slideInRight 0.5s ease-out;
+            animation-fill-mode: both;
+        }
+
+        .expense-item:nth-child(1) { animation-delay: 0.1s; }
+        .expense-item:nth-child(2) { animation-delay: 0.2s; }
+        .expense-item:nth-child(3) { animation-delay: 0.3s; }
+        .expense-item:nth-child(4) { animation-delay: 0.4s; }
+        .expense-item:nth-child(5) { animation-delay: 0.5s; }
+        .expense-item:nth-child(6) { animation-delay: 0.6s; }
+        .expense-item:nth-child(7) { animation-delay: 0.7s; }
+        .expense-item:nth-child(8) { animation-delay: 0.8s; }
+
+        @keyframes slideInRight {
+            from {
+                opacity: 0;
+                transform: translateX(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
         }
 
         .expense-item:hover {
-            background: var(--bg-tertiary);
+            background: linear-gradient(135deg, rgba(108, 99, 255, 0.05), rgba(54, 209, 220, 0.05));
+            transform: translateX(-5px);
         }
 
         .expense-item:last-child {
@@ -646,17 +1071,22 @@
         }
 
         .expense-icon {
-            width: 45px;
-            height: 45px;
-            border-radius: var(--radius-small);
+            width: 55px;
+            height: 55px;
+            border-radius: var(--radius-medium);
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 1.1rem;
+            font-size: 1.3rem;
             color: white;
-            margin-left: 15px;
+            margin-left: 20px;
             flex-shrink: 0;
-            box-shadow: var(--shadow-soft);
+            box-shadow: var(--shadow-medium);
+            transition: var(--transition-normal);
+        }
+
+        .expense-item:hover .expense-icon {
+            transform: scale(1.1) rotate(5deg);
         }
 
         .expense-details {
@@ -665,41 +1095,48 @@
         }
 
         .expense-title {
-            font-size: 1rem;
-            font-weight: 600;
+            font-size: 1.1rem;
+            font-weight: 700;
             color: var(--text-primary);
-            margin-bottom: 4px;
+            margin-bottom: 8px;
         }
 
         .expense-meta {
             display: flex;
             align-items: center;
-            gap: 10px;
-            font-size: 0.85rem;
+            gap: 15px;
+            font-size: 0.9rem;
             color: var(--text-light);
             flex-wrap: wrap;
         }
 
         .expense-amount {
-            font-weight: 700;
-            font-size: 1.2rem;
+            font-weight: 800;
+            font-size: 1.3rem;
             color: var(--primary);
-            padding: 6px 12px;
-            background: var(--bg-tertiary);
-            border-radius: 20px;
-            margin-right: 10px;
+            padding: 10px 20px;
+            background: linear-gradient(135deg, rgba(108, 99, 255, 0.1), rgba(54, 209, 220, 0.1));
+            border-radius: var(--radius-full);
+            margin-right: 15px;
             flex-shrink: 0;
+            border: var(--glass-border);
+            transition: var(--transition-normal);
+        }
+
+        .expense-item:hover .expense-amount {
+            background: linear-gradient(135deg, rgba(108, 99, 255, 0.2), rgba(54, 209, 220, 0.2));
+            transform: scale(1.05);
         }
 
         .expense-actions {
             display: flex;
-            gap: 8px;
+            gap: 10px;
             flex-shrink: 0;
         }
 
         .action-btn {
-            width: 35px;
-            height: 35px;
+            width: 40px;
+            height: 40px;
             border-radius: 50%;
             border: none;
             display: flex;
@@ -707,91 +1144,139 @@
             justify-content: center;
             cursor: pointer;
             transition: var(--transition-normal);
-            font-size: 0.9rem;
+            font-size: 1rem;
+            box-shadow: var(--shadow-soft);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .action-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0;
+            transition: var(--transition-normal);
+        }
+
+        .action-btn i {
+            position: relative;
+            z-index: 1;
         }
 
         .action-btn:hover {
             transform: scale(1.1);
+            box-shadow: var(--shadow-medium);
         }
 
         .edit-btn {
-            background: rgba(52, 152, 219, 0.1);
+            background: linear-gradient(135deg, rgba(33, 150, 243, 0.1), rgba(66, 165, 245, 0.1));
             color: var(--info);
-            border: 1px solid rgba(52, 152, 219, 0.2);
+            border: 1px solid rgba(33, 150, 243, 0.2);
+        }
+
+        .edit-btn:hover::before {
+            background: linear-gradient(135deg, var(--info), #64B5F6);
+            opacity: 1;
+        }
+
+        .edit-btn:hover {
+            color: white;
         }
 
         .delete-btn {
-            background: rgba(231, 76, 60, 0.1);
+            background: linear-gradient(135deg, rgba(244, 67, 54, 0.1), rgba(239, 83, 80, 0.1));
             color: var(--danger);
-            border: 1px solid rgba(231, 76, 60, 0.2);
+            border: 1px solid rgba(244, 67, 54, 0.2);
+        }
+
+        .delete-btn:hover::before {
+            background: linear-gradient(135deg, var(--danger), #EF5350);
+            opacity: 1;
         }
 
         .delete-btn:hover {
-            background: var(--danger);
             color: white;
         }
 
         /* الإشعارات */
         .notification {
             position: fixed;
-            bottom: 20px;
-            right: 20px;
-            background: var(--bg-secondary);
+            bottom: 30px;
+            right: 30px;
+            background: var(--bg-card);
             border-radius: var(--radius-medium);
-            padding: 15px 20px;
+            padding: 20px 25px;
             box-shadow: var(--shadow-hard);
             display: flex;
             align-items: center;
-            gap: 15px;
-            transform: translateX(100%);
+            gap: 20px;
+            transform: translateX(100%) scale(0.9);
             opacity: 0;
-            transition: transform 0.3s ease, opacity 0.3s ease;
+            transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.4s cubic-bezier(0.4, 0, 0.2, 1);
             z-index: 3000;
-            max-width: 350px;
+            max-width: 400px;
+            backdrop-filter: blur(20px);
+            border: var(--glass-border);
+            animation: slideInNotification 0.5s ease-out;
+        }
+
+        @keyframes slideInNotification {
+            0% {
+                transform: translateX(100%) scale(0.9);
+                opacity: 0;
+            }
+            100% {
+                transform: translateX(0) scale(1);
+                opacity: 1;
+            }
         }
 
         .notification.show {
-            transform: translateX(0);
+            transform: translateX(0) scale(1);
             opacity: 1;
         }
 
         .notification-icon {
-            width: 40px;
-            height: 40px;
+            width: 50px;
+            height: 50px;
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
             color: white;
-            font-size: 1.2rem;
+            font-size: 1.3rem;
             flex-shrink: 0;
+            box-shadow: var(--shadow-medium);
         }
 
         .notification.success .notification-icon {
-            background: var(--success);
+            background: linear-gradient(135deg, var(--success), #81C784);
         }
 
         .notification.error .notification-icon {
-            background: var(--danger);
+            background: linear-gradient(135deg, var(--danger), #EF5350);
         }
 
         .notification.warning .notification-icon {
-            background: var(--warning);
+            background: linear-gradient(135deg, var(--warning), #FFB74D);
         }
 
         .notification.info .notification-icon {
-            background: var(--info);
+            background: linear-gradient(135deg, var(--info), #64B5F6);
         }
 
         .notification-content h4 {
-            font-size: 1rem;
-            font-weight: 600;
+            font-size: 1.1rem;
+            font-weight: 800;
             color: var(--text-primary);
-            margin-bottom: 4px;
+            margin-bottom: 6px;
         }
 
         .notification-content p {
-            font-size: 0.9rem;
+            font-size: 0.95rem;
             color: var(--text-light);
         }
 
@@ -802,8 +1287,8 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0, 0, 0, 0.7);
-            backdrop-filter: blur(5px);
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(10px);
             z-index: 2000;
             display: flex;
             opacity: 0;
@@ -820,110 +1305,145 @@
         .admin-content {
             width: 90%;
             max-width: 800px;
-            background: var(--bg-secondary);
+            background: var(--bg-card);
             border-radius: var(--radius-large);
             margin: auto;
             box-shadow: var(--shadow-hard);
             max-height: 90vh;
             overflow-y: auto;
-            transform: translateY(20px);
-            transition: transform 0.3s ease;
+            transform: translateY(30px) scale(0.95);
+            transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            backdrop-filter: blur(20px);
+            border: var(--glass-border);
         }
 
         .admin-panel.active .admin-content {
-            transform: translateY(0);
+            transform: translateY(0) scale(1);
         }
 
         .admin-header {
-            background: linear-gradient(135deg, var(--primary), var(--info));
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
             color: white;
-            padding: 25px;
+            padding: 30px;
             text-align: center;
             position: relative;
             border-radius: var(--radius-large) var(--radius-large) 0 0;
         }
 
         .admin-header h2 {
-            font-size: 1.5rem;
+            font-size: 1.6rem;
             font-weight: 900;
-            margin-bottom: 10px;
+            margin-bottom: 15px;
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 15px;
+            gap: 20px;
         }
 
         .admin-header p {
-            opacity: 0.95;
+            opacity: 0.9;
             font-size: 1rem;
-            font-weight: 300;
+            font-weight: 400;
         }
 
         .close-admin {
             position: absolute;
-            top: 20px;
-            right: 20px;
-            background: rgba(255, 255, 255, 0.15);
+            top: 25px;
+            right: 25px;
+            background: rgba(255, 255, 255, 0.2);
             border: 1px solid rgba(255, 255, 255, 0.3);
             color: white;
-            width: 45px;
-            height: 45px;
+            width: 50px;
+            height: 50px;
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
             cursor: pointer;
             transition: var(--transition-normal);
+            box-shadow: var(--shadow-soft);
         }
 
         .close-admin:hover {
-            background: rgba(255, 255, 255, 0.25);
+            background: rgba(255, 255, 255, 0.3);
             transform: rotate(90deg);
+            box-shadow: 0 5px 20px rgba(255, 255, 255, 0.2);
         }
 
         .admin-body {
-            padding: 25px;
-            max-height: calc(90vh - 140px);
+            padding: 30px;
+            max-height: calc(90vh - 150px);
             overflow-y: auto;
         }
 
         .admin-section {
-            margin-bottom: 30px;
+            margin-bottom: 35px;
+            padding-bottom: 25px;
+            border-bottom: 1px solid rgba(108, 99, 255, 0.1);
         }
 
         .admin-section h3 {
-            font-size: 1.2rem;
+            font-size: 1.3rem;
             font-weight: 900;
             color: var(--primary);
-            margin-bottom: 20px;
+            margin-bottom: 25px;
             display: flex;
             align-items: center;
-            gap: 10px;
-            padding-bottom: 10px;
-            border-bottom: 2px solid var(--bg-tertiary);
+            gap: 15px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid rgba(108, 99, 255, 0.1);
         }
 
         .btn-block {
             width: 100%;
-            padding: 15px;
-            background: var(--primary);
+            padding: 18px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
             color: white;
             border: none;
-            border-radius: var(--radius-small);
-            font-weight: 600;
+            border-radius: var(--radius-medium);
+            font-weight: 700;
             cursor: pointer;
             transition: var(--transition-normal);
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 10px;
-            margin-top: 15px;
+            gap: 12px;
+            margin-top: 20px;
             font-size: 1rem;
+            box-shadow: var(--shadow-medium);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn-block::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, var(--secondary), var(--primary));
+            opacity: 0;
+            transition: var(--transition-normal);
+        }
+
+        .btn-block span {
+            position: relative;
+            z-index: 1;
+        }
+
+        .btn-block i {
+            position: relative;
+            z-index: 1;
         }
 
         .btn-block:hover {
-            background: var(--info);
-            transform: translateY(-2px);
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-hard);
+        }
+
+        .btn-block:hover::before {
+            opacity: 1;
         }
 
         /* مودال تفاصيل المصروفات */
@@ -933,8 +1453,8 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0, 0, 0, 0.7);
-            backdrop-filter: blur(5px);
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(10px);
             z-index: 2000;
             display: flex;
             opacity: 0;
@@ -951,191 +1471,202 @@
         .category-details-content {
             width: 90%;
             max-width: 900px;
-            background: var(--bg-secondary);
+            background: var(--bg-card);
             border-radius: var(--radius-large);
             margin: auto;
             box-shadow: var(--shadow-hard);
             max-height: 90vh;
             overflow-y: auto;
-            transform: translateY(20px);
-            transition: transform 0.3s ease;
+            transform: translateY(30px) scale(0.95);
+            transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            backdrop-filter: blur(20px);
+            border: var(--glass-border);
         }
 
         .category-details-modal.active .category-details-content {
-            transform: translateY(0);
+            transform: translateY(0) scale(1);
         }
 
         .category-details-header {
-            background: linear-gradient(135deg, var(--primary), var(--info));
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
             color: white;
-            padding: 25px;
+            padding: 30px;
             text-align: center;
             position: relative;
             border-radius: var(--radius-large) var(--radius-large) 0 0;
         }
 
         .category-details-header h2 {
-            font-size: 1.5rem;
+            font-size: 1.6rem;
             font-weight: 900;
-            margin-bottom: 10px;
+            margin-bottom: 15px;
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 15px;
+            gap: 20px;
         }
 
         .category-details-header p {
-            opacity: 0.95;
+            opacity: 0.9;
             font-size: 1rem;
-            font-weight: 300;
+            font-weight: 400;
         }
 
         .close-category-details {
             position: absolute;
-            top: 20px;
-            right: 20px;
-            background: rgba(255, 255, 255, 0.15);
+            top: 25px;
+            right: 25px;
+            background: rgba(255, 255, 255, 0.2);
             border: 1px solid rgba(255, 255, 255, 0.3);
             color: white;
-            width: 45px;
-            height: 45px;
+            width: 50px;
+            height: 50px;
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
             cursor: pointer;
             transition: var(--transition-normal);
+            box-shadow: var(--shadow-soft);
         }
 
         .close-category-details:hover {
-            background: rgba(255, 255, 255, 0.25);
+            background: rgba(255, 255, 255, 0.3);
             transform: rotate(90deg);
+            box-shadow: 0 5px 20px rgba(255, 255, 255, 0.2);
         }
 
         .category-details-body {
-            padding: 25px;
-            max-height: calc(90vh - 140px);
+            padding: 30px;
+            max-height: calc(90vh - 150px);
             overflow-y: auto;
         }
 
         .category-summary {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-            gap: 20px;
-            margin-bottom: 30px;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 25px;
+            margin-bottom: 35px;
         }
 
         .summary-card {
-            background: var(--bg-tertiary);
+            background: linear-gradient(135deg, rgba(255,255,255,0.9), rgba(248,249,252,0.9));
             border-radius: var(--radius-medium);
-            padding: 20px;
+            padding: 25px;
             text-align: center;
-            border: 2px solid transparent;
+            border: var(--glass-border);
             transition: var(--transition-normal);
+            box-shadow: var(--shadow-soft);
+            backdrop-filter: blur(10px);
         }
 
         .summary-card:hover {
             border-color: var(--primary);
             transform: translateY(-5px);
+            box-shadow: var(--shadow-medium);
         }
 
         .summary-value {
-            font-size: 1.8rem;
+            font-size: 2rem;
             font-weight: 900;
-            margin-bottom: 8px;
-            color: var(--text-primary);
+            margin-bottom: 10px;
+            color: var(--primary);
         }
 
         .summary-label {
-            font-size: 0.9rem;
+            font-size: 1rem;
             color: var(--text-light);
-            font-weight: 500;
+            font-weight: 600;
         }
 
         .category-expenses-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-            gap: 20px;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 25px;
         }
 
         .category-expense-card {
-            background: var(--bg-tertiary);
+            background: linear-gradient(135deg, rgba(255,255,255,0.9), rgba(248,249,252,0.9));
             border-radius: var(--radius-medium);
-            padding: 20px;
-            border: 1px solid #E0E0E0;
+            padding: 25px;
+            border: var(--glass-border);
             transition: var(--transition-normal);
+            box-shadow: var(--shadow-soft);
+            backdrop-filter: blur(10px);
         }
 
         .category-expense-card:hover {
-            transform: translateY(-5px);
-            box-shadow: var(--shadow-medium);
+            transform: translateY(-8px);
+            box-shadow: var(--shadow-hard);
+            border-color: var(--primary);
         }
 
         .expense-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 15px;
+            margin-bottom: 20px;
         }
 
         .expense-amount-large {
-            font-size: 1.5rem;
+            font-size: 1.8rem;
             font-weight: 900;
             color: var(--primary);
         }
 
         .expense-date-display {
-            font-size: 0.9rem;
+            font-size: 1rem;
             color: var(--text-light);
             display: flex;
             align-items: center;
-            gap: 6px;
+            gap: 8px;
         }
 
         .expense-details-row {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 15px;
-            margin-bottom: 15px;
+            gap: 20px;
+            margin-bottom: 20px;
         }
 
         .expense-detail-item {
             display: flex;
             flex-direction: column;
-            gap: 4px;
+            gap: 6px;
         }
 
         .detail-label {
-            font-size: 0.85rem;
+            font-size: 0.9rem;
             color: var(--text-light);
-            font-weight: 600;
-        }
-
-        .detail-value {
-            font-size: 1rem;
-            color: var(--text-primary);
             font-weight: 700;
         }
 
+        .detail-value {
+            font-size: 1.1rem;
+            color: var(--text-primary);
+            font-weight: 800;
+        }
+
         .expense-notes {
-            background: white;
+            background: linear-gradient(135deg, rgba(255,255,255,0.95), rgba(248,249,252,0.95));
             border-radius: var(--radius-small);
-            padding: 12px;
-            margin-top: 10px;
-            border-right: 3px solid var(--primary);
+            padding: 15px;
+            margin-top: 15px;
+            border-right: 4px solid var(--primary);
+            border: var(--glass-border);
         }
 
         .expense-actions-small {
             display: flex;
-            gap: 8px;
-            margin-top: 15px;
-            padding-top: 15px;
-            border-top: 1px solid #E0E0E0;
+            gap: 10px;
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid rgba(108, 99, 255, 0.1);
         }
 
         .action-btn-small {
-            width: 32px;
-            height: 32px;
+            width: 38px;
+            height: 38px;
             border-radius: 50%;
             border: none;
             display: flex;
@@ -1143,7 +1674,31 @@
             justify-content: center;
             cursor: pointer;
             transition: var(--transition-normal);
-            font-size: 0.85rem;
+            font-size: 0.9rem;
+            box-shadow: var(--shadow-soft);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .action-btn-small::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0;
+            transition: var(--transition-normal);
+        }
+
+        .action-btn-small i {
+            position: relative;
+            z-index: 1;
+        }
+
+        .action-btn-small:hover {
+            transform: scale(1.1);
+            box-shadow: var(--shadow-medium);
         }
 
         /* وضع العرض فقط */
@@ -1185,12 +1740,13 @@
         @media (max-width: 768px) {
             .main-header {
                 margin: 10px;
-                padding: 15px;
+                padding: 20px;
             }
             
             .header-content {
                 flex-direction: column;
                 text-align: center;
+                gap: 25px;
             }
             
             .user-actions {
@@ -1200,31 +1756,33 @@
             
             .budget-stats {
                 grid-template-columns: 1fr;
+                gap: 20px;
             }
             
             .categories-grid {
-                grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+                grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
+                gap: 20px;
             }
             
             .expense-item {
                 flex-direction: column;
                 text-align: center;
-                gap: 10px;
-                padding: 20px 15px;
+                gap: 15px;
+                padding: 25px 20px;
             }
             
             .expense-icon {
                 margin-left: 0;
-                margin-bottom: 10px;
+                margin-bottom: 15px;
             }
             
             .expense-amount {
                 margin-right: 0;
-                margin-top: 10px;
+                margin-top: 15px;
             }
             
             .expense-actions {
-                margin-top: 10px;
+                margin-top: 15px;
             }
             
             .quick-form {
@@ -1233,8 +1791,8 @@
             
             .section-title {
                 flex-direction: column;
-                gap: 10px;
-                align-items: flex-start;
+                gap: 15px;
+                align-items: stretch;
             }
             
             .add-category-btn {
@@ -1251,12 +1809,27 @@
             .category-expenses-grid {
                 grid-template-columns: 1fr;
             }
+            
+            .month-navigation {
+                flex-direction: column;
+                gap: 20px;
+            }
+            
+            .nav-btn {
+                order: 1;
+            }
+            
+            .notification {
+                right: 10px;
+                left: 10px;
+                max-width: none;
+            }
         }
 
         @media (max-width: 480px) {
             .month-navigation {
                 gap: 15px;
-                padding: 15px;
+                padding: 20px;
             }
             
             .categories-grid {
@@ -1265,44 +1838,98 @@
             
             .budget-card,
             .quick-add {
-                padding: 20px 15px;
+                padding: 20px;
             }
             
             .stat-value {
-                font-size: 1.5rem;
+                font-size: 1.8rem;
             }
             
             .category-summary {
                 grid-template-columns: 1fr;
             }
+            
+            .expense-details-row {
+                grid-template-columns: 1fr;
+                gap: 15px;
+            }
+            
+            .main-header {
+                padding: 15px;
+            }
+            
+            .logo-icon {
+                width: 50px;
+                height: 50px;
+            }
         }
 
         /* شريط التمرير */
         ::-webkit-scrollbar {
-            width: 8px;
+            width: 10px;
         }
 
         ::-webkit-scrollbar-track {
-            background: #F0F0F0;
-            border-radius: 4px;
+            background: rgba(108, 99, 255, 0.05);
+            border-radius: var(--radius-full);
         }
 
         ::-webkit-scrollbar-thumb {
-            background: var(--primary);
-            border-radius: 4px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            border-radius: var(--radius-full);
         }
 
         ::-webkit-scrollbar-thumb:hover {
-            background: var(--info);
+            background: linear-gradient(135deg, var(--secondary), var(--primary));
+        }
+
+        /* تأثيرات إضافية */
+        .hover-lift {
+            transition: var(--transition-normal);
+        }
+
+        .hover-lift:hover {
+            transform: translateY(-5px);
+        }
+
+        .glow-effect {
+            position: relative;
+        }
+
+        .glow-effect::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at center, rgba(108, 99, 255, 0.2) 0%, transparent 70%);
+            transform: translate(-50%, -50%);
+            z-index: -1;
+            opacity: 0;
+            transition: var(--transition-normal);
+        }
+
+        .glow-effect:hover::after {
+            opacity: 1;
+            width: 120%;
+            height: 120%;
         }
     </style>
 </head>
 <body>
+    <!-- خلفية متحركة -->
+    <div class="bg-animation">
+        <div class="bg-circle"></div>
+        <div class="bg-circle"></div>
+        <div class="bg-circle"></div>
+    </div>
+    
     <!-- شريط التصميم -->
     <div class="designer-bar">
         <div class="designer-text">
             <i class="fas fa-sparkles"></i>
-            تصميم بسيط ومرتب - مهندس بولس سمير
+            تصميم حديث ومتطور - مهندس بولس سمير
             <i class="fas fa-sparkles"></i>
         </div>
     </div>
@@ -1316,7 +1943,7 @@
                 </div>
                 <div class="app-title">
                     <h1>مالي الذكية</h1>
-                    <p>نظام بسيط لإدارة المصروفات</p>
+                    <p>نظام متطور لإدارة المصروفات</p>
                 </div>
             </div>
             
@@ -1440,7 +2067,7 @@
                 
                 <button type="submit" class="btn-quick">
                     <i class="fas fa-plus-circle"></i>
-                    إضافة المصروف
+                    <span>إضافة المصروف</span>
                 </button>
             </form>
         </section>
@@ -1461,7 +2088,8 @@
             <div class="section-title">
                 <h2><i class="fas fa-layer-group"></i> فئات المصروفات</h2>
                 <button class="add-category-btn" id="add-category-btn">
-                    <i class="fas fa-plus"></i> إضافة فئة جديدة
+                    <i class="fas fa-plus"></i>
+                    <span>إضافة فئة جديدة</span>
                 </button>
             </div>
             
@@ -1491,7 +2119,8 @@
                                placeholder="أدخل الميزانية" value="10000" min="1">
                     </div>
                     <button class="btn-block" id="save-budget">
-                        <i class="fas fa-save"></i> تحديث الميزانية
+                        <i class="fas fa-save"></i>
+                        <span>تحديث الميزانية</span>
                     </button>
                 </div>
                 
@@ -1523,7 +2152,8 @@
                         </select>
                     </div>
                     <button class="btn-block" id="save-category">
-                        <i class="fas fa-plus"></i> إنشاء الفئة
+                        <i class="fas fa-plus"></i>
+                        <span>إنشاء الفئة</span>
                     </button>
                 </div>
                 
@@ -1624,18 +2254,18 @@
 
         // ألوان متنوعة للفئات والمصروفات
         const categoryColors = [
-            '#E74C3C', // أحمر
-            '#3498DB', // أزرق
-            '#2ECC71', // أخضر
-            '#F39C12', // برتقالي
-            '#9B59B6', // بنفسجي
-            '#1ABC9C', // تركواز
-            '#E67E22', // برتقالي غامق
-            '#34495E', // أزرق غامق
-            '#D35400', // برتقالي محروق
-            '#16A085', // أخضر غامق
-            '#8E44AD', // بنفسجي غامق
-            '#2C3E50'  // أزرق أسود
+            '#FF6B8B', // وردي
+            '#6C63FF', // بنفسجي
+            '#36D1DC', // تركواز
+            '#4CAF50', // أخضر
+            '#FF9800', // برتقالي
+            '#2196F3', // أزرق
+            '#9C27B0', // بنفسجي غامق
+            '#FF5722', // أحمر برتقالي
+            '#00BCD4', // سماوي
+            '#8BC34A', // أخضر فاتح
+            '#E91E63', // وردي غامق
+            '#3F51B5'  // نيلي
         ];
 
         // شهور السنة العربية
@@ -1656,6 +2286,23 @@
             loadData();
             updateDateDisplay();
             setupDateInput();
+            createBackgroundAnimation();
+        }
+
+        // إنشاء خلفية متحركة
+        function createBackgroundAnimation() {
+            const bgAnimation = document.querySelector('.bg-animation');
+            for (let i = 0; i < 5; i++) {
+                const circle = document.createElement('div');
+                circle.className = 'bg-circle';
+                circle.style.width = `${Math.random() * 200 + 50}px`;
+                circle.style.height = circle.style.width;
+                circle.style.top = `${Math.random() * 100}%`;
+                circle.style.left = `${Math.random() * 100}%`;
+                circle.style.opacity = `${Math.random() * 0.05 + 0.02}`;
+                circle.style.animationDelay = `${Math.random() * 20}s`;
+                bgAnimation.appendChild(circle);
+            }
         }
 
         // التحقق من معلمات URL
@@ -1859,15 +2506,25 @@
             totalSpentEl.textContent = formatCurrency(totalSpent);
             remainingBudgetEl.textContent = formatCurrency(remaining);
             
-            budgetProgressFill.style.width = `${Math.min(percentage, 100)}%`;
+            // تحريك شريط التقدم مع تأثير سلس
+            setTimeout(() => {
+                budgetProgressFill.style.width = `${Math.min(percentage, 100)}%`;
+            }, 100);
             progressPercentage.textContent = `${percentage.toFixed(1)}%`;
             
+            // تغيير اللون حسب النسبة
             if (percentage > 90) {
-                progressPercentage.style.color = 'var(--danger)';
+                progressPercentage.style.background = 'linear-gradient(135deg, var(--danger), #EF5350)';
+                progressPercentage.style.webkitBackgroundClip = 'text';
+                progressPercentage.style.webkitTextFillColor = 'transparent';
             } else if (percentage > 70) {
-                progressPercentage.style.color = 'var(--warning)';
+                progressPercentage.style.background = 'linear-gradient(135deg, var(--warning), #FFB74D)';
+                progressPercentage.style.webkitBackgroundClip = 'text';
+                progressPercentage.style.webkitTextFillColor = 'transparent';
             } else {
-                progressPercentage.style.color = 'var(--primary)';
+                progressPercentage.style.background = 'linear-gradient(135deg, var(--primary), var(--secondary))';
+                progressPercentage.style.webkitBackgroundClip = 'text';
+                progressPercentage.style.webkitTextFillColor = 'transparent';
             }
         }
 
@@ -1934,12 +2591,12 @@
             
             if (categories.length === 0) {
                 categoriesContainer.innerHTML = `
-                    <div style="grid-column: 1 / -1; text-align: center; padding: 40px 20px; color: var(--text-light);">
-                        <div style="width: 60px; height: 60px; margin: 0 auto 20px; border-radius: var(--radius-medium); background: linear-gradient(135deg, var(--primary), var(--info)); display: flex; align-items: center; justify-content: center; font-size: 1.5rem; color: white;">
+                    <div style="grid-column: 1 / -1; text-align: center; padding: 50px 20px; color: var(--text-light);">
+                        <div style="width: 80px; height: 80px; margin: 0 auto 25px; border-radius: var(--radius-medium); background: linear-gradient(135deg, var(--primary), var(--secondary)); display: flex; align-items: center; justify-content: center; font-size: 2rem; color: white; box-shadow: var(--shadow-medium);">
                             <i class="fas fa-tags"></i>
                         </div>
-                        <h3 style="color: var(--text-primary); margin-bottom: 10px;">لا توجد فئات بعد</h3>
-                        <p>اضغط على زر "إضافة فئة" لتبدأ</p>
+                        <h3 style="color: var(--text-primary); margin-bottom: 15px; font-size: 1.3rem;">لا توجد فئات بعد</h3>
+                        <p style="font-size: 1rem;">اضغط على زر "إضافة فئة" لتبدأ</p>
                     </div>
                 `;
                 return;
@@ -1954,14 +2611,14 @@
                 const categoryCard = document.createElement('div');
                 categoryCard.className = 'category-card';
                 categoryCard.innerHTML = `
-                    <div class="category-icon" style="background: ${color}">
+                    <div class="category-icon" style="background: linear-gradient(135deg, ${color}, ${lightenColor(color, 20)})">
                         <i class="${category.icon || 'fas fa-tag'}"></i>
                     </div>
                     <div class="category-info">
                         <h3>${category.name}</h3>
                         <div class="category-amount">${formatCurrency(category.spent)} / ${formatCurrency(category.limit)}</div>
                         <div class="category-progress">
-                            <div class="category-progress-fill" style="width: ${Math.min(percentage, 100)}%; background: ${color}"></div>
+                            <div class="category-progress-fill" style="width: ${Math.min(percentage, 100)}%; background: linear-gradient(90deg, ${color}, ${lightenColor(color, 20)})"></div>
                         </div>
                         <div class="category-remaining">
                             متبقي: ${formatCurrency(remaining)}
@@ -1974,6 +2631,16 @@
                 });
                 categoriesContainer.appendChild(categoryCard);
             });
+        }
+
+        // وظيفة لتفتيح اللون
+        function lightenColor(color, percent) {
+            const num = parseInt(color.replace("#", ""), 16),
+                amt = Math.round(2.55 * percent),
+                R = (num >> 16) + amt,
+                G = (num >> 8 & 0x00FF) + amt,
+                B = (num & 0x0000FF) + amt;
+            return "#" + (0x1000000 + (R<255?R<1?0:R:255)*0x10000 + (G<255?G<1?0:G:255)*0x100 + (B<255?B<1?0:B:255)).toString(16).slice(1);
         }
 
         function renderCategoryOptions() {
@@ -2008,9 +2675,9 @@
             
             if (categories.length === 0) {
                 adminCategoriesList.innerHTML = `
-                    <div style="text-align: center; padding: 30px 20px; color: var(--text-light);">
-                        <i class="fas fa-tags" style="font-size: 1.8rem; margin-bottom: 15px; display: block; color: var(--primary);"></i>
-                        <p style="font-size: 1rem;">لا توجد فئات بعد</p>
+                    <div style="text-align: center; padding: 40px 20px; color: var(--text-light);">
+                        <i class="fas fa-tags" style="font-size: 2rem; margin-bottom: 20px; display: block; color: var(--primary);"></i>
+                        <p style="font-size: 1.1rem;">لا توجد فئات بعد</p>
                     </div>
                 `;
                 return;
@@ -2023,18 +2690,20 @@
                 
                 const categoryItem = document.createElement('div');
                 categoryItem.className = 'category-list-item';
-                categoryItem.style.cssText = 'display: flex; justify-content: space-between; align-items: center; padding: 15px; background: var(--bg-tertiary); border-radius: var(--radius-medium); margin-bottom: 10px; border: 1px solid #E0E0E0;';
+                categoryItem.style.cssText = 'display: flex; justify-content: space-between; align-items: center; padding: 20px; background: linear-gradient(135deg, rgba(255,255,255,0.9), rgba(248,249,252,0.9)); border-radius: var(--radius-medium); margin-bottom: 15px; border: var(--glass-border); box-shadow: var(--shadow-soft); backdrop-filter: blur(10px);';
                 categoryItem.innerHTML = `
                     <div class="category-list-info" style="flex: 1;">
-                        <h4 style="font-size: 1.1rem; margin-bottom: 5px; color: var(--text-primary); display: flex; align-items: center; gap: 8px;">
-                            <i class="${category.icon || 'fas fa-tag'}" style="color: ${color}"></i> 
+                        <h4 style="font-size: 1.2rem; margin-bottom: 8px; color: var(--text-primary); display: flex; align-items: center; gap: 12px;">
+                            <i class="${category.icon || 'fas fa-tag'}" style="color: ${color}; font-size: 1.3rem;"></i> 
                             ${category.name}
                         </h4>
-                        <span style="font-size: 0.9rem; color: var(--text-light);">
-                            الحد: ${formatCurrency(category.limit)} | المصروف: ${formatCurrency(category.spent || 0)} | المتبقي: ${formatCurrency(remaining)}
+                        <span style="font-size: 1rem; color: var(--text-light); display: flex; flex-wrap: wrap; gap: 15px;">
+                            <span>الحد: <strong>${formatCurrency(category.limit)}</strong></span>
+                            <span>المصروف: <strong>${formatCurrency(category.spent || 0)}</strong></span>
+                            <span>المتبقي: <strong style="color: ${remaining >= 0 ? 'var(--success)' : 'var(--danger)'}">${formatCurrency(remaining)}</strong></span>
                         </span>
                     </div>
-                    <div class="category-list-actions" style="display: flex; gap: 8px;">
+                    <div class="category-list-actions" style="display: flex; gap: 10px;">
                         <button class="action-btn edit-btn edit-category-btn" data-id="${category.id}">
                             <i class="fas fa-edit"></i>
                         </button>
@@ -2080,12 +2749,12 @@
             
             if (limitedExpenses.length === 0) {
                 recentExpensesList.innerHTML = `
-                    <div style="text-align: center; padding: 40px 20px; color: var(--text-light);">
-                        <div style="width: 60px; height: 60px; margin: 0 auto 20px; border-radius: var(--radius-medium); background: linear-gradient(135deg, var(--primary), var(--info)); display: flex; align-items: center; justify-content: center; font-size: 1.5rem; color: white;">
+                    <div style="text-align: center; padding: 50px 20px; color: var(--text-light);">
+                        <div style="width: 80px; height: 80px; margin: 0 auto 25px; border-radius: var(--radius-medium); background: linear-gradient(135deg, var(--primary), var(--secondary)); display: flex; align-items: center; justify-content: center; font-size: 2rem; color: white; box-shadow: var(--shadow-medium);">
                             <i class="fas fa-receipt"></i>
                         </div>
-                        <h3 style="color: var(--text-primary); margin-bottom: 10px;">لا توجد مصروفات</h3>
-                        <p>أضف أول مصروف لديك</p>
+                        <h3 style="color: var(--text-primary); margin-bottom: 15px; font-size: 1.3rem;">لا توجد مصروفات</h3>
+                        <p style="font-size: 1rem;">أضف أول مصروف لديك</p>
                     </div>
                 `;
                 return;
@@ -2114,7 +2783,7 @@
                 const expenseItem = document.createElement('div');
                 expenseItem.className = 'expense-item';
                 expenseItem.innerHTML = `
-                    <div class="expense-icon" style="background: ${color}">
+                    <div class="expense-icon" style="background: linear-gradient(135deg, ${color}, ${lightenColor(color, 20)})">
                         <i class="${category?.icon || 'fas fa-tag'}"></i>
                     </div>
                     <div class="expense-details">
@@ -2194,7 +2863,7 @@
                     </div>
                 </div>
                 
-                <h3 style="color: var(--primary); margin: 30px 0 20px 0; padding-bottom: 10px; border-bottom: 2px solid var(--bg-tertiary);">
+                <h3 style="color: var(--primary); margin: 30px 0 20px 0; padding-bottom: 10px; border-bottom: 2px solid rgba(108, 99, 255, 0.1);">
                     <i class="fas fa-layer-group"></i> تفاصيل الفئات
                 </h3>
             `;
@@ -2222,39 +2891,41 @@
                 categorySection.className = 'category-expense-card';
                 categorySection.innerHTML = `
                     <div class="expense-header">
-                        <div style="display: flex; align-items: center; gap: 10px;">
-                            <div style="width: 40px; height: 40px; border-radius: var(--radius-small); background: ${color}; display: flex; align-items: center; justify-content: center; color: white; font-size: 1.2rem;">
+                        <div style="display: flex; align-items: center; gap: 15px;">
+                            <div style="width: 50px; height: 50px; border-radius: var(--radius-medium); background: linear-gradient(135deg, ${color}, ${lightenColor(color, 20)}); display: flex; align-items: center; justify-content: center; color: white; font-size: 1.4rem; box-shadow: var(--shadow-soft);">
                                 <i class="${category.icon || 'fas fa-tag'}"></i>
                             </div>
                             <div>
-                                <div style="font-weight: 700; color: var(--text-primary);">${category.name}</div>
-                                <div style="font-size: 0.85rem; color: var(--text-light);">${categoryExpenses.length} معاملة</div>
+                                <div style="font-weight: 800; color: var(--text-primary); font-size: 1.2rem;">${category.name}</div>
+                                <div style="font-size: 1rem; color: var(--text-light);">${categoryExpenses.length} معاملة</div>
                             </div>
                         </div>
                         <div style="text-align: right;">
-                            <div style="font-weight: 700; color: ${color};">${formatCurrency(categorySpent)}</div>
-                            <div style="font-size: 0.85rem; color: var(--text-light);">من ${formatCurrency(category.limit)}</div>
+                            <div style="font-weight: 800; color: ${color}; font-size: 1.3rem;">${formatCurrency(categorySpent)}</div>
+                            <div style="font-size: 1rem; color: var(--text-light);">من ${formatCurrency(category.limit)}</div>
                         </div>
                     </div>
                     
-                    <div style="margin: 15px 0;">
-                        <div style="display: flex; justify-content: space-between; margin-bottom: 5px;">
-                            <span style="font-size: 0.9rem; color: var(--text-light);">النسبة</span>
-                            <span style="font-weight: 700; color: ${percentage > 90 ? 'var(--danger)' : percentage > 70 ? 'var(--warning)' : 'var(--success)'};">${percentage.toFixed(1)}%</span>
+                    <div style="margin: 20px 0;">
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                            <span style="font-size: 1rem; color: var(--text-light);">النسبة</span>
+                            <span style="font-weight: 800; color: ${percentage > 90 ? 'var(--danger)' : percentage > 70 ? 'var(--warning)' : 'var(--success)'}; font-size: 1.1rem;">${percentage.toFixed(1)}%</span>
                         </div>
-                        <div style="height: 8px; background: #E0E0E0; border-radius: 4px; overflow: hidden;">
-                            <div style="height: 100%; width: ${Math.min(percentage, 100)}%; background: ${color}; border-radius: 4px;"></div>
+                        <div style="height: 10px; background: rgba(108, 99, 255, 0.1); border-radius: var(--radius-full); overflow: hidden;">
+                            <div style="height: 100%; width: ${Math.min(percentage, 100)}%; background: linear-gradient(90deg, ${color}, ${lightenColor(color, 20)}); border-radius: var(--radius-full); position: relative;">
+                                <div style="position: absolute; top: 0; right: 0; width: 20px; height: 100%; background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent); animation: shine 2s infinite;"></div>
+                            </div>
                         </div>
                     </div>
                     
-                    <div style="display: flex; justify-content: space-between; background: white; padding: 10px; border-radius: var(--radius-small); margin-top: 15px;">
-                        <div style="text-align: center;">
-                            <div style="font-size: 0.85rem; color: var(--text-light);">المتبقي</div>
-                            <div style="font-weight: 700; color: ${remaining >= 0 ? 'var(--success)' : 'var(--danger)'};">${formatCurrency(remaining)}</div>
+                    <div style="display: flex; justify-content: space-between; background: linear-gradient(135deg, rgba(255,255,255,0.9), rgba(248,249,252,0.9)); padding: 15px; border-radius: var(--radius-medium); margin-top: 20px; border: var(--glass-border);">
+                        <div style="text-align: center; flex: 1;">
+                            <div style="font-size: 0.95rem; color: var(--text-light);">المتبقي</div>
+                            <div style="font-weight: 800; color: ${remaining >= 0 ? 'var(--success)' : 'var(--danger)'}; font-size: 1.2rem;">${formatCurrency(remaining)}</div>
                         </div>
-                        <div style="text-align: center;">
-                            <div style="font-size: 0.85rem; color: var(--text-light);">المصروف</div>
-                            <div style="font-weight: 700; color: ${color};">${formatCurrency(categorySpent)}</div>
+                        <div style="text-align: center; flex: 1;">
+                            <div style="font-size: 0.95rem; color: var(--text-light);">المصروف</div>
+                            <div style="font-weight: 800; color: ${color}; font-size: 1.2rem;">${formatCurrency(categorySpent)}</div>
                         </div>
                     </div>
                 `;
@@ -2293,35 +2964,35 @@
             filteredExpenses.sort((a, b) => new Date(b.date) - new Date(a.date));
             
             const headerHTML = `
-                <div style="text-align: center; margin-bottom: 30px;">
-                    <div style="width: 80px; height: 80px; margin: 0 auto 15px; border-radius: var(--radius-medium); background: ${color}; display: flex; align-items: center; justify-content: center; font-size: 2rem; color: white; box-shadow: var(--shadow-soft);">
+                <div style="text-align: center; margin-bottom: 40px;">
+                    <div style="width: 100px; height: 100px; margin: 0 auto 20px; border-radius: var(--radius-large); background: linear-gradient(135deg, ${color}, ${lightenColor(color, 20)}); display: flex; align-items: center; justify-content: center; font-size: 2.5rem; color: white; box-shadow: var(--shadow-hard);">
                         <i class="${category.icon || 'fas fa-tag'}"></i>
                     </div>
-                    <h2 style="color: var(--text-primary); margin-bottom: 10px;">${category.name}</h2>
-                    <div style="display: flex; justify-content: center; gap: 20px; flex-wrap: wrap;">
+                    <h2 style="color: var(--text-primary); margin-bottom: 15px; font-size: 1.8rem;">${category.name}</h2>
+                    <div style="display: flex; justify-content: center; gap: 30px; flex-wrap: wrap;">
                         <div>
-                            <div style="font-size: 0.9rem; color: var(--text-light);">الحد الشهري</div>
-                            <div style="font-size: 1.2rem; font-weight: 700; color: ${color};">${formatCurrency(category.limit)}</div>
+                            <div style="font-size: 1rem; color: var(--text-light);">الحد الشهري</div>
+                            <div style="font-size: 1.4rem; font-weight: 800; color: ${color};">${formatCurrency(category.limit)}</div>
                         </div>
                         <div>
-                            <div style="font-size: 0.9rem; color: var(--text-light);">المصروف</div>
-                            <div style="font-size: 1.2rem; font-weight: 700; color: var(--accent);">${formatCurrency(categorySpent)}</div>
+                            <div style="font-size: 1rem; color: var(--text-light);">المصروف</div>
+                            <div style="font-size: 1.4rem; font-weight: 800; color: var(--accent);">${formatCurrency(categorySpent)}</div>
                         </div>
                         <div>
-                            <div style="font-size: 0.9rem; color: var(--text-light);">المتبقي</div>
-                            <div style="font-size: 1.2rem; font-weight: 700; color: ${remaining >= 0 ? 'var(--success)' : 'var(--danger)'};">${formatCurrency(remaining)}</div>
+                            <div style="font-size: 1rem; color: var(--text-light);">المتبقي</div>
+                            <div style="font-size: 1.4rem; font-weight: 800; color: ${remaining >= 0 ? 'var(--success)' : 'var(--danger)'};">${formatCurrency(remaining)}</div>
                         </div>
                     </div>
                 </div>
                 
-                <div style="margin: 20px 0; text-align: center;">
-                    <div style="display: inline-block; background: white; padding: 10px 20px; border-radius: 20px; box-shadow: var(--shadow-soft);">
-                        <span style="font-weight: 700; color: ${percentage > 90 ? 'var(--danger)' : percentage > 70 ? 'var(--warning)' : 'var(--success)'};">${percentage.toFixed(1)}%</span>
-                        <span style="color: var(--text-light); margin-right: 5px;">نسبة الإنفاق</span>
+                <div style="margin: 30px 0; text-align: center;">
+                    <div style="display: inline-block; background: linear-gradient(135deg, rgba(255,255,255,0.9), rgba(248,249,252,0.9)); padding: 15px 30px; border-radius: var(--radius-full); box-shadow: var(--shadow-medium); border: var(--glass-border);">
+                        <span style="font-weight: 800; color: ${percentage > 90 ? 'var(--danger)' : percentage > 70 ? 'var(--warning)' : 'var(--success)'}; font-size: 1.3rem;">${percentage.toFixed(1)}%</span>
+                        <span style="color: var(--text-light); margin-right: 10px; font-size: 1.1rem;">نسبة الإنفاق</span>
                     </div>
                 </div>
                 
-                <h3 style="color: var(--primary); margin: 30px 0 20px 0; padding-bottom: 10px; border-bottom: 2px solid var(--bg-tertiary);">
+                <h3 style="color: var(--primary); margin: 30px 0 20px 0; padding-bottom: 10px; border-bottom: 2px solid rgba(108, 99, 255, 0.1);">
                     <i class="fas fa-receipt"></i> تفاصيل المصروفات (${filteredExpenses.length})
                 </h3>
             `;
@@ -2330,12 +3001,12 @@
             
             if (filteredExpenses.length === 0) {
                 categoryDetailsBody.innerHTML += `
-                    <div style="text-align: center; padding: 40px 20px; color: var(--text-light);">
-                        <div style="width: 60px; height: 60px; margin: 0 auto 20px; border-radius: var(--radius-medium); background: linear-gradient(135deg, var(--primary), var(--info)); display: flex; align-items: center; justify-content: center; font-size: 1.5rem; color: white;">
+                    <div style="text-align: center; padding: 50px 20px; color: var(--text-light);">
+                        <div style="width: 80px; height: 80px; margin: 0 auto 25px; border-radius: var(--radius-medium); background: linear-gradient(135deg, var(--primary), var(--secondary)); display: flex; align-items: center; justify-content: center; font-size: 2rem; color: white; box-shadow: var(--shadow-medium);">
                             <i class="fas fa-receipt"></i>
                         </div>
-                        <h3 style="color: var(--text-primary); margin-bottom: 10px;">لا توجد مصروفات لهذه الفئة</h3>
-                        <p>أضف أول مصروف لهذه الفئة</p>
+                        <h3 style="color: var(--text-primary); margin-bottom: 15px; font-size: 1.3rem;">لا توجد مصروفات لهذه الفئة</h3>
+                        <p style="font-size: 1rem;">أضف أول مصروف لهذه الفئة</p>
                     </div>
                 `;
             } else {
@@ -2556,7 +3227,8 @@
                                 <span class="date-display-text" id="edit-date-display-text">اليوم</span>
                             </div>
                             <button class="btn-block" id="update-expense-btn" data-id="${expenseId}">
-                                <i class="fas fa-save"></i> حفظ التعديلات
+                                <i class="fas fa-save"></i>
+                                <span>حفظ التعديلات</span>
                             </button>
                         </div>
                     </div>
@@ -2798,7 +3470,8 @@
                                     </select>
                                 </div>
                                 <button class="btn-block" id="update-category-btn" data-id="${categoryId}">
-                                    <i class="fas fa-save"></i> حفظ التعديلات
+                                    <i class="fas fa-save"></i>
+                                    <span>حفظ التعديلات</span>
                                 </button>
                             </div>
                         </div>
