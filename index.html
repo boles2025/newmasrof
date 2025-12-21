@@ -135,7 +135,7 @@
         .grid-bg,
         .dynamic-lines,
         .parallax-layer {
-            display: none;
+            display: none; /* مخفي لتحسين الأداء */
         }
 
         /* شاشة تحميل مخففة */
@@ -1490,76 +1490,6 @@
             font-size: 0.9rem;
         }
 
-        /* فصل بين الفئات */
-        .category-divider {
-            height: 2px;
-            background: linear-gradient(90deg, transparent, var(--glass-border), transparent);
-            margin: 30px 0;
-            width: 100%;
-        }
-
-        .category-section {
-            margin-bottom: 30px;
-            padding-bottom: 20px;
-        }
-
-        .category-section:last-child {
-            margin-bottom: 0;
-        }
-
-        .category-header {
-            background: var(--glass-bg);
-            border-radius: var(--radius-large);
-            padding: 20px;
-            border: 1px solid var(--glass-border);
-            margin-bottom: 15px;
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            transition: var(--transition-normal);
-        }
-
-        .category-header:active {
-            transform: scale(0.99);
-        }
-
-        .category-header-info {
-            flex: 1;
-        }
-
-        .category-header-title {
-            font-size: 1.2rem;
-            font-weight: 900;
-            color: white;
-            margin-bottom: 5px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .category-stats {
-            display: flex;
-            gap: 20px;
-            flex-wrap: wrap;
-        }
-
-        .category-stat {
-            display: flex;
-            flex-direction: column;
-            gap: 4px;
-        }
-
-        .category-stat-label {
-            font-size: 0.85rem;
-            color: #8a8aff;
-            font-weight: 600;
-        }
-
-        .category-stat-value {
-            font-size: 1.1rem;
-            font-weight: 900;
-        }
-
         /* أنيميشن مخففة */
         @keyframes bodyFadeIn {
             from { opacity: 0; }
@@ -2080,19 +2010,6 @@
         body.view-only .month-navigation .nav-btn {
             display: flex !important;
         }
-
-        /* QR Code */
-        #qrcode-container {
-            text-align: center;
-            margin: 20px 0;
-        }
-
-        #qrcode img {
-            display: block;
-            margin: 0 auto;
-            border-radius: var(--radius-medium);
-            box-shadow: var(--shadow-medium);
-        }
     </style>
 </head>
 <body>
@@ -2402,8 +2319,8 @@
                 
                 <div class="share-section">
                     <h3><i class="fas fa-qrcode"></i> رمز QR للمشاركة</h3>
-                    <div id="qrcode-container">
-                        <div id="qrcode"></div>
+                    <div style="text-align: center; padding: 20px;">
+                        <div id="qrcode" style="display: inline-block; background: white; padding: 20px; border-radius: var(--radius-medium);"></div>
                     </div>
                 </div>
             </div>
@@ -2656,16 +2573,12 @@
             
             // إنشاء QR Code
             if (typeof QRCode !== 'undefined') {
-                // مسح العنصر السابق
-                qrcodeContainer.innerHTML = '';
-                
-                // إنشاء QR جديد
                 new QRCode(qrcodeContainer, {
                     text: shareLink,
                     width: 200,
                     height: 200,
-                    colorDark: "#00f2fe",
-                    colorLight: "#0a0a1a",
+                    colorDark: "#000000",
+                    colorLight: "#ffffff",
                     correctLevel: QRCode.CorrectLevel.H
                 });
             }
@@ -2954,7 +2867,7 @@
                 `;
                 
                 categoryCard.addEventListener('click', () => {
-                    showCategoryExpensesDetails();
+                    showCategoryExpenses(category.id);
                 });
                 categoriesContainer.appendChild(categoryCard);
             });
@@ -3182,6 +3095,10 @@
             categories.forEach((category, index) => {
                 const categoryExpenses = filteredExpenses.filter(expense => expense.categoryId === category.id);
                 
+                if (categoryExpenses.length === 0) {
+                    return; // تخطي الفئات بدون مصروفات
+                }
+                
                 const categorySpent = categoryExpenses.reduce((sum, expense) => sum + expense.amount, 0);
                 const remaining = category.limit - categorySpent;
                 const percentage = category.limit > 0 ? (categorySpent / category.limit) * 100 : 0;
@@ -3194,38 +3111,176 @@
                 const categorySection = document.createElement('div');
                 categorySection.className = 'category-section';
                 categorySection.innerHTML = `
-                    <div class="category-header">
-                        <div class="category-icon" style="background: ${color}; width: 60px; height: 60px; font-size: 1.5rem;">
-                            <i class="${category.icon || 'fas fa-tag'}"></i>
+                    <div style="margin-bottom: 20px;">
+                        <div style="display: flex; align-items: center; gap: 15px; margin-bottom: 15px; padding: 15px; background: var(--glass-bg); border-radius: var(--radius-large); border: 1px solid var(--glass-border);">
+                            <div class="category-icon" style="background: ${color}">
+                                <i class="${category.icon || 'fas fa-tag'}"></i>
+                            </div>
+                            <div style="flex: 1;">
+                                <h3 style="font-size: 1.2rem; margin-bottom: 5px; color: white;">${category.name}</h3>
+                                <div style="display: flex; gap: 20px;">
+                                    <div>
+                                        <div style="font-size: 0.9rem; color: #a0a0ff;">المصروف</div>
+                                        <div style="font-size: 1.1rem; font-weight: 900; color: ${color};">${formatCurrency(categorySpent)}</div>
+                                    </div>
+                                    <div>
+                                        <div style="font-size: 0.9rem; color: #a0a0ff;">الحد</div>
+                                        <div style="font-size: 1.1rem; font-weight: 900; color: white;">${formatCurrency(category.limit)}</div>
+                                    </div>
+                                    <div>
+                                        <div style="font-size: 0.9rem; color: #a0a0ff;">المتبقي</div>
+                                        <div style="font-size: 1.1rem; font-weight: 900; color: ${remaining >= 0 ? 'var(--success)' : 'var(--danger)'};">${formatCurrency(remaining)}</div>
+                                    </div>
+                                    <div>
+                                        <div style="font-size: 0.9rem; color: #a0a0ff;">النسبة</div>
+                                        <div style="font-size: 1.1rem; font-weight: 900; color: ${percentage > 90 ? 'var(--danger)' : percentage > 70 ? 'var(--warning)' : 'var(--primary)'};">${percentage.toFixed(1)}%</div>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
-                        <div class="category-header-info">
-                            <div class="category-header-title">
-                                ${category.name}
-                            </div>
-                            <div class="category-stats">
-                                <div class="category-stat">
-                                    <span class="category-stat-label">المصروف</span>
-                                    <span class="category-stat-value" style="color: ${color};">${formatCurrency(categorySpent)}</span>
-                                </div>
-                                <div class="category-stat">
-                                    <span class="category-stat-label">الحد</span>
-                                    <span class="category-stat-value" style="color: white;">${formatCurrency(category.limit)}</span>
-                                </div>
-                                <div class="category-stat">
-                                    <span class="category-stat-label">المتبقي</span>
-                                    <span class="category-stat-value" style="color: ${remaining >= 0 ? 'var(--success)' : 'var(--danger)'};">${formatCurrency(remaining)}</span>
-                                </div>
-                                <div class="category-stat">
-                                    <span class="category-stat-label">النسبة</span>
-                                    <span class="category-stat-value" style="color: ${percentage > 90 ? 'var(--danger)' : percentage > 70 ? 'var(--warning)' : 'var(--primary)'};">${percentage.toFixed(1)}%</span>
-                                </div>
-                            </div>
+                        
+                        <div class="category-expenses-list">
+                            ${categoryExpenses.map(expense => {
+                                const expenseDate = new Date(expense.date);
+                                const today = new Date();
+                                const yesterday = new Date(today);
+                                yesterday.setDate(yesterday.getDate() - 1);
+                                
+                                let dateDisplay;
+                                if (expenseDate.toDateString() === today.toDateString()) {
+                                    dateDisplay = 'اليوم';
+                                } else if (expenseDate.toDateString() === yesterday.toDateString()) {
+                                    dateDisplay = 'أمس';
+                                } else {
+                                    const dayName = arabicDays[expenseDate.getDay()];
+                                    const day = expenseDate.getDate();
+                                    const month = arabicMonths[expenseDate.getMonth()];
+                                    dateDisplay = `${dayName} ${day} ${month}`;
+                                }
+                                
+                                return `
+                                    <div class="category-expense-item">
+                                        <div class="expense-header">
+                                            <div class="expense-amount-large">${formatCurrency(expense.amount)}</div>
+                                            <div class="expense-date-display">
+                                                <i class="far fa-calendar"></i>
+                                                ${dateDisplay}
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="expense-details-row">
+                                            <div class="expense-detail-item">
+                                                <span class="detail-label">الفئة</span>
+                                                <span class="detail-value">${category.name}</span>
+                                            </div>
+                                            <div class="expense-detail-item">
+                                                <span class="detail-label">التاريخ</span>
+                                                <span class="detail-value">${expenseDate.toLocaleDateString('ar-EG')}</span>
+                                            </div>
+                                        </div>
+                                        
+                                        ${expense.notes ? `
+                                            <div class="expense-notes">
+                                                <span class="detail-label">البيان</span>
+                                                <span class="detail-value">${expense.notes}</span>
+                                            </div>
+                                        ` : ''}
+                                        
+                                        <div class="expense-remaining-info">
+                                            <div class="remaining-amount-large">
+                                                <i class="fas fa-coins"></i>
+                                                متبقي في الفئة: ${formatCurrency(remaining)}
+                                            </div>
+                                            ${!isViewOnly ? `
+                                            <div class="expense-actions-small">
+                                                <button class="action-btn-small edit-btn" onclick="editExpense('${expense.id}')">
+                                                    <i class="fas fa-edit"></i>
+                                                </button>
+                                                <button class="action-btn-small delete-btn" onclick="deleteExpense('${expense.id}')">
+                                                    <i class="fas fa-trash"></i>
+                                                </button>
+                                            </div>
+                                            ` : ''}
+                                        </div>
+                                    </div>
+                                `;
+                            }).join('')}
                         </div>
                     </div>
-                    
-                    ${categoryExpenses.length > 0 ? `
+                `;
+                
+                categoryDetailsBody.appendChild(categorySection);
+            });
+            
+            // إظهار المودال
+            categoryDetailsModal.classList.add('active');
+        }
+
+        // عرض مصروفات فئة محددة
+        function showCategoryExpenses(categoryId) {
+            const category = categories.find(c => c.id === categoryId);
+            if (!category) return;
+            
+            const filteredExpenses = expenses.filter(expense => {
+                const expenseDate = new Date(expense.date);
+                return expenseDate.getMonth() === currentMonthIndex && 
+                       expenseDate.getFullYear() === currentYear &&
+                       expense.categoryId === categoryId;
+            });
+            
+            categoryDetailsBody.innerHTML = '';
+            
+            const categoryIndex = categories.findIndex(c => c.id === categoryId);
+            const colorIndex = categoryIndex % categoryColors.length;
+            const color = categoryColors[colorIndex];
+            
+            const categorySpent = filteredExpenses.reduce((sum, expense) => sum + expense.amount, 0);
+            const remaining = category.limit - categorySpent;
+            const percentage = category.limit > 0 ? (categorySpent / category.limit) * 100 : 0;
+            
+            // ترتيب المصروفات من الأحدث إلى الأقدم
+            filteredExpenses.sort((a, b) => new Date(b.date) - new Date(a.date));
+            
+            const headerHTML = `
+                <div class="category-summary">
+                    <h3><i class="${category.icon || 'fas fa-tag'}"></i> ${category.name}</h3>
+                    <div class="category-summary-stats">
+                        <div class="summary-stat-item">
+                            <div class="summary-stat-value">${formatCurrency(category.limit)}</div>
+                            <div class="summary-stat-label">الحد الشهري</div>
+                        </div>
+                        <div class="summary-stat-item">
+                            <div class="summary-stat-value">${formatCurrency(categorySpent)}</div>
+                            <div class="summary-stat-label">إجمالي المصروفات</div>
+                        </div>
+                        <div class="summary-stat-item">
+                            <div class="summary-stat-value">${formatCurrency(remaining)}</div>
+                            <div class="summary-stat-label">المتبقي</div>
+                        </div>
+                        <div class="summary-stat-item">
+                            <div class="summary-stat-value">${percentage.toFixed(1)}%</div>
+                            <div class="summary-stat-label">نسبة الإنفاق</div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            categoryDetailsBody.innerHTML = headerHTML;
+            
+            if (filteredExpenses.length === 0) {
+                categoryDetailsBody.innerHTML += `
+                    <div style="text-align: center; padding: 40px 20px;">
+                        <div style="width: 60px; height: 60px; margin: 0 auto 20px; border-radius: var(--radius-circle); background: var(--glass-bg); display: flex; align-items: center; justify-content: center; font-size: 1.5rem; color: var(--primary); box-shadow: var(--glow-primary);">
+                            <i class="fas fa-receipt"></i>
+                        </div>
+                        <h3 style="color: white; margin-bottom: 10px; font-size: 1.2rem;">لا توجد مصروفات لهذه الفئة</h3>
+                        <p style="color: #a0a0ff; font-size: 0.9rem;">أضف أول مصروف لهذه الفئة</p>
+                    </div>
+                `;
+            } else {
+                const expensesHTML = `
                     <div class="category-expenses-list">
-                        ${categoryExpenses.map(expense => {
+                        ${filteredExpenses.map(expense => {
                             const expenseDate = new Date(expense.date);
                             const today = new Date();
                             const yesterday = new Date(today);
@@ -3246,7 +3301,7 @@
                             return `
                                 <div class="category-expense-item">
                                     <div class="expense-header">
-                                        <div class="expense-amount-large" style="color: ${color};">${formatCurrency(expense.amount)}</div>
+                                        <div class="expense-amount-large">${formatCurrency(expense.amount)}</div>
                                         <div class="expense-date-display">
                                             <i class="far fa-calendar"></i>
                                             ${dateDisplay}
@@ -3271,12 +3326,12 @@
                                         </div>
                                     ` : ''}
                                     
-                                    ${!isViewOnly ? `
                                     <div class="expense-remaining-info">
                                         <div class="remaining-amount-large">
                                             <i class="fas fa-coins"></i>
                                             متبقي في الفئة: ${formatCurrency(remaining)}
                                         </div>
+                                        ${!isViewOnly ? `
                                         <div class="expense-actions-small">
                                             <button class="action-btn-small edit-btn" onclick="editExpense('${expense.id}')">
                                                 <i class="fas fa-edit"></i>
@@ -3285,29 +3340,20 @@
                                                 <i class="fas fa-trash"></i>
                                             </button>
                                         </div>
+                                        ` : ''}
                                     </div>
-                                    ` : ''}
                                 </div>
                             `;
                         }).join('')}
                     </div>
-                    ` : `
-                    <div style="text-align: center; padding: 30px 20px; color: #a0a0ff; background: var(--glass-bg); border-radius: var(--radius-medium); border: 1px solid var(--glass-border);">
-                        <i class="fas fa-receipt" style="font-size: 2rem; margin-bottom: 15px; display: block; color: ${color};"></i>
-                        <p style="font-size: 1rem;">لا توجد مصروفات لهذه الفئة</p>
-                    </div>
-                    `}
                 `;
                 
-                categoryDetailsBody.appendChild(categorySection);
-                
-                // إضافة فصل بين الفئات (ما عدا الأخيرة)
-                if (index < categories.length - 1) {
-                    const divider = document.createElement('div');
-                    divider.className = 'category-divider';
-                    categoryDetailsBody.appendChild(divider);
-                }
-            });
+                categoryDetailsBody.innerHTML += expensesHTML;
+            }
+            
+            // تحديث عنوان المودال
+            document.querySelector('.category-details-header h2').innerHTML = `<i class="${category.icon || 'fas fa-tag'}"></i> ${category.name}`;
+            document.querySelector('.category-details-header p').textContent = 'تفاصيل المصروفات للفئة';
             
             // إظهار المودال
             categoryDetailsModal.classList.add('active');
