@@ -380,6 +380,7 @@
 
         .form-group {
             margin-bottom: 15px;
+            position: relative;
         }
 
         .form-label {
@@ -406,6 +407,57 @@
             outline: none;
             border-color: var(--primary);
             box-shadow: 0 0 0 3px rgba(93, 109, 126, 0.1);
+        }
+
+        /* تلميح المتبقي في الفئة */
+        .category-remaining-hint {
+            position: absolute;
+            bottom: -25px;
+            right: 0;
+            font-size: 0.8rem;
+            padding: 4px 10px;
+            border-radius: 12px;
+            display: none;
+            align-items: center;
+            gap: 5px;
+            font-weight: 600;
+            z-index: 10;
+            transition: var(--transition-fast);
+            box-shadow: var(--shadow-soft);
+        }
+
+        .category-remaining-hint.show {
+            display: flex;
+            animation: slideUp 0.3s ease;
+        }
+
+        .category-remaining-hint.positive {
+            background: rgba(39, 174, 96, 0.1);
+            color: var(--success);
+            border: 1px solid rgba(39, 174, 96, 0.2);
+        }
+
+        .category-remaining-hint.warning {
+            background: rgba(230, 126, 34, 0.1);
+            color: var(--warning);
+            border: 1px solid rgba(230, 126, 34, 0.2);
+        }
+
+        .category-remaining-hint.danger {
+            background: rgba(231, 76, 60, 0.1);
+            color: var(--danger);
+            border: 1px solid rgba(231, 76, 60, 0.2);
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
 
         .date-display-text {
@@ -1246,7 +1298,7 @@
     </style>
 </head>
 <body>
-    <!-- شريط المصمم -->
+    <!-- شريط التصميم -->
     <div class="designer-bar">
         <div class="designer-text">
             <i class="fas fa-sparkles"></i>
@@ -1356,6 +1408,10 @@
                     <select class="form-control" id="expense-category" required>
                         <option value="">اختر الفئة</option>
                     </select>
+                    <div class="category-remaining-hint" id="category-hint">
+                        <i class="fas fa-coins"></i>
+                        <span id="remaining-amount-text">0 ج.م</span>
+                    </div>
                 </div>
                 
                 <div class="form-group">
@@ -1562,6 +1618,9 @@
         const notification = document.getElementById('notification');
         const notificationTitle = document.getElementById('notification-title');
         const notificationMessage = document.getElementById('notification-message');
+        const categoryHint = document.getElementById('category-hint');
+        const remainingAmountText = document.getElementById('remaining-amount-text');
+        const expenseAmountInput = document.getElementById('expense-amount');
 
         // ألوان متنوعة للفئات والمصروفات
         const categoryColors = [
@@ -1826,6 +1885,50 @@
             });
         }
 
+        // إظهار المتبقي في الفئة المختارة
+        function showCategoryRemaining(categoryId) {
+            const category = categories.find(c => c.id === categoryId);
+            if (!category) {
+                categoryHint.classList.remove('show');
+                return;
+            }
+            
+            const remaining = category.limit - category.spent;
+            const percentage = category.limit > 0 ? (category.spent / category.limit) * 100 : 0;
+            
+            remainingAmountText.textContent = formatCurrency(remaining) + ' متبقي';
+            
+            // تحديد لون التلميح حسب نسبة الإنفاق
+            categoryHint.className = 'category-remaining-hint';
+            if (percentage > 90) {
+                categoryHint.classList.add('danger');
+            } else if (percentage > 70) {
+                categoryHint.classList.add('warning');
+            } else {
+                categoryHint.classList.add('positive');
+            }
+            
+            // التحقق من المبلغ المدخل
+            const enteredAmount = parseFloat(expenseAmountInput.value) || 0;
+            if (enteredAmount > remaining && remaining > 0) {
+                categoryHint.innerHTML = `
+                    <i class="fas fa-exclamation-triangle"></i>
+                    <span>المبلغ يتجاوز المتبقي (${formatCurrency(remaining)})</span>
+                `;
+                categoryHint.classList.remove('positive');
+                categoryHint.classList.add('danger');
+            } else if (remaining <= 0) {
+                categoryHint.innerHTML = `
+                    <i class="fas fa-ban"></i>
+                    <span>تم استنفاد الميزانية</span>
+                `;
+                categoryHint.classList.remove('positive', 'warning');
+                categoryHint.classList.add('danger');
+            }
+            
+            categoryHint.classList.add('show');
+        }
+
         function renderCategories() {
             categoriesContainer.innerHTML = '';
             
@@ -1881,6 +1984,22 @@
                 option.value = category.id;
                 option.textContent = category.name;
                 expenseCategorySelect.appendChild(option);
+            });
+            
+            // إضافة مستمع الحدث عند تغيير الفئة
+            expenseCategorySelect.addEventListener('change', function() {
+                if (this.value) {
+                    showCategoryRemaining(this.value);
+                } else {
+                    categoryHint.classList.remove('show');
+                }
+            });
+            
+            // تحديث عند تغيير قيمة المبلغ
+            expenseAmountInput.addEventListener('input', function() {
+                if (expenseCategorySelect.value) {
+                    showCategoryRemaining(expenseCategorySelect.value);
+                }
             });
         }
 
@@ -2345,6 +2464,26 @@
         // إضافة مصروف
         async function addExpense(expenseData) {
             try {
+                // التحقق من عدم تجاوز الميزانية
+                const category = categories.find(c => c.id === expenseData.categoryId);
+                if (category) {
+                    const categoryExpenses = expenses.filter(expense => {
+                        const expenseDate = new Date(expense.date);
+                        return expenseDate.getMonth() === currentMonthIndex && 
+                               expenseDate.getFullYear() === currentYear &&
+                               expense.categoryId === expenseData.categoryId;
+                    });
+                    
+                    const currentSpent = categoryExpenses.reduce((sum, expense) => sum + expense.amount, 0);
+                    const newSpent = currentSpent + expenseData.amount;
+                    
+                    if (newSpent > category.limit) {
+                        const remaining = category.limit - currentSpent;
+                        showNotification('تحذير', `هذا المصروف يتجاوز الحد المتبقي للفئة (${formatCurrency(remaining)})`, 'warning');
+                        return false;
+                    }
+                }
+                
                 await database.ref('expenses').push({
                     ...expenseData,
                     date: expenseData.date,
@@ -2358,6 +2497,8 @@
                 const todayFormatted = formatDateForInput(today);
                 expenseDateInput.value = todayFormatted;
                 updateDateDisplayText(today);
+                // إخفاء التلميح
+                categoryHint.classList.remove('show');
                 
                 return true;
             } catch (error) {
@@ -2393,6 +2534,10 @@
                                 <select class="form-control" id="edit-expense-category" required>
                                     <option value="">اختر الفئة</option>
                                 </select>
+                                <div class="category-remaining-hint" id="edit-category-hint">
+                                    <i class="fas fa-coins"></i>
+                                    <span id="edit-remaining-amount-text">0 ج.م</span>
+                                </div>
                             </div>
                             <div class="form-group">
                                 <label class="form-label">قيمة المصروف</label>
@@ -2444,10 +2589,61 @@
                 updateDateDisplayText(selectedDate);
             });
             
+            // إظهار المتبقي للفئة المختارة
+            const editCategoryHint = document.getElementById('edit-category-hint');
+            const editRemainingAmountText = document.getElementById('edit-remaining-amount-text');
+            const editExpenseAmountInput = document.getElementById('edit-expense-amount');
+            
+            function updateEditCategoryRemaining() {
+                const selectedCategoryId = categorySelect.value;
+                if (!selectedCategoryId) {
+                    editCategoryHint.classList.remove('show');
+                    return;
+                }
+                
+                const selectedCategory = categories.find(c => c.id === selectedCategoryId);
+                if (!selectedCategory) return;
+                
+                const categoryExpenses = expenses.filter(exp => {
+                    const expDate = new Date(exp.date);
+                    return expDate.getMonth() === currentMonthIndex && 
+                           expDate.getFullYear() === currentYear &&
+                           exp.categoryId === selectedCategoryId &&
+                           exp.id !== expenseId; // استبعاد المصروف الحالي
+                });
+                
+                const currentSpent = categoryExpenses.reduce((sum, exp) => sum + exp.amount, 0);
+                const remaining = selectedCategory.limit - currentSpent;
+                const enteredAmount = parseFloat(editExpenseAmountInput.value) || 0;
+                
+                editRemainingAmountText.textContent = formatCurrency(remaining) + ' متبقي';
+                
+                // تحديد لون التلميح
+                editCategoryHint.className = 'category-remaining-hint';
+                if (enteredAmount > remaining && remaining > 0) {
+                    editRemainingAmountText.textContent = `المبلغ يتجاوز المتبقي (${formatCurrency(remaining)})`;
+                    editCategoryHint.classList.add('danger');
+                } else if (remaining <= 0) {
+                    editRemainingAmountText.textContent = 'تم استنفاد الميزانية';
+                    editCategoryHint.classList.add('danger');
+                } else {
+                    editCategoryHint.classList.add('positive');
+                }
+                
+                editCategoryHint.classList.add('show');
+            }
+            
+            // استدعاء الدالة عند تحميل المودال
+            setTimeout(updateEditCategoryRemaining, 100);
+            
+            // مستمعي الأحداث
+            categorySelect.addEventListener('change', updateEditCategoryRemaining);
+            editExpenseAmountInput.addEventListener('input', updateEditCategoryRemaining);
+            
             const updateBtn = document.getElementById('update-expense-btn');
             updateBtn.addEventListener('click', async () => {
                 const categoryId = categorySelect.value;
-                const amount = parseFloat(document.getElementById('edit-expense-amount').value);
+                const amount = parseFloat(editExpenseAmountInput.value);
                 const notes = document.getElementById('edit-expense-notes').value.trim();
                 const date = document.getElementById('edit-expense-date').value;
                 
