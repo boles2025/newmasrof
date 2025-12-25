@@ -3,63 +3,29 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>مصروفاتي - تصميم مهندس بولس سمير</title>
+    <title>مصروفاتي - التصميم الجديد</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
     <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-database-compat.js"></script>
     <style>
         :root {
-            /* نظام ألوان جديد ومتطور */
-            --primary: #6C63FF;
-            --primary-dark: #554FD8;
-            --secondary: #FF6584;
-            --accent: #36D1DC;
-            --success: #2EB872;
-            --warning: #FFB74D;
-            --danger: #FF6B6B;
-            --info: #4FC3F7;
-            
-            /* تدرجات جديدة */
-            --gradient-primary: linear-gradient(135deg, var(--primary) 0%, #8A84FF 100%);
-            --gradient-secondary: linear-gradient(135deg, var(--secondary) 0%, #FF8DA1 100%);
-            --gradient-accent: linear-gradient(135deg, var(--accent) 0%, #5B86E5 100%);
-            --gradient-success: linear-gradient(135deg, var(--success) 0%, #56AB2F 100%);
-            --gradient-warning: linear-gradient(135deg, var(--warning) 0%, #FF9800 100%);
-            --gradient-danger: linear-gradient(135deg, var(--danger) 0%, #FF8A80 100%);
-            --gradient-info: linear-gradient(135deg, var(--info) 0%, #29B6F6 100%);
-            
-            /* خلفيات */
-            --bg-main: linear-gradient(135deg, #f8f9ff 0%, #eef1ff 100%);
-            --bg-card: rgba(255, 255, 255, 0.95);
-            --bg-card-hover: rgba(255, 255, 255, 0.98);
-            --bg-glass: rgba(255, 255, 255, 0.25);
-            --bg-dark: #1A1A2E;
-            
-            /* نصوص */
-            --text-primary: #2D3748;
-            --text-secondary: #4A5568;
-            --text-light: #718096;
-            --text-white: #ffffff;
-            
-            /* ظلال */
-            --shadow-soft: 0 4px 20px rgba(108, 99, 255, 0.08);
-            --shadow-medium: 0 8px 30px rgba(108, 99, 255, 0.12);
-            --shadow-hard: 0 15px 50px rgba(108, 99, 255, 0.18);
-            --shadow-inset: inset 0 2px 10px rgba(0, 0, 0, 0.05);
-            
-            /* زوايا */
-            --radius-small: 12px;
-            --radius-medium: 16px;
-            --radius-large: 24px;
-            --radius-full: 50px;
-            --radius-pill: 100px;
-            
-            /* انتقالات */
-            --transition-fast: 0.2s ease;
-            --transition-normal: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            --transition-slow: 0.5s cubic-bezier(0.4, 0, 0.2, 1);
-            --transition-bounce: 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            --primary: #4F46E5;
+            --primary-light: #818CF8;
+            --primary-dark: #3730A3;
+            --secondary: #10B981;
+            --secondary-light: #34D399;
+            --danger: #EF4444;
+            --warning: #F59E0B;
+            --info: #3B82F6;
+            --light: #F9FAFB;
+            --dark: #1F2937;
+            --gray: #6B7280;
+            --gray-light: #E5E7EB;
+            --border-radius: 12px;
+            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+            --transition: all 0.2s ease;
         }
 
         * {
@@ -70,393 +36,134 @@
         }
 
         body {
-            background: var(--bg-main);
-            color: var(--text-primary);
+            background-color: #F8FAFC;
+            color: var(--dark);
             line-height: 1.6;
             font-size: 16px;
             min-height: 100vh;
-            position: relative;
-            overflow-x: hidden;
             padding-bottom: 80px;
         }
 
-        /* شريط التصميم العلوي الجديد */
+        /* شريط التصميم المبسط */
         .designer-bar {
-            background: var(--bg-dark);
+            background: linear-gradient(90deg, var(--primary-dark), var(--primary));
             color: white;
-            padding: 12px 20px;
+            padding: 10px 20px;
             text-align: center;
-            font-size: 0.9rem;
-            font-weight: 600;
-            position: relative;
-            overflow: hidden;
-            z-index: 1000;
+            font-size: 0.85rem;
+            font-weight: 500;
         }
 
-        .designer-bar::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            right: 0;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
-            animation: shine 3s infinite;
-        }
-
-        @keyframes shine {
-            0% { transform: translateX(-100%); }
-            100% { transform: translateX(100%); }
-        }
-
-        .designer-content {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-        }
-
-        .designer-icon {
-            color: var(--primary);
-            animation: pulse 2s infinite;
-        }
-
-        @keyframes pulse {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.1); }
-        }
-
-        /* ترويسة التطبيق */
+        /* الترويسة الرئيسية */
         .app-header {
-            background: var(--gradient-primary);
-            padding: 30px 25px;
-            border-radius: 0 0 var(--radius-large) var(--radius-large);
-            color: white;
-            box-shadow: var(--shadow-medium);
-            position: relative;
-            overflow: hidden;
-            margin-bottom: 30px;
-        }
-
-        .app-header::before {
-            content: '';
-            position: absolute;
+            background: white;
+            padding: 20px;
+            border-bottom: 1px solid var(--gray-light);
+            box-shadow: var(--shadow);
+            position: sticky;
             top: 0;
-            right: 0;
-            width: 100%;
-            height: 100%;
-            background: url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M11 18c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm48 25c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm-43-7c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm63 31c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM34 90c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm56-76c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM12 86c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm28-65c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm23-11c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-6 60c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm29 22c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zM32 63c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm57-13c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-9-21c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM60 91c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM35 41c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM12 60c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2z' fill='%23ffffff' fill-opacity='0.05' fill-rule='evenodd'/%3E%3C/svg%3E");
-            opacity: 0.3;
+            z-index: 100;
         }
 
         .header-content {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            position: relative;
-            z-index: 1;
+            max-width: 1200px;
+            margin: 0 auto;
         }
 
         .logo-section {
             display: flex;
             align-items: center;
-            gap: 20px;
+            gap: 15px;
         }
 
         .logo-icon {
-            width: 70px;
-            height: 70px;
-            background: rgba(255, 255, 255, 0.2);
-            backdrop-filter: blur(10px);
-            border-radius: var(--radius-medium);
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, var(--primary), var(--primary-light));
+            border-radius: 12px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 1.8rem;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
-            border: 2px solid rgba(255, 255, 255, 0.3);
-            animation: float 4s ease-in-out infinite;
-        }
-
-        @keyframes float {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-10px); }
+            color: white;
+            font-size: 1.5rem;
         }
 
         .app-title h1 {
-            font-size: 1.8rem;
-            font-weight: 900;
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: var(--dark);
             margin-bottom: 5px;
-            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
         }
 
         .app-title p {
-            opacity: 0.9;
-            font-size: 0.95rem;
+            color: var(--gray);
+            font-size: 0.9rem;
         }
 
         .header-actions {
             display: flex;
-            gap: 12px;
+            gap: 10px;
         }
 
         .header-btn {
-            width: 50px;
-            height: 50px;
-            border-radius: 50%;
-            background: rgba(255, 255, 255, 0.2);
-            border: 2px solid rgba(255, 255, 255, 0.3);
-            color: white;
-            font-size: 1.2rem;
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            background: var(--light);
+            border: none;
+            color: var(--primary);
+            font-size: 1rem;
             cursor: pointer;
-            transition: var(--transition-normal);
+            transition: var(--transition);
             display: flex;
             align-items: center;
             justify-content: center;
-            backdrop-filter: blur(10px);
         }
 
         .header-btn:hover {
-            background: rgba(255, 255, 255, 0.3);
-            transform: scale(1.1) rotate(5deg);
-        }
-
-        /* شريط اختيار الشهر المحسّن */
-        .month-selector-container {
-            background: var(--bg-card);
-            padding: 25px;
-            margin: 0 25px 30px;
-            border-radius: var(--radius-large);
-            box-shadow: var(--shadow-medium);
-            position: relative;
-            overflow: hidden;
-            border: 1px solid rgba(108, 99, 255, 0.1);
-        }
-
-        .month-selector-container::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            right: 0;
-            width: 100%;
-            height: 5px;
-            background: var(--gradient-primary);
-        }
-
-        .section-title {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            margin-bottom: 25px;
-            padding-bottom: 15px;
-            border-bottom: 2px solid rgba(108, 99, 255, 0.1);
-        }
-
-        .section-title h2 {
-            font-size: 1.5rem;
-            color: var(--text-primary);
-            font-weight: 800;
-            background: var(--gradient-primary);
-            -webkit-background-clip: text;
-            background-clip: text;
-            color: transparent;
-        }
-
-        .section-title i {
-            color: var(--primary);
-            font-size: 1.3rem;
-        }
-
-        /* شريط اختيار الشهر الجديد */
-        .month-selector-wrapper {
-            position: relative;
-        }
-
-        .month-display {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            background: linear-gradient(135deg, rgba(108, 99, 255, 0.1), rgba(108, 99, 255, 0.05));
-            padding: 18px 25px;
-            border-radius: var(--radius-medium);
-            border: 2px solid rgba(108, 99, 255, 0.15);
-            cursor: pointer;
-            transition: var(--transition-normal);
-            margin-bottom: 15px;
-        }
-
-        .month-display:hover {
-            border-color: var(--primary);
-            transform: translateY(-2px);
-            box-shadow: var(--shadow-soft);
-        }
-
-        .current-month {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-        }
-
-        .month-icon {
-            width: 45px;
-            height: 45px;
-            background: var(--gradient-primary);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-size: 1.2rem;
-            box-shadow: 0 4px 15px rgba(108, 99, 255, 0.3);
-        }
-
-        .month-text h3 {
-            font-size: 1.3rem;
-            font-weight: 800;
-            color: var(--text-primary);
-            margin-bottom: 5px;
-        }
-
-        .month-text p {
-            font-size: 0.9rem;
-            color: var(--text-light);
-        }
-
-        .month-nav {
-            display: flex;
-            gap: 10px;
-        }
-
-        .nav-btn {
-            width: 45px;
-            height: 45px;
-            border-radius: 50%;
-            background: white;
-            border: 2px solid rgba(108, 99, 255, 0.15);
-            color: var(--primary);
-            font-size: 1.1rem;
-            cursor: pointer;
-            transition: var(--transition-normal);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .nav-btn:hover {
             background: var(--primary);
             color: white;
-            transform: scale(1.1);
-            border-color: var(--primary);
+            transform: translateY(-2px);
         }
 
-        /* شبكة أشهر السنة */
-        .months-grid {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 12px;
-            max-height: 0;
-            overflow: hidden;
-            transition: max-height 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+        /* المحتوى الرئيسي */
+        .main-content {
+            max-width: 1200px;
+            margin: 20px auto;
+            padding: 0 20px;
         }
 
-        .months-grid.active {
-            max-height: 500px;
-            margin-top: 20px;
-        }
-
-        .month-card {
-            background: white;
-            border-radius: var(--radius-medium);
-            padding: 20px;
-            text-align: center;
-            cursor: pointer;
-            transition: var(--transition-normal);
-            border: 2px solid rgba(108, 99, 255, 0.1);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .month-card:hover {
-            transform: translateY(-5px);
-            border-color: var(--primary);
-            box-shadow: var(--shadow-soft);
-        }
-
-        .month-card.active {
-            background: var(--gradient-primary);
-            color: white;
-            border-color: var(--primary);
-            transform: translateY(-5px);
-            box-shadow: 0 10px 25px rgba(108, 99, 255, 0.3);
-        }
-
-        .month-card.active .month-card-icon,
-        .month-card.active .month-card-name,
-        .month-card.active .month-card-year {
-            color: white;
-        }
-
-        .month-card-icon {
-            width: 50px;
-            height: 50px;
-            background: rgba(108, 99, 255, 0.1);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: var(--primary);
-            font-size: 1.2rem;
-        }
-
-        .month-card-name {
-            font-size: 1.1rem;
-            font-weight: 700;
-            color: var(--text-primary);
-        }
-
-        .month-card-year {
-            font-size: 0.9rem;
-            color: var(--text-light);
-            background: rgba(108, 99, 255, 0.05);
-            padding: 4px 12px;
-            border-radius: var(--radius-pill);
-        }
-
-        /* إحصائيات سريعة */
+        /* بطاقة الإحصائيات السريعة */
         .quick-stats {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
             gap: 20px;
-            margin: 0 25px 30px;
+            margin-bottom: 30px;
         }
 
         .stat-card {
-            background: var(--bg-card);
+            background: white;
             padding: 25px;
-            border-radius: var(--radius-large);
-            box-shadow: var(--shadow-medium);
-            border: 1px solid rgba(108, 99, 255, 0.1);
-            transition: var(--transition-normal);
-            position: relative;
-            overflow: hidden;
-            cursor: pointer;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            transition: var(--transition);
+            border-top: 4px solid var(--primary);
+        }
+
+        .stat-card:nth-child(2) {
+            border-top-color: var(--secondary);
+        }
+
+        .stat-card:nth-child(3) {
+            border-top-color: var(--info);
         }
 
         .stat-card:hover {
             transform: translateY(-5px);
-            box-shadow: var(--shadow-hard);
-        }
-
-        .stat-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            right: 0;
-            width: 100%;
-            height: 5px;
-            background: var(--gradient-primary);
+            box-shadow: var(--shadow-lg);
         }
 
         .stat-header {
@@ -467,204 +174,106 @@
         }
 
         .stat-icon {
-            width: 60px;
-            height: 60px;
-            border-radius: var(--radius-medium);
+            width: 50px;
+            height: 50px;
+            border-radius: 10px;
+            background: linear-gradient(135deg, var(--primary), var(--primary-light));
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 1.5rem;
             color: white;
-            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+            font-size: 1.3rem;
         }
 
-        .stat-trend {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            font-size: 0.9rem;
-            font-weight: 600;
-            padding: 6px 12px;
-            border-radius: var(--radius-pill);
-            background: rgba(46, 184, 114, 0.1);
-            color: var(--success);
+        .stat-card:nth-child(2) .stat-icon {
+            background: linear-gradient(135deg, var(--secondary), var(--secondary-light));
+        }
+
+        .stat-card:nth-child(3) .stat-icon {
+            background: linear-gradient(135deg, var(--info), #60A5FA);
         }
 
         .stat-value {
             font-size: 2rem;
-            font-weight: 900;
-            color: var(--text-primary);
-            margin-bottom: 10px;
+            font-weight: 800;
+            color: var(--dark);
+            margin-bottom: 5px;
         }
 
         .stat-label {
             font-size: 0.95rem;
-            color: var(--text-light);
-            font-weight: 600;
+            color: var(--gray);
+            font-weight: 500;
         }
 
-        /* بطاقات الفئات المدمجة */
-        .categories-section {
-            margin: 0 25px 30px;
-        }
-
-        .categories-header {
+        /* شريط الاختيارات السريع */
+        .quick-actions {
             display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 25px;
-        }
-
-        .add-category-btn {
-            padding: 12px 25px;
-            background: var(--gradient-success);
-            color: white;
-            border: none;
-            border-radius: var(--radius-medium);
-            font-weight: 700;
-            cursor: pointer;
-            transition: var(--transition-normal);
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            box-shadow: 0 5px 15px rgba(46, 184, 114, 0.3);
-        }
-
-        .add-category-btn:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 8px 25px rgba(46, 184, 114, 0.4);
-        }
-
-        .categories-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-            gap: 20px;
-        }
-
-        .category-card {
-            background: var(--bg-card);
-            padding: 25px;
-            border-radius: var(--radius-large);
-            box-shadow: var(--shadow-medium);
-            border: 1px solid rgba(108, 99, 255, 0.1);
-            transition: var(--transition-normal);
-            position: relative;
-            overflow: hidden;
-            cursor: pointer;
-        }
-
-        .category-card:hover {
-            transform: translateY(-5px);
-            box-shadow: var(--shadow-hard);
-        }
-
-        .category-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            right: 0;
-            width: 5px;
-            height: 100%;
-            background: var(--gradient-primary);
-        }
-
-        .category-header {
-            display: flex;
-            align-items: center;
             gap: 15px;
-            margin-bottom: 20px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
         }
 
-        .category-icon {
-            width: 55px;
-            height: 55px;
-            border-radius: var(--radius-medium);
+        .quick-action-btn {
+            flex: 1;
+            min-width: 150px;
+            padding: 15px 20px;
+            background: white;
+            border: none;
+            border-radius: var(--border-radius);
+            color: var(--dark);
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 1.4rem;
+            gap: 10px;
+            box-shadow: var(--shadow);
+        }
+
+        .quick-action-btn:hover {
+            background: var(--primary);
             color: white;
-            flex-shrink: 0;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            transform: translateY(-3px);
         }
 
-        .category-info h3 {
-            font-size: 1.2rem;
-            font-weight: 800;
-            color: var(--text-primary);
-            margin-bottom: 5px;
+        .quick-action-btn.add-expense {
+            background: linear-gradient(135deg, var(--secondary), var(--secondary-light));
+            color: white;
         }
 
-        .category-info p {
-            font-size: 0.9rem;
-            color: var(--text-light);
+        /* قسم إضافة المصروفات السريع */
+        .add-expense-section {
+            background: white;
+            padding: 25px;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            margin-bottom: 30px;
         }
 
-        .category-progress {
-            margin-bottom: 15px;
-        }
-
-        .progress-bar {
-            height: 8px;
-            background: rgba(108, 99, 255, 0.1);
-            border-radius: var(--radius-pill);
-            overflow: hidden;
-            margin-bottom: 8px;
-        }
-
-        .progress-fill {
-            height: 100%;
-            border-radius: var(--radius-pill);
-            background: var(--gradient-primary);
-            transition: width 1s ease;
-        }
-
-        .progress-text {
+        .section-title {
             display: flex;
-            justify-content: space-between;
-            font-size: 0.9rem;
-            color: var(--text-light);
-        }
-
-        .category-stats {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
+            align-items: center;
             gap: 15px;
-            margin-top: 20px;
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid var(--gray-light);
         }
 
-        .stat-item {
-            text-align: center;
-            padding: 12px;
-            background: rgba(108, 99, 255, 0.05);
-            border-radius: var(--radius-medium);
+        .section-title h2 {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: var(--dark);
         }
 
-        .stat-amount {
-            font-size: 1.2rem;
-            font-weight: 800;
-            color: var(--text-primary);
-            margin-bottom: 5px;
-        }
-
-        .stat-label-small {
-            font-size: 0.8rem;
-            color: var(--text-light);
-        }
-
-        /* لوحة الإضافة السريعة */
-        .quick-add-section {
-            background: var(--bg-card);
-            padding: 30px;
-            margin: 0 25px 30px;
-            border-radius: var(--radius-large);
-            box-shadow: var(--shadow-medium);
-            border: 1px solid rgba(108, 99, 255, 0.1);
+        .section-title i {
+            color: var(--primary);
         }
 
         .quick-add-form {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
             gap: 20px;
         }
 
@@ -674,75 +283,151 @@
 
         .form-label {
             display: block;
-            margin-bottom: 10px;
-            font-weight: 700;
-            color: var(--text-secondary);
-            display: flex;
-            align-items: center;
-            gap: 10px;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: var(--dark);
             font-size: 0.95rem;
         }
 
         .form-control {
             width: 100%;
-            padding: 15px 20px;
-            border: 2px solid rgba(108, 99, 255, 0.1);
-            border-radius: var(--radius-medium);
+            padding: 12px 15px;
+            border: 1px solid var(--gray-light);
+            border-radius: 8px;
             font-size: 1rem;
-            transition: var(--transition-normal);
+            transition: var(--transition);
             background: white;
-            color: var(--text-primary);
+            color: var(--dark);
         }
 
         .form-control:focus {
             outline: none;
             border-color: var(--primary);
-            box-shadow: 0 0 0 3px rgba(108, 99, 255, 0.1);
+            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
         }
 
         .submit-btn {
-            padding: 16px 30px;
-            background: var(--gradient-primary);
+            padding: 15px 30px;
+            background: linear-gradient(135deg, var(--primary), var(--primary-light));
             color: white;
             border: none;
-            border-radius: var(--radius-medium);
-            font-weight: 800;
+            border-radius: 8px;
+            font-weight: 700;
             font-size: 1rem;
             cursor: pointer;
-            transition: var(--transition-normal);
+            transition: var(--transition);
             display: flex;
             align-items: center;
             justify-content: center;
             gap: 10px;
             grid-column: 1 / -1;
             margin-top: 10px;
-            box-shadow: 0 5px 20px rgba(108, 99, 255, 0.3);
         }
 
         .submit-btn:hover {
+            background: linear-gradient(135deg, var(--primary-dark), var(--primary));
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(79, 70, 229, 0.2);
+        }
+
+        /* الفئات */
+        .categories-section {
+            margin-bottom: 30px;
+        }
+
+        .categories-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+        }
+
+        .category-card {
+            background: white;
+            padding: 20px;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            transition: var(--transition);
+            cursor: pointer;
+            border-right: 4px solid var(--primary);
+        }
+
+        .category-card:hover {
             transform: translateY(-3px);
-            box-shadow: 0 8px 30px rgba(108, 99, 255, 0.4);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .category-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+
+        .category-icon {
+            width: 45px;
+            height: 45px;
+            border-radius: 10px;
+            background: linear-gradient(135deg, var(--primary), var(--primary-light));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.2rem;
+        }
+
+        .category-info h3 {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--dark);
+            margin-bottom: 5px;
+        }
+
+        .category-info p {
+            font-size: 0.9rem;
+            color: var(--gray);
+        }
+
+        .category-progress {
+            margin-bottom: 15px;
+        }
+
+        .progress-bar {
+            height: 6px;
+            background: var(--gray-light);
+            border-radius: 3px;
+            overflow: hidden;
+            margin-bottom: 8px;
+        }
+
+        .progress-fill {
+            height: 100%;
+            border-radius: 3px;
+            background: linear-gradient(90deg, var(--primary), var(--primary-light));
+            transition: width 0.5s ease;
+        }
+
+        .progress-text {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.85rem;
+            color: var(--gray);
         }
 
         /* المصروفات الحديثة */
-        .recent-expenses-section {
-            margin: 0 25px;
-        }
-
         .expenses-list {
-            background: var(--bg-card);
-            border-radius: var(--radius-large);
+            background: white;
+            border-radius: var(--border-radius);
             overflow: hidden;
-            box-shadow: var(--shadow-medium);
-            border: 1px solid rgba(108, 99, 255, 0.1);
+            box-shadow: var(--shadow);
+            margin-bottom: 30px;
         }
 
         .expense-item {
             display: flex;
             align-items: center;
-            padding: 20px 25px;
-            border-bottom: 1px solid rgba(108, 99, 255, 0.1);
-            transition: var(--transition-normal);
+            padding: 18px 20px;
+            border-bottom: 1px solid var(--gray-light);
+            transition: var(--transition);
             cursor: pointer;
         }
 
@@ -751,21 +436,21 @@
         }
 
         .expense-item:hover {
-            background: rgba(108, 99, 255, 0.02);
+            background: #F9FAFB;
         }
 
         .expense-icon {
-            width: 50px;
-            height: 50px;
-            border-radius: var(--radius-medium);
+            width: 45px;
+            height: 45px;
+            border-radius: 10px;
+            background: linear-gradient(135deg, var(--primary), var(--primary-light));
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 1.2rem;
             color: white;
+            font-size: 1.1rem;
             margin-left: 15px;
             flex-shrink: 0;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
         }
 
         .expense-details {
@@ -773,9 +458,9 @@
         }
 
         .expense-title {
-            font-size: 1.1rem;
-            font-weight: 800;
-            color: var(--text-primary);
+            font-size: 1rem;
+            font-weight: 700;
+            color: var(--dark);
             margin-bottom: 5px;
         }
 
@@ -783,40 +468,38 @@
             display: flex;
             align-items: center;
             gap: 15px;
-            font-size: 0.9rem;
-            color: var(--text-light);
+            font-size: 0.85rem;
+            color: var(--gray);
         }
 
         .expense-amount {
-            font-weight: 900;
-            font-size: 1.3rem;
+            font-weight: 800;
+            font-size: 1.2rem;
             color: var(--primary);
-            margin-left: 15px;
-            padding: 8px 16px;
-            background: rgba(108, 99, 255, 0.1);
-            border-radius: var(--radius-medium);
+            padding: 8px 15px;
+            background: #EEF2FF;
+            border-radius: 8px;
         }
 
         .expense-actions {
             display: flex;
-            gap: 10px;
+            gap: 8px;
             margin-right: 10px;
         }
 
         .action-btn {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
+            width: 35px;
+            height: 35px;
+            border-radius: 8px;
             border: none;
             display: flex;
             align-items: center;
             justify-content: center;
             cursor: pointer;
-            transition: var(--transition-normal);
+            transition: var(--transition);
             font-size: 0.9rem;
-            background: white;
-            border: 2px solid rgba(108, 99, 255, 0.1);
-            color: var(--text-secondary);
+            background: var(--light);
+            color: var(--gray);
         }
 
         .action-btn:hover {
@@ -826,13 +509,11 @@
         .edit-btn:hover {
             background: var(--info);
             color: white;
-            border-color: var(--info);
         }
 
         .delete-btn:hover {
             background: var(--danger);
             color: white;
-            border-color: var(--danger);
         }
 
         /* المودالات */
@@ -842,8 +523,8 @@
             right: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0, 0, 0, 0.8);
-            backdrop-filter: blur(10px);
+            background: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(5px);
             z-index: 2000;
             display: flex;
             align-items: center;
@@ -851,7 +532,7 @@
             padding: 20px;
             opacity: 0;
             visibility: hidden;
-            transition: var(--transition-normal);
+            transition: opacity 0.3s ease;
         }
 
         .modal.active {
@@ -860,15 +541,14 @@
         }
 
         .modal-content {
-            background: var(--bg-card);
-            border-radius: var(--radius-large);
+            background: white;
+            border-radius: var(--border-radius);
             width: 100%;
-            max-width: 800px;
+            max-width: 500px;
             max-height: 90vh;
             overflow-y: auto;
-            transform: translateY(50px);
-            transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            transform: translateY(20px);
+            transition: transform 0.3s ease;
         }
 
         .modal.active .modal-content {
@@ -876,16 +556,16 @@
         }
 
         .modal-header {
-            background: var(--gradient-primary);
+            background: linear-gradient(135deg, var(--primary), var(--primary-light));
             color: white;
-            padding: 30px;
-            border-radius: var(--radius-large) var(--radius-large) 0 0;
+            padding: 25px;
+            border-radius: var(--border-radius) var(--border-radius) 0 0;
             position: relative;
         }
 
         .modal-header h2 {
-            font-size: 1.8rem;
-            font-weight: 900;
+            font-size: 1.5rem;
+            font-weight: 800;
             display: flex;
             align-items: center;
             gap: 15px;
@@ -893,19 +573,19 @@
 
         .close-modal {
             position: absolute;
-            top: 25px;
-            left: 25px;
-            width: 45px;
-            height: 45px;
-            border-radius: 50%;
+            top: 20px;
+            left: 20px;
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
             background: rgba(255, 255, 255, 0.2);
-            border: 2px solid rgba(255, 255, 255, 0.3);
+            border: none;
             color: white;
             display: flex;
             align-items: center;
             justify-content: center;
             cursor: pointer;
-            transition: var(--transition-normal);
+            transition: var(--transition);
         }
 
         .close-modal:hover {
@@ -914,207 +594,140 @@
         }
 
         .modal-body {
-            padding: 30px;
+            padding: 25px;
         }
 
-        /* تصميم متجاوب للجوال */
+        /* الإشعارات */
+        .notification {
+            position: fixed;
+            bottom: 30px;
+            left: 30px;
+            background: white;
+            color: var(--dark);
+            padding: 15px 20px;
+            border-radius: 10px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.15);
+            z-index: 3000;
+            max-width: 350px;
+            display: none;
+            border-right: 4px solid var(--secondary);
+            transform: translateX(-20px);
+            transition: transform 0.3s ease;
+        }
+
+        .notification.show {
+            display: block;
+            transform: translateX(0);
+        }
+
+        .notification-content {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .notification-icon {
+            width: 35px;
+            height: 35px;
+            background: var(--secondary);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+        }
+
+        .notification-text h4 {
+            font-weight: 700;
+            font-size: 1rem;
+            margin-bottom: 5px;
+        }
+
+        .notification-text p {
+            font-size: 0.9rem;
+            color: var(--gray);
+        }
+
+        /* التجاوب مع الجوال */
         @media (max-width: 768px) {
-            body {
-                padding-bottom: 60px;
+            .main-content {
+                padding: 0 15px;
             }
-            
-            .app-header {
-                padding: 25px 20px;
-                margin-bottom: 20px;
-                border-radius: 0 0 var(--radius-medium) var(--radius-medium);
-            }
-            
-            .header-content {
-                flex-direction: column;
-                gap: 20px;
-                text-align: center;
-            }
-            
-            .logo-section {
-                flex-direction: column;
-                gap: 15px;
-            }
-            
-            .logo-icon {
-                width: 60px;
-                height: 60px;
-                font-size: 1.5rem;
-            }
-            
-            .app-title h1 {
-                font-size: 1.5rem;
-            }
-            
-            .header-actions {
-                width: 100%;
-                justify-content: center;
-            }
-            
-            .month-selector-container,
-            .quick-stats,
-            .categories-section,
-            .quick-add-section,
-            .recent-expenses-section {
-                margin: 0 15px 20px;
-                padding: 20px;
-            }
-            
-            .months-grid {
-                grid-template-columns: repeat(2, 1fr);
-            }
-            
-            .month-card {
-                padding: 15px;
-            }
-            
+
             .quick-stats {
                 grid-template-columns: 1fr;
             }
-            
-            .stat-card {
-                padding: 20px;
+
+            .quick-actions {
+                flex-direction: column;
             }
-            
-            .stat-value {
-                font-size: 1.8rem;
+
+            .quick-action-btn {
+                min-width: 100%;
             }
-            
-            .categories-grid {
-                grid-template-columns: 1fr;
-            }
-            
-            .category-card {
-                padding: 20px;
-            }
-            
+
             .quick-add-form {
                 grid-template-columns: 1fr;
             }
-            
+
+            .categories-grid {
+                grid-template-columns: 1fr;
+            }
+
             .expense-item {
                 flex-direction: column;
                 text-align: center;
                 gap: 15px;
-                padding: 20px;
             }
-            
+
             .expense-icon {
                 margin-left: 0;
             }
-            
+
             .expense-amount {
-                margin-left: 0;
                 margin-top: 10px;
             }
-            
+
             .expense-actions {
                 margin-right: 0;
                 margin-top: 15px;
             }
-            
-            .modal-content {
-                margin: 10px;
-            }
-            
-            .modal-header {
-                padding: 25px 20px;
-            }
-            
-            .modal-body {
-                padding: 20px;
-            }
-            
-            .designer-bar {
-                padding: 10px 15px;
-                font-size: 0.8rem;
-            }
-        }
 
-        @media (max-width: 480px) {
-            .months-grid {
-                grid-template-columns: 1fr;
-            }
-            
-            .month-nav {
-                flex-wrap: wrap;
-                justify-content: center;
-            }
-            
-            .stat-value {
-                font-size: 1.6rem;
-            }
-            
-            .category-stats {
-                grid-template-columns: 1fr;
-            }
-            
-            .modal-header h2 {
-                font-size: 1.5rem;
+            .header-content {
                 flex-direction: column;
-                gap: 10px;
+                gap: 15px;
                 text-align: center;
             }
-            
-            .close-modal {
-                top: 15px;
-                left: 15px;
-                width: 40px;
-                height: 40px;
+
+            .logo-section {
+                flex-direction: column;
+                gap: 10px;
+            }
+
+            .modal-content {
+                margin: 10px;
             }
         }
 
         /* شريط التمرير */
         ::-webkit-scrollbar {
-            width: 8px;
+            width: 6px;
         }
 
         ::-webkit-scrollbar-track {
-            background: rgba(108, 99, 255, 0.05);
-            border-radius: var(--radius-full);
+            background: var(--gray-light);
+            border-radius: 3px;
         }
 
         ::-webkit-scrollbar-thumb {
-            background: var(--gradient-primary);
-            border-radius: var(--radius-full);
-        }
-
-        ::-webkit-scrollbar-thumb:hover {
-            background: var(--primary-dark);
-        }
-
-        /* تأثيرات الظهور */
-        .fade-in {
-            animation: fadeIn 0.6s ease-out;
-        }
-
-        @keyframes fadeIn {
-            from {
-                opacity: 0;
-                transform: translateY(20px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        /* تأثيرات النص */
-        .text-gradient {
-            background: var(--gradient-primary);
-            -webkit-background-clip: text;
-            background-clip: text;
-            color: transparent;
+            background: var(--primary);
+            border-radius: 3px;
         }
 
         /* وضع العرض فقط */
         body.view-only .header-btn:nth-child(2),
-        body.view-only .add-category-btn,
-        body.view-only .quick-add-section,
+        body.view-only .quick-action-btn:nth-child(2),
+        body.view-only .add-expense-section,
         body.view-only .expense-actions,
         body.view-only .action-btn {
             display: none !important;
@@ -1128,17 +741,14 @@
         body.view-only .category-card:hover,
         body.view-only .expense-item:hover {
             transform: none;
-            box-shadow: var(--shadow-medium);
+            box-shadow: var(--shadow);
         }
     </style>
 </head>
 <body>
     <!-- شريط التصميم -->
     <div class="designer-bar">
-        <div class="designer-content">
-            <i class="fas fa-code designer-icon"></i>
-            <span>تصميم وتطوير: مهندس بولس سمير - 01093939137</span>
-        </div>
+        تصميم وتطوير: مهندس بولس سمير - 01093939137
     </div>
     
     <!-- الترويسة الرئيسية -->
@@ -1149,14 +759,14 @@
                     <i class="fas fa-wallet"></i>
                 </div>
                 <div class="app-title">
-                    <h1>مصروفاتي الذكية</h1>
-                    <p>إدارة مالية بسيطة وفعّالة</p>
+                    <h1>مصروفاتي</h1>
+                    <p>إدارة مالية بسيطة وسريعة</p>
                 </div>
             </div>
             
             <div class="header-actions">
                 <button class="header-btn" onclick="toggleAdminPanel()">
-                    <i class="fas fa-cogs"></i>
+                    <i class="fas fa-sliders-h"></i>
                 </button>
                 <button class="header-btn" onclick="toggleSharePanel()">
                     <i class="fas fa-share-alt"></i>
@@ -1165,162 +775,120 @@
         </div>
     </header>
     
-    <!-- اختيار الشهر المحسّن -->
-    <div class="month-selector-container">
-        <div class="section-title">
-            <i class="fas fa-calendar-alt"></i>
-            <h2>اختر شهر المصروف</h2>
+    <!-- المحتوى الرئيسي -->
+    <div class="main-content">
+        <!-- إحصائيات سريعة -->
+        <div class="quick-stats">
+            <div class="stat-card" onclick="showAllExpenses()">
+                <div class="stat-header">
+                    <div class="stat-icon">
+                        <i class="fas fa-money-bill-wave"></i>
+                    </div>
+                </div>
+                <div class="stat-value" id="total-expenses">0 ج.م</div>
+                <div class="stat-label">إجمالي المصروفات</div>
+            </div>
+            
+            <div class="stat-card">
+                <div class="stat-header">
+                    <div class="stat-icon">
+                        <i class="fas fa-piggy-bank"></i>
+                    </div>
+                </div>
+                <div class="stat-value" id="total-remaining">0 ج.م</div>
+                <div class="stat-label">المبلغ المتبقي</div>
+            </div>
+            
+            <div class="stat-card">
+                <div class="stat-header">
+                    <div class="stat-icon">
+                        <i class="fas fa-chart-pie"></i>
+                    </div>
+                </div>
+                <div class="stat-value" id="total-budget">0 ج.م</div>
+                <div class="stat-label">الميزانية الإجمالية</div>
+            </div>
         </div>
         
-        <div class="month-selector-wrapper">
-            <div class="month-display" onclick="toggleMonthsGrid()">
-                <div class="current-month">
-                    <div class="month-icon">
-                        <i class="fas fa-calendar"></i>
-                    </div>
-                    <div class="month-text">
-                        <h3 id="current-month-display">يناير 2024</h3>
-                        <p id="month-status">شهر جاري</p>
-                    </div>
+        <!-- إجراءات سريعة -->
+        <div class="quick-actions">
+            <button class="quick-action-btn" onclick="showAllExpenses()">
+                <i class="fas fa-list"></i>
+                <span>عرض الكل</span>
+            </button>
+            <button class="quick-action-btn add-expense" onclick="focusAddExpense()">
+                <i class="fas fa-plus-circle"></i>
+                <span>إضافة مصروف</span>
+            </button>
+            <button class="quick-action-btn" onclick="showMonthSelector()">
+                <i class="fas fa-calendar-alt"></i>
+                <span>اختر الشهر</span>
+            </button>
+        </div>
+        
+        <!-- إضافة مصروف سريع -->
+        <section class="add-expense-section">
+            <div class="section-title">
+                <i class="fas fa-bolt"></i>
+                <h2>إضافة مصروف سريع</h2>
+            </div>
+            
+            <form class="quick-add-form" id="quick-expense-form">
+                <div class="form-group">
+                    <label class="form-label">الفئة</label>
+                    <select class="form-control" id="expense-category" required>
+                        <option value="">اختر الفئة</option>
+                    </select>
                 </div>
                 
-                <div class="month-nav">
-                    <button class="nav-btn" onclick="changeMonth(-1)">
-                        <i class="fas fa-chevron-right"></i>
-                    </button>
-                    <button class="nav-btn" onclick="changeMonth(1)">
-                        <i class="fas fa-chevron-left"></i>
-                    </button>
+                <div class="form-group">
+                    <label class="form-label">المبلغ (ج.م)</label>
+                    <input type="number" class="form-control" id="expense-amount" 
+                           placeholder="0" min="1" step="1" required>
                 </div>
-            </div>
-            
-            <div class="months-grid" id="months-grid">
-                <!-- سيتم تعبئته ديناميكيًا -->
-            </div>
-        </div>
-    </div>
-    
-    <!-- إحصائيات سريعة -->
-    <div class="quick-stats">
-        <div class="stat-card" onclick="showAllExpenses()">
-            <div class="stat-header">
-                <div class="stat-icon" style="background: var(--gradient-primary);">
-                    <i class="fas fa-money-bill-wave"></i>
+                
+                <div class="form-group">
+                    <label class="form-label">ملاحظات (اختياري)</label>
+                    <input type="text" class="form-control" id="expense-notes" 
+                           placeholder="وصف مختصر">
                 </div>
-                <div class="stat-trend">
-                    <i class="fas fa-chart-line"></i>
-                    <span>+12%</span>
+                
+                <div class="form-group">
+                    <label class="form-label">التاريخ</label>
+                    <input type="date" class="form-control" id="expense-date" required>
                 </div>
-            </div>
-            <div class="stat-value" id="total-expenses">0 ج.م</div>
-            <div class="stat-label">إجمالي المصروفات</div>
-        </div>
+                
+                <button type="submit" class="submit-btn">
+                    <i class="fas fa-check"></i>
+                    <span>إضافة المصروف</span>
+                </button>
+            </form>
+        </section>
         
-        <div class="stat-card">
-            <div class="stat-header">
-                <div class="stat-icon" style="background: var(--gradient-success);">
-                    <i class="fas fa-piggy-bank"></i>
-                </div>
-                <div class="stat-trend">
-                    <i class="fas fa-chart-line"></i>
-                    <span>+8%</span>
-                </div>
-            </div>
-            <div class="stat-value" id="total-remaining">0 ج.م</div>
-            <div class="stat-label">المبلغ المتبقي</div>
-        </div>
-        
-        <div class="stat-card">
-            <div class="stat-header">
-                <div class="stat-icon" style="background: var(--gradient-info);">
-                    <i class="fas fa-chart-pie"></i>
-                </div>
-                <div class="stat-trend">
-                    <i class="fas fa-chart-line"></i>
-                    <span>+15%</span>
-                </div>
-            </div>
-            <div class="stat-value" id="total-budget">0 ج.م</div>
-            <div class="stat-label">الميزانية الإجمالية</div>
-        </div>
-    </div>
-    
-    <!-- فئات المصروفات -->
-    <section class="categories-section">
-        <div class="categories-header">
+        <!-- فئات المصروفات -->
+        <section class="categories-section">
             <div class="section-title">
-                <i class="fas fa-boxes"></i>
+                <i class="fas fa-tags"></i>
                 <h2>فئات المصروفات</h2>
             </div>
-            <button class="add-category-btn" onclick="toggleAdminPanel()">
-                <i class="fas fa-plus"></i>
-                <span>إضافة فئة</span>
-            </button>
-        </div>
+            
+            <div class="categories-grid" id="categories-container">
+                <!-- سيتم تعبئته ديناميكيًا -->
+            </div>
+        </section>
         
-        <div class="categories-grid" id="categories-container">
-            <!-- سيتم تعبئته ديناميكيًا -->
-        </div>
-    </section>
-    
-    <!-- إضافة مصروف سريع -->
-    <section class="quick-add-section">
-        <div class="section-title">
-            <i class="fas fa-bolt"></i>
-            <h2>إضافة مصروف سريع</h2>
-        </div>
-        
-        <form class="quick-add-form" id="quick-expense-form">
-            <div class="form-group">
-                <label class="form-label">
-                    <i class="fas fa-tags"></i> الفئة
-                </label>
-                <select class="form-control" id="expense-category" required>
-                    <option value="">اختر الفئة</option>
-                </select>
+        <!-- المصروفات الحديثة -->
+        <section class="expenses-section">
+            <div class="section-title">
+                <i class="fas fa-history"></i>
+                <h2>المصروفات الحديثة</h2>
             </div>
             
-            <div class="form-group">
-                <label class="form-label">
-                    <i class="fas fa-money-bill-wave"></i> المبلغ
-                </label>
-                <input type="number" class="form-control" id="expense-amount" 
-                       placeholder="0.00" min="0.01" step="0.01" required>
+            <div class="expenses-list" id="recent-expenses-list">
+                <!-- سيتم تعبئته ديناميكيًا -->
             </div>
-            
-            <div class="form-group">
-                <label class="form-label">
-                    <i class="fas fa-sticky-note"></i> ملاحظات
-                </label>
-                <input type="text" class="form-control" id="expense-notes" 
-                       placeholder="ملاحظات اختيارية">
-            </div>
-            
-            <div class="form-group">
-                <label class="form-label">
-                    <i class="fas fa-calendar-day"></i> التاريخ
-                </label>
-                <input type="date" class="form-control" id="expense-date" required>
-            </div>
-            
-            <button type="submit" class="submit-btn">
-                <i class="fas fa-plus-circle"></i>
-                <span>إضافة المصروف</span>
-            </button>
-        </form>
-    </section>
-    
-    <!-- المصروفات الحديثة -->
-    <section class="recent-expenses-section">
-        <div class="section-title">
-            <i class="fas fa-history"></i>
-            <h2>أحدث المعاملات</h2>
-        </div>
-        
-        <div class="expenses-list" id="recent-expenses-list">
-            <!-- سيتم تعبئته ديناميكيًا -->
-        </div>
-    </section>
+        </section>
+    </div>
     
     <!-- مودال جميع المصروفات -->
     <div class="modal" id="all-expenses-modal">
@@ -1333,7 +901,7 @@
                     <i class="fas fa-receipt"></i>
                     جميع المصروفات
                 </h2>
-                <p id="modal-month-title">قبض شهر يناير 2024</p>
+                <p id="modal-month-title">شهر الحالي</p>
             </div>
             <div class="modal-body" id="all-expenses-body">
                 <!-- سيتم تعبئته ديناميكيًا -->
@@ -1350,7 +918,7 @@
                 </button>
                 <h2>
                     <i class="fas fa-sliders-h"></i>
-                    لوحة التحكم
+                    الإعدادات
                 </h2>
                 <p>إدارة الميزانية والفئات</p>
             </div>
@@ -1362,11 +930,11 @@
                 </div>
                 <button class="submit-btn" onclick="updateBudget()">
                     <i class="fas fa-save"></i>
-                    <span>تحديث الميزانية</span>
+                    <span>حفظ الميزانية</span>
                 </button>
                 
-                <div style="margin-top: 40px; padding-top: 30px; border-top: 2px solid rgba(108, 99, 255, 0.1);">
-                    <h3 style="font-size: 1.4rem; font-weight: 800; margin-bottom: 25px; color: var(--text-primary);">
+                <div style="margin-top: 40px; padding-top: 30px; border-top: 1px solid var(--gray-light);">
+                    <h3 style="font-size: 1.3rem; font-weight: 700; margin-bottom: 20px; color: var(--dark);">
                         <i class="fas fa-plus-circle"></i> إضافة فئة جديدة
                     </h3>
                     
@@ -1386,16 +954,16 @@
                         <div class="form-group">
                             <label class="form-label">أيقونة الفئة</label>
                             <select class="form-control" id="new-category-icon">
-                                <option value="fas fa-shopping-cart">🛒 تسوق</option>
-                                <option value="fas fa-utensils">🍽️ طعام</option>
-                                <option value="fas fa-car">🚗 مواصلات</option>
-                                <option value="fas fa-home">🏠 منزل</option>
-                                <option value="fas fa-heart">❤️ صحة</option>
-                                <option value="fas fa-graduation-cap">🎓 تعليم</option>
-                                <option value="fas fa-gamepad">🎮 ترفيه</option>
-                                <option value="fas fa-tshirt">👕 ملابس</option>
-                                <option value="fas fa-mobile-alt">📱 اتصالات</option>
-                                <option value="fas fa-tag">🏷️ أخرى</option>
+                                <option value="fas fa-shopping-cart">تسوق</option>
+                                <option value="fas fa-utensils">طعام</option>
+                                <option value="fas fa-car">مواصلات</option>
+                                <option value="fas fa-home">منزل</option>
+                                <option value="fas fa-heart">صحة</option>
+                                <option value="fas fa-graduation-cap">تعليم</option>
+                                <option value="fas fa-gamepad">ترفيه</option>
+                                <option value="fas fa-tshirt">ملابس</option>
+                                <option value="fas fa-mobile-alt">اتصالات</option>
+                                <option value="fas fa-tag">أخرى</option>
                             </select>
                         </div>
                         
@@ -1409,15 +977,63 @@
         </div>
     </div>
     
+    <!-- مودال اختيار الشهر -->
+    <div class="modal" id="month-selector-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button class="close-modal" onclick="closeMonthSelector()">
+                    <i class="fas fa-times"></i>
+                </button>
+                <h2>
+                    <i class="fas fa-calendar-alt"></i>
+                    اختر الشهر
+                </h2>
+                <p>عرض مصروفات شهر معين</p>
+            </div>
+            <div class="modal-body">
+                <div class="quick-add-form">
+                    <div class="form-group">
+                        <label class="form-label">الشهر</label>
+                        <select class="form-control" id="select-month">
+                            <option value="0">يناير</option>
+                            <option value="1">فبراير</option>
+                            <option value="2">مارس</option>
+                            <option value="3">أبريل</option>
+                            <option value="4">مايو</option>
+                            <option value="5">يونيو</option>
+                            <option value="6">يوليو</option>
+                            <option value="7">أغسطس</option>
+                            <option value="8">سبتمبر</option>
+                            <option value="9">أكتوبر</option>
+                            <option value="10">نوفمبر</option>
+                            <option value="11">ديسمبر</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">السنة</label>
+                        <input type="number" class="form-control" id="select-year" 
+                               value="2024" min="2020" max="2030">
+                    </div>
+                    
+                    <button class="submit-btn" onclick="applyMonthSelection()">
+                        <i class="fas fa-check"></i>
+                        <span>تطبيق</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
     <!-- الإشعارات -->
-    <div class="notification" id="notification" style="display: none; position: fixed; bottom: 30px; left: 30px; background: var(--success); color: white; padding: 15px 25px; border-radius: var(--radius-medium); box-shadow: var(--shadow-hard); z-index: 3000; max-width: 350px;">
-        <div style="display: flex; align-items: center; gap: 15px;">
-            <div style="width: 40px; height: 40px; background: rgba(255, 255, 255, 0.2); border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+    <div class="notification" id="notification">
+        <div class="notification-content">
+            <div class="notification-icon">
                 <i class="fas fa-check"></i>
             </div>
-            <div>
-                <div style="font-weight: 800; font-size: 1.1rem;" id="notification-title">تمت العملية</div>
-                <div style="font-size: 0.9rem; opacity: 0.9;" id="notification-message">تم تنفيذ العملية بنجاح</div>
+            <div class="notification-text">
+                <h4 id="notification-title">تمت العملية</h4>
+                <p id="notification-message">تم تنفيذ العملية بنجاح</p>
             </div>
         </div>
     </div>
@@ -1453,16 +1069,14 @@
 
         // ألوان الفئات
         const categoryColors = [
-            '#6C63FF', '#FF6584', '#36D1DC', '#2EB872', 
-            '#FFB74D', '#4FC3F7', '#9575CD', '#4DB6AC'
+            '#4F46E5', '#10B981', '#F59E0B', '#EF4444', 
+            '#8B5CF6', '#EC4899', '#06B6D4', '#84CC16'
         ];
 
         // DOM Elements
         const totalBudgetEl = document.getElementById('total-budget');
         const totalExpensesEl = document.getElementById('total-expenses');
         const totalRemainingEl = document.getElementById('total-remaining');
-        const currentMonthDisplay = document.getElementById('current-month-display');
-        const monthStatus = document.getElementById('month-status');
         const monthsGrid = document.getElementById('months-grid');
         const categoriesContainer = document.getElementById('categories-container');
         const expenseCategorySelect = document.getElementById('expense-category');
@@ -1479,16 +1093,17 @@
         const notification = document.getElementById('notification');
         const notificationTitle = document.getElementById('notification-title');
         const notificationMessage = document.getElementById('notification-message');
+        const monthSelectorModal = document.getElementById('month-selector-modal');
+        const selectMonth = document.getElementById('select-month');
+        const selectYear = document.getElementById('select-year');
 
         // تهيئة التطبيق
         function initApp() {
             checkURLParameters();
             setupEventListeners();
             setupDateInput();
-            renderMonthsGrid();
             loadData();
-            
-            document.body.classList.add('fade-in');
+            showNotification('مرحباً', 'تم تحميل التطبيق بنجاح', 'success');
         }
 
         // إعداد حقل التاريخ
@@ -1496,6 +1111,10 @@
             const today = new Date();
             const todayFormatted = formatDateForInput(today);
             document.getElementById('expense-date').value = todayFormatted;
+            
+            // تعيين الشهر الحالي في أداة الاختيار
+            selectMonth.value = currentMonthIndex;
+            selectYear.value = currentYear;
         }
 
         function formatDateForInput(date) {
@@ -1624,100 +1243,8 @@
             });
         }
 
-        // عرض شبكة الأشهر
-        function renderMonthsGrid() {
-            monthsGrid.innerHTML = '';
-            
-            arabicMonths.forEach((month, index) => {
-                const monthCard = document.createElement('div');
-                monthCard.className = 'month-card';
-                if (index === currentMonthIndex) {
-                    monthCard.classList.add('active');
-                }
-                
-                monthCard.innerHTML = `
-                    <div class="month-card-icon">
-                        <i class="fas fa-calendar${index === new Date().getMonth() ? '-day' : ''}"></i>
-                    </div>
-                    <div class="month-card-name">${month}</div>
-                    <div class="month-card-year">${currentYear}</div>
-                `;
-                
-                monthCard.addEventListener('click', () => {
-                    selectMonth(index);
-                    toggleMonthsGrid();
-                });
-                
-                monthsGrid.appendChild(monthCard);
-            });
-        }
-
-        function selectMonth(monthIndex) {
-            currentMonthIndex = monthIndex;
-            
-            // تحديث العرض
-            document.querySelectorAll('.month-card').forEach(card => {
-                card.classList.remove('active');
-            });
-            
-            document.querySelectorAll('.month-card')[monthIndex].classList.add('active');
-            
-            // تحديث نص الشهر الحالي
-            updateMonthDisplay();
-            
-            // تحديث الواجهة
-            updateUI();
-            
-            showNotification('تم التحديث', `تم التبديل إلى شهر ${arabicMonths[monthIndex]}`, 'success');
-        }
-
-        function updateMonthDisplay() {
-            const monthName = arabicMonths[currentMonthIndex];
-            currentMonthDisplay.textContent = `${monthName} ${currentYear}`;
-            modalMonthTitle.textContent = `قبض شهر ${monthName} ${currentYear}`;
-            
-            // تحديث حالة الشهر
-            const today = new Date();
-            if (currentMonthIndex === today.getMonth() && currentYear === today.getFullYear()) {
-                monthStatus.textContent = 'شهر جاري';
-                monthStatus.style.color = 'var(--success)';
-            } else if (currentMonthIndex < today.getMonth() || currentYear < today.getFullYear()) {
-                monthStatus.textContent = 'شهر سابق';
-                monthStatus.style.color = 'var(--warning)';
-            } else {
-                monthStatus.textContent = 'شهر قادم';
-                monthStatus.style.color = 'var(--info)';
-            }
-        }
-
-        function changeMonth(direction) {
-            let newMonthIndex = currentMonthIndex + direction;
-            let newYear = currentYear;
-            
-            if (newMonthIndex < 0) {
-                newMonthIndex = 11;
-                newYear--;
-            } else if (newMonthIndex > 11) {
-                newMonthIndex = 0;
-                newYear++;
-            }
-            
-            currentMonthIndex = newMonthIndex;
-            currentYear = newYear;
-            
-            renderMonthsGrid();
-            updateMonthDisplay();
-            updateUI();
-        }
-
-        function toggleMonthsGrid() {
-            monthsGrid.classList.toggle('active');
-        }
-
         // تحديث الواجهة
         function updateUI() {
-            updateMonthDisplay();
-            updateCategorySpent();
             updateTotalStats();
             renderCategories();
             renderCategoryOptions();
@@ -1739,15 +1266,17 @@
             totalExpensesEl.textContent = formatCurrency(totalExpenses);
             totalRemainingEl.textContent = formatCurrency(totalRemaining);
             
-            // تحديث ألوان الإحصائيات
-            const remainingPercentage = (totalRemaining / totalBudget) * 100;
-            if (remainingPercentage < 20) {
+            // تحديث لون المتبقي
+            if (totalRemaining < totalBudget * 0.2) {
                 totalRemainingEl.style.color = 'var(--danger)';
-            } else if (remainingPercentage < 40) {
+            } else if (totalRemaining < totalBudget * 0.4) {
                 totalRemainingEl.style.color = 'var(--warning)';
             } else {
-                totalRemainingEl.style.color = 'var(--success)';
+                totalRemainingEl.style.color = 'var(--secondary)';
             }
+            
+            // تحديث عنوان المودال
+            modalMonthTitle.textContent = `شهر ${arabicMonths[currentMonthIndex]} ${currentYear}`;
         }
 
         function updateCategorySpent() {
@@ -1770,10 +1299,10 @@
             
             if (categories.length === 0) {
                 categoriesContainer.innerHTML = `
-                    <div style="grid-column: 1 / -1; text-align: center; padding: 40px 20px; color: var(--text-light);">
-                        <i class="fas fa-box-open" style="font-size: 3rem; margin-bottom: 20px; color: rgba(108, 99, 255, 0.3);"></i>
-                        <h3 style="color: var(--text-primary); margin-bottom: 15px; font-size: 1.3rem;">لا توجد فئات بعد</h3>
-                        <p style="font-size: 1rem;">اضغط على زر "إضافة فئة" لتبدأ</p>
+                    <div style="text-align: center; padding: 40px 20px; color: var(--gray);">
+                        <i class="fas fa-box-open" style="font-size: 3rem; margin-bottom: 15px; color: var(--gray-light);"></i>
+                        <h3 style="color: var(--dark); margin-bottom: 10px; font-size: 1.2rem;">لا توجد فئات بعد</h3>
+                        <p style="font-size: 0.95rem;">استخدم لوحة الإعدادات لإضافة فئات جديدة</p>
                     </div>
                 `;
                 return;
@@ -1787,6 +1316,7 @@
                 
                 const categoryCard = document.createElement('div');
                 categoryCard.className = 'category-card';
+                categoryCard.style.borderRightColor = color;
                 categoryCard.innerHTML = `
                     <div class="category-header">
                         <div class="category-icon" style="background: ${color}">
@@ -1803,21 +1333,8 @@
                             <div class="progress-fill" style="width: ${Math.min(percentage, 100)}%; background: ${color};"></div>
                         </div>
                         <div class="progress-text">
-                            <span>${formatCurrency(category.spent)}</span>
+                            <span>صرف ${formatCurrency(category.spent)}</span>
                             <span>${percentage.toFixed(1)}%</span>
-                        </div>
-                    </div>
-                    
-                    <div class="category-stats">
-                        <div class="stat-item">
-                            <div class="stat-amount">${formatCurrency(category.spent)}</div>
-                            <div class="stat-label-small">الصرف</div>
-                        </div>
-                        <div class="stat-item">
-                            <div class="stat-amount" style="color: ${remaining >= 0 ? 'var(--success)' : 'var(--danger)'}">
-                                ${formatCurrency(remaining)}
-                            </div>
-                            <div class="stat-label-small">المتبقي</div>
                         </div>
                     </div>
                 `;
@@ -1854,14 +1371,14 @@
             
             filteredExpenses.sort((a, b) => new Date(b.date) - new Date(a.date));
             
-            const limitedExpenses = filteredExpenses.slice(0, 5);
+            const limitedExpenses = filteredExpenses.slice(0, 10);
             
             if (limitedExpenses.length === 0) {
                 recentExpensesList.innerHTML = `
-                    <div style="text-align: center; padding: 40px 20px; color: var(--text-light);">
-                        <i class="fas fa-receipt" style="font-size: 3rem; margin-bottom: 20px; color: rgba(108, 99, 255, 0.3);"></i>
-                        <h3 style="color: var(--text-primary); margin-bottom: 15px; font-size: 1.3rem;">لا توجد مصروفات</h3>
-                        <p style="font-size: 1rem;">أضف أول مصروف لديك</p>
+                    <div style="text-align: center; padding: 40px 20px; color: var(--gray);">
+                        <i class="fas fa-receipt" style="font-size: 3rem; margin-bottom: 15px; color: var(--gray-light);"></i>
+                        <h3 style="color: var(--dark); margin-bottom: 10px; font-size: 1.2rem;">لا توجد مصروفات</h3>
+                        <p style="font-size: 0.95rem;">ابدأ بإضافة أول مصروف لديك</p>
                     </div>
                 `;
                 return;
@@ -1929,29 +1446,29 @@
             const totalRemaining = totalBudget - totalExpenses;
             
             allExpensesBody.innerHTML = `
-                <div class="quick-stats" style="margin: 0 0 30px 0; grid-template-columns: repeat(2, 1fr);">
-                    <div class="stat-card">
+                <div class="quick-stats" style="margin: 0 0 20px 0; grid-template-columns: repeat(2, 1fr);">
+                    <div class="stat-card" style="border-top-color: var(--info);">
                         <div class="stat-value">${filteredExpenses.length}</div>
                         <div class="stat-label">عدد المصروفات</div>
                     </div>
-                    <div class="stat-card">
+                    <div class="stat-card" style="border-top-color: var(--secondary);">
                         <div class="stat-value">${formatCurrency(totalExpenses)}</div>
-                        <div class="stat-label">إجمالي المصروفات</div>
+                        <div class="stat-label">إجمالي الصرف</div>
                     </div>
                 </div>
                 
-                <h3 style="font-size: 1.4rem; font-weight: 800; margin-bottom: 20px; color: var(--text-primary);">
-                    <i class="fas fa-list"></i> تفاصيل المصروفات
+                <h3 style="font-size: 1.2rem; font-weight: 700; margin-bottom: 15px; color: var(--dark);">
+                    تفاصيل المصروفات
                 </h3>
                 
                 ${filteredExpenses.length === 0 ? `
-                    <div style="text-align: center; padding: 40px 20px; color: var(--text-light);">
-                        <i class="fas fa-receipt" style="font-size: 3rem; margin-bottom: 20px; color: rgba(108, 99, 255, 0.3);"></i>
-                        <h3 style="color: var(--text-primary); margin-bottom: 15px; font-size: 1.3rem;">لا توجد مصروفات</h3>
-                        <p style="font-size: 1rem;">لم تقم بإضافة أي مصروفات هذا الشهر</p>
+                    <div style="text-align: center; padding: 30px 20px; color: var(--gray);">
+                        <i class="fas fa-receipt" style="font-size: 2.5rem; margin-bottom: 15px; color: var(--gray-light);"></i>
+                        <h3 style="color: var(--dark); margin-bottom: 10px; font-size: 1.2rem;">لا توجد مصروفات</h3>
+                        <p style="font-size: 0.95rem;">لم تقم بإضافة أي مصروفات هذا الشهر</p>
                     </div>
                 ` : `
-                    <div class="expenses-list">
+                    <div style="max-height: 400px; overflow-y: auto;">
                         ${filteredExpenses.sort((a, b) => new Date(b.date) - new Date(a.date)).map((expense, index) => {
                             const category = categories.find(c => c.id === expense.categoryId);
                             const date = new Date(expense.date);
@@ -1960,8 +1477,8 @@
                             const color = categoryColors[colorIndex];
                             
                             return `
-                                <div class="expense-item">
-                                    <div class="expense-icon" style="background: ${color}">
+                                <div class="expense-item" style="margin-bottom: 10px; border: 1px solid var(--gray-light); border-radius: 8px;">
+                                    <div class="expense-icon" style="background: ${color}; width: 40px; height: 40px; margin-left: 10px;">
                                         <i class="${category?.icon || 'fas fa-tag'}"></i>
                                     </div>
                                     <div class="expense-details">
@@ -1971,27 +1488,19 @@
                                             ${expense.notes ? `<span><i class="far fa-sticky-note"></i> ${expense.notes}</span>` : ''}
                                         </div>
                                     </div>
-                                    <div class="expense-amount">${formatCurrency(expense.amount)}</div>
-                                    <div class="expense-actions">
-                                        <button class="action-btn edit-btn" onclick="editExpense('${expense.id}')">
-                                            <i class="fas fa-edit"></i>
-                                        </button>
-                                        <button class="action-btn delete-btn" onclick="deleteExpense('${expense.id}')">
-                                            <i class="fas fa-trash"></i>
-                                        </button>
-                                    </div>
+                                    <div class="expense-amount" style="font-size: 1.1rem;">${formatCurrency(expense.amount)}</div>
                                 </div>
                             `;
                         }).join('')}
                     </div>
                     
-                    <div style="margin-top: 30px; padding: 20px; background: rgba(108, 99, 255, 0.05); border-radius: var(--radius-medium); border: 1px solid rgba(108, 99, 255, 0.1);">
+                    <div style="margin-top: 20px; padding: 15px; background: var(--light); border-radius: 8px;">
                         <div style="display: flex; justify-content: space-between; align-items: center;">
-                            <div style="font-weight: 800; color: var(--text-primary); font-size: 1.1rem;">
-                                الإجمالي: <span style="color: var(--primary); font-size: 1.3rem;">${formatCurrency(totalExpenses)}</span>
+                            <div style="font-weight: 700; color: var(--dark);">
+                                الإجمالي: <span style="color: var(--primary);">${formatCurrency(totalExpenses)}</span>
                             </div>
-                            <div style="font-weight: 800; color: var(--text-primary); font-size: 1.1rem;">
-                                المتبقي: <span style="color: ${totalRemaining >= 0 ? 'var(--success)' : 'var(--danger)'}; font-size: 1.3rem;">
+                            <div style="font-weight: 700; color: var(--dark);">
+                                المتبقي: <span style="color: ${totalRemaining >= 0 ? 'var(--secondary)' : 'var(--danger)'};">
                                     ${formatCurrency(totalRemaining)}
                                 </span>
                             </div>
@@ -2018,6 +1527,22 @@
             });
         }
 
+        function showMonthSelector() {
+            monthSelectorModal.classList.add('active');
+        }
+
+        function closeMonthSelector() {
+            monthSelectorModal.classList.remove('active');
+        }
+
+        function applyMonthSelection() {
+            currentMonthIndex = parseInt(selectMonth.value);
+            currentYear = parseInt(selectYear.value);
+            closeMonthSelector();
+            updateUI();
+            showNotification('تم التغيير', `تم التبديل إلى ${arabicMonths[currentMonthIndex]} ${currentYear}`, 'success');
+        }
+
         // دوال مساعدة
         function formatCurrency(amount) {
             return new Intl.NumberFormat('ar-EG', {
@@ -2027,25 +1552,32 @@
         }
 
         function showNotification(title, message, type = 'success') {
-            notification.style.display = 'block';
-            notification.style.background = `var(--${type})`;
-            
-            const icon = notification.querySelector('i');
-            if (type === 'error') {
-                icon.className = 'fas fa-exclamation-circle';
-            } else if (type === 'warning') {
-                icon.className = 'fas fa-exclamation-triangle';
-            } else if (type === 'info') {
-                icon.className = 'fas fa-info-circle';
-            } else {
-                icon.className = 'fas fa-check';
-            }
-            
             notificationTitle.textContent = title;
             notificationMessage.textContent = message;
             
+            const icon = notification.querySelector('.notification-icon i');
+            if (type === 'error') {
+                icon.className = 'fas fa-exclamation-circle';
+                notification.querySelector('.notification-icon').style.background = 'var(--danger)';
+                notification.style.borderRightColor = 'var(--danger)';
+            } else if (type === 'warning') {
+                icon.className = 'fas fa-exclamation-triangle';
+                notification.querySelector('.notification-icon').style.background = 'var(--warning)';
+                notification.style.borderRightColor = 'var(--warning)';
+            } else if (type === 'info') {
+                icon.className = 'fas fa-info-circle';
+                notification.querySelector('.notification-icon').style.background = 'var(--info)';
+                notification.style.borderRightColor = 'var(--info)';
+            } else {
+                icon.className = 'fas fa-check';
+                notification.querySelector('.notification-icon').style.background = 'var(--secondary)';
+                notification.style.borderRightColor = 'var(--secondary)';
+            }
+            
+            notification.classList.add('show');
+            
             setTimeout(() => {
-                notification.style.display = 'none';
+                notification.classList.remove('show');
             }, 4000);
         }
 
@@ -2065,6 +1597,13 @@
                 }
                 
                 await addExpense({ categoryId, amount, notes, date });
+            });
+            
+            // إضافة مصروف بأربع
+            document.addEventListener('keydown', (e) => {
+                if (e.altKey && e.key === 'Enter') {
+                    document.getElementById('expense-amount').focus();
+                }
             });
         }
 
@@ -2101,6 +1640,7 @@
                 const today = new Date();
                 const todayFormatted = formatDateForInput(today);
                 document.getElementById('expense-date').value = todayFormatted;
+                document.getElementById('expense-category').focus();
                 
                 return true;
             } catch (error) {
@@ -2121,6 +1661,7 @@
             try {
                 await database.ref('totalBudget').set(newBudget);
                 showNotification('تم التحديث', 'تم تحديث الميزانية بنجاح', 'success');
+                toggleAdminPanel();
             } catch (error) {
                 console.error('Error updating budget:', error);
                 showNotification('خطأ', 'حدث خطأ في تحديث الميزانية', 'error');
@@ -2209,38 +1750,38 @@
             const totalCategoryExpenses = filteredExpenses.reduce((sum, expense) => sum + expense.amount, 0);
             
             allExpensesBody.innerHTML = `
-                <div style="text-align: center; margin-bottom: 30px;">
-                    <div style="width: 80px; height: 80px; background: ${categoryColors[categories.findIndex(c => c.id === categoryId) % categoryColors.length]}; 
-                         border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; font-size: 1.8rem; color: white; margin-bottom: 20px;">
+                <div style="text-align: center; margin-bottom: 20px;">
+                    <div style="width: 60px; height: 60px; background: ${categoryColors[categories.findIndex(c => c.id === categoryId) % categoryColors.length]}; 
+                         border-radius: 12px; display: inline-flex; align-items: center; justify-content: center; font-size: 1.5rem; color: white; margin-bottom: 15px;">
                         <i class="${category?.icon || 'fas fa-tag'}"></i>
                     </div>
-                    <h3 style="font-size: 1.5rem; font-weight: 800; margin-bottom: 10px; color: var(--text-primary);">${category?.name}</h3>
-                    <p style="color: var(--text-light); margin-bottom: 30px;">حد الفئة: ${formatCurrency(category?.limit || 0)}</p>
+                    <h3 style="font-size: 1.3rem; font-weight: 700; margin-bottom: 10px; color: var(--dark);">${category?.name}</h3>
+                    <p style="color: var(--gray); margin-bottom: 20px;">حد الفئة: ${formatCurrency(category?.limit || 0)}</p>
                 </div>
                 
-                <div class="quick-stats" style="margin: 0 0 30px 0; grid-template-columns: repeat(2, 1fr);">
-                    <div class="stat-card">
+                <div class="quick-stats" style="margin: 0 0 20px 0; grid-template-columns: repeat(2, 1fr);">
+                    <div class="stat-card" style="border-top-color: var(--info);">
                         <div class="stat-value">${filteredExpenses.length}</div>
                         <div class="stat-label">عدد المصروفات</div>
                     </div>
-                    <div class="stat-card">
+                    <div class="stat-card" style="border-top-color: var(--secondary);">
                         <div class="stat-value">${formatCurrency(totalCategoryExpenses)}</div>
                         <div class="stat-label">إجمالي الصرف</div>
                     </div>
                 </div>
                 
-                <h3 style="font-size: 1.4rem; font-weight: 800; margin-bottom: 20px; color: var(--text-primary);">
-                    <i class="fas fa-list"></i> مصروفات الفئة
+                <h3 style="font-size: 1.2rem; font-weight: 700; margin-bottom: 15px; color: var(--dark);">
+                    مصروفات الفئة
                 </h3>
                 
                 ${filteredExpenses.length === 0 ? `
-                    <div style="text-align: center; padding: 40px 20px; color: var(--text-light);">
-                        <i class="fas fa-receipt" style="font-size: 3rem; margin-bottom: 20px; color: rgba(108, 99, 255, 0.3);"></i>
-                        <h3 style="color: var(--text-primary); margin-bottom: 15px; font-size: 1.3rem;">لا توجد مصروفات</h3>
-                        <p style="font-size: 1rem;">لم تقم بإضافة أي مصروفات لهذه الفئة هذا الشهر</p>
+                    <div style="text-align: center; padding: 30px 20px; color: var(--gray);">
+                        <i class="fas fa-receipt" style="font-size: 2.5rem; margin-bottom: 15px; color: var(--gray-light);"></i>
+                        <h3 style="color: var(--dark); margin-bottom: 10px; font-size: 1.2rem;">لا توجد مصروفات</h3>
+                        <p style="font-size: 0.95rem;">لم تقم بإضافة أي مصروفات لهذه الفئة هذا الشهر</p>
                     </div>
                 ` : `
-                    <div class="expenses-list">
+                    <div style="max-height: 300px; overflow-y: auto;">
                         ${filteredExpenses.sort((a, b) => new Date(b.date) - new Date(a.date)).map((expense, index) => {
                             const date = new Date(expense.date);
                             const dateFormatted = date.toLocaleDateString('ar-EG');
@@ -2248,8 +1789,8 @@
                             const color = categoryColors[colorIndex];
                             
                             return `
-                                <div class="expense-item">
-                                    <div class="expense-icon" style="background: ${color}">
+                                <div class="expense-item" style="margin-bottom: 10px; border: 1px solid var(--gray-light); border-radius: 8px;">
+                                    <div class="expense-icon" style="background: ${color}; width: 40px; height: 40px; margin-left: 10px;">
                                         <i class="${category?.icon || 'fas fa-tag'}"></i>
                                     </div>
                                     <div class="expense-details">
@@ -2259,15 +1800,7 @@
                                             ${expense.notes ? `<span><i class="far fa-sticky-note"></i> ${expense.notes}</span>` : ''}
                                         </div>
                                     </div>
-                                    <div class="expense-amount">${formatCurrency(expense.amount)}</div>
-                                    <div class="expense-actions">
-                                        <button class="action-btn edit-btn" onclick="editExpense('${expense.id}')">
-                                            <i class="fas fa-edit"></i>
-                                        </button>
-                                        <button class="action-btn delete-btn" onclick="deleteExpense('${expense.id}')">
-                                            <i class="fas fa-trash"></i>
-                                        </button>
-                                    </div>
+                                    <div class="expense-amount" style="font-size: 1.1rem;">${formatCurrency(expense.amount)}</div>
                                 </div>
                             `;
                         }).join('')}
@@ -2277,6 +1810,11 @@
             
             modalMonthTitle.textContent = `مصروفات فئة ${category?.name}`;
             allExpensesModal.classList.add('active');
+        }
+
+        // التركيز على إضافة مصروف
+        function focusAddExpense() {
+            document.getElementById('expense-amount').focus();
         }
 
         // تهيئة التطبيق عند تحميل الصفحة
