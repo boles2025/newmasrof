@@ -11,8 +11,6 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
   <!-- Google Font -->
   <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700&display=swap" rel="stylesheet">
-  <!-- Chart.js (للرسومات) -->
-  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
 
   <!-- Firebase (compat) -->
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
@@ -41,6 +39,7 @@
       background: var(--bg);
       color: var(--text);
       padding-top: 76px;
+      padding-bottom: 80px; /* مساحة للزر العائم */
     }
 
     /* glass surfaces */
@@ -85,20 +84,6 @@
       box-shadow: 0 0 0 6px rgba(241,196,15,.12);
     }
 
-    /* sidebar */
-    .nav-pill{
-      border-radius: 14px !important;
-      color: var(--text);
-      border: 1px solid transparent;
-      transition: .15s ease;
-    }
-    .nav-pill:hover{ background: rgba(255,255,255,.06); border-color: rgba(255,255,255,.08); }
-    .nav-pills .nav-link.active{
-      background: linear-gradient(45deg, rgba(26,188,156,.25), rgba(241,196,15,.16));
-      border: 1px solid rgba(26,188,156,.35);
-      color: var(--text);
-    }
-
     /* stat cards */
     .stat{
       padding: 14px 14px;
@@ -140,8 +125,8 @@
       transition: opacity .35s ease;
     }
 
-    /* floating quick add on mobile */
-    .fab{
+    /* floating menu button - bottom left */
+    .fab-menu{
       position: fixed;
       left: 18px;
       bottom: 18px;
@@ -152,10 +137,123 @@
       color: #1b2630;
       box-shadow: 0 12px 28px rgba(241,196,15,.22);
       z-index: 1200;
+      display: grid; place-items: center;
+      font-size: 1.3rem;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+    .fab-menu:hover, .fab-menu:active{
+      transform: scale(1.08);
+      box-shadow: 0 16px 36px rgba(241,196,15,.28);
+    }
+
+    /* floating action menu - expanded */
+    .fab-menu-expanded{
+      position: fixed;
+      left: 18px;
+      bottom: 18px;
+      width: 220px;
+      border-radius: 20px;
+      border: 1px solid rgba(255,255,255,.15);
+      background: rgba(10, 20, 28, .92);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      box-shadow: 0 20px 40px rgba(0,0,0,.35);
+      z-index: 1300;
+      overflow: hidden;
+      transform-origin: bottom left;
+      animation: menuAppear 0.25s ease;
+    }
+    
+    @keyframes menuAppear {
+      from { opacity: 0; transform: scale(0.9) translateY(20px); }
+      to { opacity: 1; transform: scale(1) translateY(0); }
+    }
+    
+    .fab-menu-header{
+      padding: 16px 18px;
+      border-bottom: 1px solid rgba(255,255,255,.08);
+      background: rgba(0,0,0,.15);
+    }
+    
+    .fab-menu-items{
+      padding: 12px 0;
+    }
+    
+    .fab-menu-item{
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 14px 18px;
+      color: var(--text);
+      text-decoration: none;
+      border-left: 3px solid transparent;
+      transition: all 0.15s ease;
+      cursor: pointer;
+    }
+    
+    .fab-menu-item:hover, .fab-menu-item.active{
+      background: rgba(255,255,255,.05);
+      border-left-color: var(--teal);
+      padding-right: 22px;
+    }
+    
+    .fab-menu-item i{
+      width: 20px;
+      text-align: center;
+      font-size: 1.1rem;
+    }
+    
+    .fab-menu-close{
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      background: none;
+      border: none;
+      color: rgba(255,255,255,.5);
+      width: 32px; height: 32px;
+      border-radius: 50%;
+      display: grid; place-items: center;
+      transition: background 0.15s ease;
+      cursor: pointer;
+    }
+    
+    .fab-menu-close:hover{
+      background: rgba(255,255,255,.08);
+      color: white;
+    }
+    
+    /* overlay for menu */
+    .fab-menu-overlay{
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,.4);
+      backdrop-filter: blur(4px);
+      z-index: 1250;
+      animation: fadeIn 0.2s ease;
+    }
+    
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+    
+    /* month badge */
+    .month-badge{
+      display: inline-block;
+      padding: 4px 12px;
+      background: rgba(26,188,156,.15);
+      border: 1px solid rgba(26,188,156,.25);
+      border-radius: 999px;
+      font-size: 0.85rem;
+      color: var(--teal);
+    }
+    
+    /* تنسيق عام للتبويبات */
+    .tab-pane {
       display: none;
     }
-    @media (max-width: 991px){
-      .fab{ display: inline-grid; place-items: center; }
+    .tab-pane.active {
+      display: block;
     }
   </style>
 </head>
@@ -173,14 +271,10 @@
   <!-- top bar -->
   <nav class="navbar navbar-expand-lg fixed-top appbar">
     <div class="container-fluid px-3">
-      <button class="btn btn-outline-light d-lg-none me-2" type="button" data-bs-toggle="offcanvas" data-bs-target="#sidebar">
-        <i class="fa-solid fa-bars"></i>
-      </button>
-
       <a class="navbar-brand text-white d-flex align-items-center gap-2" href="#">
         <span class="brand-dot"></span>
         <span class="fw-bold">مصاريف المنزل</span>
-        <span class="badge badge-soft ms-1 d-none d-md-inline">نسخة محسّنة</span>
+        <span class="badge badge-soft ms-1 d-none d-md-inline">نسخة مهندس بولس سمير</span>
       </a>
 
       <div class="ms-auto d-flex gap-2 align-items-center">
@@ -197,90 +291,18 @@
   </nav>
 
   <div class="container-fluid">
-    <div class="row g-3">
-      <!-- sidebar (desktop) -->
-      <div class="col-lg-3 col-xl-2 d-none d-lg-block">
-        <div class="glass p-3 position-sticky" style="top: 90px;">
-          <div class="d-flex justify-content-between align-items-center mb-3">
-            <div>
-              <div class="fw-bold">القائمة</div>
-              <div class="small text-white-50">تنقل سريع</div>
-            </div>
-            <span class="badge badge-soft"><i class="fa-solid fa-cloud me-1"></i>Firebase</span>
-          </div>
-
-          <div class="nav nav-pills flex-column gap-2" id="appTabs" role="tablist">
-            <button class="nav-link nav-pill active" data-bs-toggle="pill" data-bs-target="#tabDashboard" type="button">
-              <i class="fa-solid fa-chart-pie me-2"></i>لوحة المتابعة
-            </button>
-            <button class="nav-link nav-pill" data-bs-toggle="pill" data-bs-target="#tabAdd" type="button">
-              <i class="fa-solid fa-wallet me-2"></i>إضافة مصروف
-            </button>
-            <button class="nav-link nav-pill" data-bs-toggle="pill" data-bs-target="#tabTx" type="button">
-              <i class="fa-solid fa-list-check me-2"></i>العمليات
-            </button>
-            <button class="nav-link nav-pill" data-bs-toggle="pill" data-bs-target="#tabReports" type="button">
-              <i class="fa-solid fa-file-invoice-dollar me-2"></i>تقارير
-            </button>
-            <button class="nav-link nav-pill" data-bs-toggle="pill" data-bs-target="#tabSettings" type="button">
-              <i class="fa-solid fa-gear me-2"></i>إعدادات
-            </button>
-          </div>
-
-          <hr class="border-secondary my-3">
-
-          <div class="small text-white-50">
-            <div class="d-flex justify-content-between">
-              <span>اختيار الشهر</span>
-              <span id="monthBadge" class="badge badge-soft"></span>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- offcanvas sidebar (mobile) -->
-      <div class="offcanvas offcanvas-start text-bg-dark" tabindex="-1" id="sidebar">
-        <div class="offcanvas-header border-bottom border-secondary">
-          <h6 class="offcanvas-title fw-bold"><i class="fa-solid fa-sliders me-2"></i>القائمة</h6>
-          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas"></button>
-        </div>
-        <div class="offcanvas-body">
-          <div class="mb-3">
-            <label class="small text-white-50 mb-1">الشهر</label>
-            <input id="monthSelectorMobile" type="month" class="form-control">
-          </div>
-
-          <div class="nav nav-pills flex-column gap-2" role="tablist">
-            <button class="nav-link nav-pill active" data-bs-dismiss="offcanvas" data-bs-toggle="pill" data-bs-target="#tabDashboard" type="button">
-              <i class="fa-solid fa-chart-pie me-2"></i>لوحة المتابعة
-            </button>
-            <button class="nav-link nav-pill" data-bs-dismiss="offcanvas" data-bs-toggle="pill" data-bs-target="#tabAdd" type="button">
-              <i class="fa-solid fa-wallet me-2"></i>إضافة مصروف
-            </button>
-            <button class="nav-link nav-pill" data-bs-dismiss="offcanvas" data-bs-toggle="pill" data-bs-target="#tabTx" type="button">
-              <i class="fa-solid fa-list-check me-2"></i>العمليات
-            </button>
-            <button class="nav-link nav-pill" data-bs-dismiss="offcanvas" data-bs-toggle="pill" data-bs-target="#tabReports" type="button">
-              <i class="fa-solid fa-file-invoice-dollar me-2"></i>تقارير
-            </button>
-            <button class="nav-link nav-pill" data-bs-dismiss="offcanvas" data-bs-toggle="pill" data-bs-target="#tabSettings" type="button">
-              <i class="fa-solid fa-gear me-2"></i>إعدادات
-            </button>
-          </div>
-        </div>
-      </div>
-
-      <!-- main -->
-      <div class="col-lg-9 col-xl-10">
+    <div class="row">
+      <!-- main content - full width now (no sidebar) -->
+      <div class="col-12">
         <div class="tab-content pb-4" id="tabContent">
 
           <!-- DASHBOARD -->
-          <div class="tab-pane fade show active" id="tabDashboard" role="tabpanel">
+          <div class="tab-pane active" id="tabDashboard" role="tabpanel">
             <div class="glass p-3 p-md-4 mb-3">
               <div class="d-flex flex-wrap gap-2 justify-content-between align-items-center">
                 <div>
                   <div class="fw-bold fs-5">ملخص الشهر</div>
-                  <div class="small text-white-50">نظرة سريعة + توزيع المصروف</div>
+                  <div class="small text-white-50">نظرة سريعة على إجمالي المصروفات</div>
                 </div>
                 <div class="d-flex gap-2 align-items-center">
                   <div class="d-md-none">
@@ -310,32 +332,6 @@
                     <div class="label"><i class="fa-solid fa-shield-heart me-1"></i>المتبقي</div>
                     <div class="value text-teal" id="totalRemainingDisplay">0</div>
                     <div class="small text-white-50">ج.م</div>
-                  </div>
-                </div>
-              </div>
-
-              <div class="row g-3 mt-1">
-                <div class="col-12 col-xl-5">
-                  <div class="glass-soft p-3 h-100">
-                    <div class="d-flex justify-content-between align-items-center mb-2">
-                      <div class="fw-bold">المصروف مقابل المتبقي</div>
-                      <span class="badge badge-soft"><i class="fa-solid fa-chart-simple me-1"></i>Chart</span>
-                    </div>
-                    <div style="height: 240px;">
-                      <canvas id="budgetChart"></canvas>
-                    </div>
-                  </div>
-                </div>
-
-                <div class="col-12 col-xl-7">
-                  <div class="glass-soft p-3 h-100">
-                    <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-2">
-                      <div class="fw-bold">توزيع المصروف حسب الفئات</div>
-                      <div class="small text-white-50">أعلى 10 (حسب الشهر الحالي)</div>
-                    </div>
-                    <div style="height: 240px;">
-                      <canvas id="catChart"></canvas>
-                    </div>
                   </div>
                 </div>
               </div>
@@ -370,7 +366,7 @@
           </div>
 
           <!-- ADD EXPENSE -->
-          <div class="tab-pane fade" id="tabAdd" role="tabpanel">
+          <div class="tab-pane" id="tabAdd" role="tabpanel">
             <div class="glass p-3 p-md-4">
               <div class="d-flex justify-content-between align-items-center mb-3">
                 <div>
@@ -437,7 +433,7 @@
           </div>
 
           <!-- TRANSACTIONS -->
-          <div class="tab-pane fade" id="tabTx" role="tabpanel">
+          <div class="tab-pane" id="tabTx" role="tabpanel">
             <div class="glass p-3 p-md-4">
               <div class="d-flex flex-wrap justify-content-between align-items-end gap-2 mb-3">
                 <div>
@@ -482,7 +478,7 @@
           </div>
 
           <!-- REPORTS -->
-          <div class="tab-pane fade" id="tabReports" role="tabpanel">
+          <div class="tab-pane" id="tabReports" role="tabpanel">
             <div class="glass p-3 p-md-4">
               <div class="d-flex justify-content-between align-items-center mb-3">
                 <div>
@@ -509,7 +505,7 @@
           </div>
 
           <!-- SETTINGS -->
-          <div class="tab-pane fade" id="tabSettings" role="tabpanel">
+          <div class="tab-pane" id="tabSettings" role="tabpanel">
             <div class="glass p-3 p-md-4">
               <div class="d-flex justify-content-between align-items-center mb-3">
                 <div>
@@ -596,9 +592,9 @@
     </div><!-- row -->
   </div><!-- container-fluid -->
 
-  <!-- mobile fab quick add -->
-  <button class="fab" id="fabAdd" title="إضافة مصروف">
-    <i class="fa-solid fa-plus fa-lg"></i>
+  <!-- floating menu button -->
+  <button class="fab-menu" id="fabMenuButton" title="القائمة">
+    <i class="fa-solid fa-plus"></i>
   </button>
 
   <!-- Edit expense modal -->
@@ -680,6 +676,141 @@
     const db = firebase.database();
 
     // =====================================================
+    // Floating Menu System - مبسط وتم إصلاحه
+    // =====================================================
+    class FloatingMenu {
+      constructor() {
+        this.isOpen = false;
+        this.menuElement = null;
+        this.overlayElement = null;
+        this.init();
+      }
+
+      init() {
+        // إنشاء القائمة
+        this.createMenu();
+        
+        // إضافة الأحداث
+        document.getElementById('fabMenuButton').addEventListener('click', () => this.toggle());
+      }
+
+      createMenu() {
+        // إنشاء overlay
+        this.overlayElement = document.createElement('div');
+        this.overlayElement.className = 'fab-menu-overlay';
+        this.overlayElement.style.display = 'none';
+        this.overlayElement.addEventListener('click', () => this.close());
+        
+        // إنشاء القائمة
+        this.menuElement = document.createElement('div');
+        this.menuElement.className = 'fab-menu-expanded';
+        this.menuElement.style.display = 'none';
+        this.menuElement.innerHTML = `
+          <div class="fab-menu-header">
+            <div class="d-flex align-items-center gap-2">
+              <span class="brand-dot"></span>
+              <span class="fw-bold">القائمة</span>
+            </div>
+            <button class="fab-menu-close" id="fabMenuClose">
+              <i class="fa-solid fa-xmark"></i>
+            </button>
+          </div>
+          <div class="fab-menu-items">
+            <div class="fab-menu-item" data-tab="tabDashboard">
+              <i class="fa-solid fa-chart-pie"></i>
+              <span>لوحة المتابعة</span>
+            </div>
+            <div class="fab-menu-item" data-tab="tabAdd">
+              <i class="fa-solid fa-wallet"></i>
+              <span>إضافة مصروف</span>
+            </div>
+            <div class="fab-menu-item" data-tab="tabTx">
+              <i class="fa-solid fa-list-check"></i>
+              <span>العمليات</span>
+            </div>
+            <div class="fab-menu-item" data-tab="tabReports">
+              <i class="fa-solid fa-file-invoice-dollar"></i>
+              <span>التقارير</span>
+            </div>
+            <div class="fab-menu-item" data-tab="tabSettings">
+              <i class="fa-solid fa-gear"></i>
+              <span>الإعدادات</span>
+            </div>
+            <hr class="border-secondary my-2 mx-3">
+            <div class="px-3 py-2">
+              <div class="small text-white-50 mb-1">الشهر المحدد</div>
+              <div class="month-badge" id="fabMonthBadge">${new Date().toISOString().slice(0,7)}</div>
+            </div>
+          </div>
+        `;
+        
+        // إضافة العناصر إلى body
+        document.body.appendChild(this.overlayElement);
+        document.body.appendChild(this.menuElement);
+        
+        // إضافة الأحداث للعناصر داخل القائمة
+        const closeBtn = this.menuElement.querySelector('#fabMenuClose');
+        if (closeBtn) {
+          closeBtn.addEventListener('click', () => this.close());
+        }
+        
+        // إضافة الأحداث لبنود القائمة
+        const menuItems = this.menuElement.querySelectorAll('.fab-menu-item');
+        menuItems.forEach(item => {
+          item.addEventListener('click', (e) => {
+            e.preventDefault();
+            const tabId = item.getAttribute('data-tab');
+            this.close();
+            app.switchTab(tabId);
+          });
+        });
+      }
+
+      open() {
+        this.isOpen = true;
+        this.menuElement.style.display = 'block';
+        this.overlayElement.style.display = 'block';
+        
+        // تحديث الشهر في القائمة
+        document.getElementById('fabMonthBadge').textContent = app.state.selectedMonth;
+        
+        // تحديث العنصر النشط
+        this.updateActiveTab();
+      }
+
+      close() {
+        this.isOpen = false;
+        this.menuElement.style.display = 'none';
+        this.overlayElement.style.display = 'none';
+      }
+
+      toggle() {
+        if (this.isOpen) {
+          this.close();
+        } else {
+          this.open();
+        }
+      }
+
+      updateActiveTab() {
+        // إزالة النشط من جميع العناصر
+        const menuItems = this.menuElement.querySelectorAll('.fab-menu-item');
+        menuItems.forEach(item => {
+          item.classList.remove('active');
+        });
+        
+        // إضافة النشط للعنصر الحالي
+        const currentTab = document.querySelector('.tab-pane.active')?.id;
+        if (currentTab) {
+          const activeItem = this.menuElement.querySelector(`[data-tab="${currentTab}"]`);
+          if (activeItem) {
+            activeItem.classList.add('active');
+          }
+        }
+      }
+    }
+
+    // =====================================================
     // App
     // =====================================================
     const UI = {
@@ -705,12 +836,14 @@
         settings: { globalBudget: 0 },
         selectedMonth: localStorage.getItem("selectedMonth") || new Date().toISOString().slice(0,7),
         pendingDelete: null,
-        charts: { budget: null, cat: null }
       },
 
       init(){
+        // Initialize floating menu
+        this.floatingMenu = new FloatingMenu();
+
         // bind month pickers
-        const monthSelectors = ["monthSelector","monthSelectorMobile","monthSelectorInline"]
+        const monthSelectors = ["monthSelector","monthSelectorInline"]
           .map(id => document.getElementById(id)).filter(Boolean);
 
         monthSelectors.forEach(el => el.value = this.state.selectedMonth);
@@ -718,11 +851,8 @@
           this.state.selectedMonth = e.target.value;
           localStorage.setItem("selectedMonth", this.state.selectedMonth);
           monthSelectors.forEach(x => { if (x !== el) x.value = this.state.selectedMonth; });
-          document.getElementById("monthBadge").innerText = this.state.selectedMonth;
           this.renderAll();
         }));
-
-        document.getElementById("monthBadge").innerText = this.state.selectedMonth;
 
         // set default date in add form
         document.getElementById("expenseDate").valueAsDate = new Date();
@@ -747,14 +877,34 @@
         document.getElementById("shareTextBtn").addEventListener("click", ()=> this.shareWhatsAppText());
         document.getElementById("shareImgBtn").addEventListener("click", (e)=> this.shareReportImage(e));
 
-        document.getElementById("quickAddBtn").addEventListener("click", ()=> this.goToTab("tabAdd"));
-        document.getElementById("fabAdd").addEventListener("click", ()=> this.goToTab("tabAdd"));
-        document.getElementById("goTxTab").addEventListener("click", ()=> this.goToTab("tabTx"));
-        document.getElementById("openAllTxFromStat").addEventListener("click", ()=> this.goToTab("tabTx"));
-        document.getElementById("goSettingsCategories").addEventListener("click", ()=> this.goToTab("tabSettings"));
+        document.getElementById("quickAddBtn").addEventListener("click", ()=> this.switchTab("tabAdd"));
+        document.getElementById("goTxTab").addEventListener("click", ()=> this.switchTab("tabTx"));
+        document.getElementById("openAllTxFromStat").addEventListener("click", ()=> this.switchTab("tabTx"));
+        document.getElementById("goSettingsCategories").addEventListener("click", ()=> this.switchTab("tabSettings"));
 
         // sync firebase
         this.syncData();
+      },
+
+      // دالة لتبديل التبويبات
+      switchTab(tabId) {
+        // إخفاء جميع التبويبات
+        const allTabs = document.querySelectorAll('.tab-pane');
+        allTabs.forEach(tab => {
+          tab.classList.remove('active');
+        });
+        
+        // إظهار التبويب المطلوب
+        const targetTab = document.getElementById(tabId);
+        if (targetTab) {
+          targetTab.classList.add('active');
+          window.scrollTo({ top: 0, behavior: "smooth" });
+        }
+        
+        // تحديث القائمة العائمة إذا كانت مفتوحة
+        if (this.floatingMenu && this.floatingMenu.isOpen) {
+          this.floatingMenu.updateActiveTab();
+        }
       },
 
       // --- Firebase Sync (نفس المسارات الموجودة) ---
@@ -803,15 +953,6 @@
       getFilteredExpenses(){
         const m = this.state.selectedMonth;
         return this.getExpensesList().filter(e => (e.month ? e.month === m : (e.date || "").startsWith(m)));
-      },
-
-      // --- navigation ---
-      goToTab(tabId){
-        const el = document.querySelector(`[data-bs-target="#${tabId}"]`);
-        if(el){
-          bootstrap.Tab.getOrCreateInstance(el).show();
-          window.scrollTo({ top: 0, behavior: "smooth" });
-        }
       },
 
       // --- UI rendering ---
@@ -890,91 +1031,6 @@
             </td>
           `;
           tbody.appendChild(tr);
-        });
-
-        // charts
-        this.renderBudgetChart(totalSpent, Math.max(remaining,0));
-        this.renderCategoryChart(rows.slice(0,10));
-      },
-
-      renderBudgetChart(spent, remainingNonNeg){
-        const ctx = document.getElementById("budgetChart");
-        if(!ctx) return;
-
-        const data = {
-          labels: ["مصروف", "متبقي"],
-          datasets: [{
-            data: [Number(spent||0), Number(remainingNonNeg||0)],
-            borderWidth: 0
-          }]
-        };
-
-        if(this.state.charts.budget){
-          this.state.charts.budget.data = data;
-          this.state.charts.budget.update();
-          return;
-        }
-
-        this.state.charts.budget = new Chart(ctx, {
-          type: "doughnut",
-          data,
-          options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            cutout: "68%",
-            plugins: {
-              legend: { labels: { color: "#eef3f7" } },
-              tooltip: {
-                callbacks: {
-                  label: (c)=> `${c.label}: ${UI.money(c.raw)} ج.م`
-                }
-              }
-            }
-          }
-        });
-      },
-
-      renderCategoryChart(rows){
-        const ctx = document.getElementById("catChart");
-        if(!ctx) return;
-
-        const labels = rows.map(r=> r.name);
-        const values = rows.map(r=> r.spent);
-
-        const data = {
-          labels,
-          datasets: [{
-            label: "المصروف",
-            data: values,
-            borderWidth: 0
-          }]
-        };
-
-        if(this.state.charts.cat){
-          this.state.charts.cat.data = data;
-          this.state.charts.cat.update();
-          return;
-        }
-
-        this.state.charts.cat = new Chart(ctx, {
-          type: "bar",
-          data,
-          options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: {
-              legend: { display: false },
-              tooltip: {
-                callbacks: {
-                  label: (c)=> `${UI.money(c.raw)} ج.م`
-                }
-              }
-            },
-            scales: {
-              x: { ticks: { color: "#eef3f7" }, grid: { color: "rgba(255,255,255,.08)" } },
-              y: { ticks: { color: "#eef3f7" }, grid: { color: "rgba(255,255,255,.08)" } }
-            }
-          }
         });
       },
 
