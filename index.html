@@ -1,1434 +1,1023 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>مصاريف المنزل - مهندس بولس سمير</title>
-
-  <!-- Bootstrap 5 -->
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-  <!-- FontAwesome -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-  <!-- Google Font -->
-  <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700&display=swap" rel="stylesheet">
-
-  <!-- Firebase (compat) -->
-  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
-
-  <!-- html2canvas for report image -->
-  <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
-
-  <style>
-    :root{
-      --bg: radial-gradient(1200px 800px at 80% 10%, rgba(26,188,156,.18), transparent 60%),
-            radial-gradient(900px 700px at 10% 20%, rgba(241,196,15,.16), transparent 55%),
-            linear-gradient(135deg, #0b1821, #0f2430 45%, #102c3a);
-      --glass: rgba(255,255,255,.06);
-      --glass2: rgba(255,255,255,.04);
-      --border: rgba(255,255,255,.10);
-      --text: #eef3f7;
-      --muted: rgba(238,243,247,.68);
-      --teal: #1abc9c;
-      --gold: #f1c40f;
-      --danger: #ff7675;
-    }
-    html, body { height: 100%; }
-    body{
-      font-family: "Tajawal", system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
-      background: var(--bg);
-      color: var(--text);
-      padding-top: 76px;
-      padding-bottom: 80px; /* مساحة للزر العائم */
-    }
-
-    /* glass surfaces */
-    .glass{
-      background: var(--glass);
-      border: 1px solid var(--border);
-      backdrop-filter: blur(14px);
-      -webkit-backdrop-filter: blur(14px);
-      border-radius: 16px;
-      box-shadow: 0 10px 30px rgba(0,0,0,.25);
-    }
-    .glass-soft{
-      background: var(--glass2);
-      border: 1px solid rgba(255,255,255,.06);
-      border-radius: 14px;
-    }
-
-    /* inputs */
-    .form-control, .form-select, .input-group-text{
-      background: rgba(0,0,0,.25) !important;
-      border: 1px solid var(--border) !important;
-      color: var(--text) !important;
-      border-radius: 12px !important;
-    }
-    .form-control::placeholder{ color: rgba(255,255,255,.55); }
-    .form-control:focus, .form-select:focus{
-      box-shadow: 0 0 0 .2rem rgba(26,188,156,.18);
-      border-color: rgba(26,188,156,.55) !important;
-    }
-
-    /* navbar */
-    .appbar{
-      background: rgba(10, 20, 28, .55);
-      border-bottom: 1px solid rgba(255,255,255,.08);
-      backdrop-filter: blur(16px);
-      -webkit-backdrop-filter: blur(16px);
-    }
-    .brand-dot{
-      width: 10px; height: 10px; border-radius: 999px;
-      background: linear-gradient(45deg, var(--gold), #f39c12);
-      display: inline-block;
-      box-shadow: 0 0 0 6px rgba(241,196,15,.12);
-    }
-
-    /* stat cards */
-    .stat{
-      padding: 14px 14px;
-      border-radius: 16px;
-      background: rgba(255,255,255,.05);
-      border: 1px solid rgba(255,255,255,.07);
-    }
-    .stat .label{ color: var(--muted); font-size: .85rem; }
-    .stat .value{ font-weight: 800; font-size: 1.4rem; letter-spacing: .2px; }
-    .text-teal{ color: var(--teal) !important; }
-    .text-gold{ color: var(--gold) !important; }
-    .text-danger-soft{ color: var(--danger) !important; }
-
-    /* tables */
-    .table{
-      --bs-table-bg: transparent;
-      --bs-table-color: var(--text);
-      --bs-table-border-color: rgba(255,255,255,.08);
-    }
-    .table thead th{
-      color: rgba(255,255,255,.85);
-      font-weight: 700;
-      border-bottom: 1px solid rgba(255,255,255,.10);
-    }
-    .table tbody tr:hover{ background: rgba(255,255,255,.04); }
-
-    /* small helpers */
-    .badge-soft{
-      background: rgba(255,255,255,.08);
-      border: 1px solid rgba(255,255,255,.10);
-      color: rgba(255,255,255,.88);
-    }
-
-    /* loader */
-    #loader{
-      position: fixed; inset: 0; z-index: 2000;
-      display: grid; place-items: center;
-      background: #0b1821;
-      transition: opacity .35s ease;
-    }
-
-    /* floating menu button - bottom left */
-    .fab-menu{
-      position: fixed;
-      left: 18px;
-      bottom: 18px;
-      width: 60px; height: 60px;
-      border-radius: 999px;
-      border: 0;
-      background: linear-gradient(45deg, var(--gold), #f39c12);
-      color: #1b2630;
-      box-shadow: 0 12px 28px rgba(241,196,15,.22);
-      z-index: 1200;
-      display: grid; place-items: center;
-      font-size: 1.3rem;
-      transition: transform 0.2s ease, box-shadow 0.2s ease;
-    }
-    .fab-menu:hover, .fab-menu:active{
-      transform: scale(1.08);
-      box-shadow: 0 16px 36px rgba(241,196,15,.28);
-    }
-
-    /* floating action menu - expanded */
-    .fab-menu-expanded{
-      position: fixed;
-      left: 18px;
-      bottom: 18px;
-      width: 220px;
-      border-radius: 20px;
-      border: 1px solid rgba(255,255,255,.15);
-      background: rgba(10, 20, 28, .92);
-      backdrop-filter: blur(20px);
-      -webkit-backdrop-filter: blur(20px);
-      box-shadow: 0 20px 40px rgba(0,0,0,.35);
-      z-index: 1300;
-      overflow: hidden;
-      transform-origin: bottom left;
-      animation: menuAppear 0.25s ease;
-    }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ادارة مصاريف المنزل - م. بولس سمير</title>
     
-    @keyframes menuAppear {
-      from { opacity: 0; transform: scale(0.9) translateY(20px); }
-      to { opacity: 1; transform: scale(1) translateY(0); }
-    }
-    
-    .fab-menu-header{
-      padding: 16px 18px;
-      border-bottom: 1px solid rgba(255,255,255,.08);
-      background: rgba(0,0,0,.15);
-    }
-    
-    .fab-menu-items{
-      padding: 12px 0;
-    }
-    
-    .fab-menu-item{
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      padding: 14px 18px;
-      color: var(--text);
-      text-decoration: none;
-      border-left: 3px solid transparent;
-      transition: all 0.15s ease;
-      cursor: pointer;
-    }
-    
-    .fab-menu-item:hover, .fab-menu-item.active{
-      background: rgba(255,255,255,.05);
-      border-left-color: var(--teal);
-      padding-right: 22px;
-    }
-    
-    .fab-menu-item i{
-      width: 20px;
-      text-align: center;
-      font-size: 1.1rem;
-    }
-    
-    .fab-menu-close{
-      position: absolute;
-      top: 10px;
-      right: 10px;
-      background: none;
-      border: none;
-      color: rgba(255,255,255,.5);
-      width: 32px; height: 32px;
-      border-radius: 50%;
-      display: grid; place-items: center;
-      transition: background 0.15s ease;
-      cursor: pointer;
-    }
-    
-    .fab-menu-close:hover{
-      background: rgba(255,255,255,.08);
-      color: white;
-    }
-    
-    /* overlay for menu */
-    .fab-menu-overlay{
-      position: fixed;
-      inset: 0;
-      background: rgba(0,0,0,.4);
-      backdrop-filter: blur(4px);
-      z-index: 1250;
-      animation: fadeIn 0.2s ease;
-    }
-    
-    @keyframes fadeIn {
-      from { opacity: 0; }
-      to { opacity: 1; }
-    }
-    
-    /* month badge */
-    .month-badge{
-      display: inline-block;
-      padding: 4px 12px;
-      background: rgba(26,188,156,.15);
-      border: 1px solid rgba(26,188,156,.25);
-      border-radius: 999px;
-      font-size: 0.85rem;
-      color: var(--teal);
-    }
-    
-    /* تنسيق عام للتبويبات */
-    .tab-pane {
-      display: none;
-    }
-    .tab-pane.active {
-      display: block;
-    }
-  </style>
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts (Tajawal) -->
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700&display=swap" rel="stylesheet">
+
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+    <!-- html2canvas for Screenshot -->
+    <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
+
+    <style>
+        :root {
+            --bg-gradient: linear-gradient(135deg, #0f2027 0%, #203a43 50%, #2c5364 100%);
+            --glass-bg: rgba(16, 30, 45, 0.6);
+            --glass-border: rgba(255, 255, 255, 0.1);
+            --accent-gold: #f1c40f;
+            --accent-teal: #1abc9c;
+            --text-primary: #ecf0f1;
+        }
+
+        body {
+            font-family: 'Tajawal', sans-serif;
+            background: var(--bg-gradient);
+            background-attachment: fixed;
+            color: var(--text-primary);
+            min-height: 100vh;
+            padding-bottom: 90px;
+        }
+
+        /* Glassmorphism */
+        .glass-panel {
+            background: var(--glass-bg);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid var(--glass-border);
+            border-radius: 16px;
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+        }
+
+        .glass-card {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            padding: 15px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            transition: all 0.3s ease;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .glass-card:hover {
+            transform: translateY(-3px);
+            background: rgba(255, 255, 255, 0.08);
+            border-color: var(--accent-teal);
+        }
+
+        .glass-input, .form-select, .form-control {
+            background: rgba(0, 0, 0, 0.3) !important;
+            border: 1px solid var(--glass-border) !important;
+            color: #fff !important;
+            border-radius: 10px;
+        }
+        
+        .glass-input:focus, .form-select:focus, .form-control:focus {
+            box-shadow: 0 0 0 2px rgba(26, 188, 156, 0.3);
+            border-color: var(--accent-teal) !important;
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.2); border-radius: 3px; }
+
+        /* Dashboard Stats */
+        .stat-card { padding: 20px 10px; }
+        .stat-value { font-size: 1.6rem; font-weight: 700; margin-top: 5px; text-shadow: 0 2px 10px rgba(0,0,0,0.3); }
+        .stat-label { font-size: 0.9rem; color: rgba(255,255,255,0.7); }
+
+        /* FAB */
+        .fab-btn {
+            position: fixed;
+            bottom: 25px;
+            left: 25px;
+            width: 65px;
+            height: 65px;
+            border-radius: 50%;
+            background: linear-gradient(45deg, var(--accent-gold), #f39c12);
+            color: #2c3e50;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 26px;
+            box-shadow: 0 4px 20px rgba(241, 196, 15, 0.4);
+            border: none;
+            z-index: 1000;
+            transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        .fab-btn:hover { transform: scale(1.1) rotate(90deg); }
+
+        /* Modals */
+        .modal-content {
+            background: #1e2a36; 
+            border: 1px solid var(--glass-border);
+            color: white;
+            border-radius: 20px;
+        }
+        .modal-header { border-bottom: 1px solid rgba(255,255,255,0.1); }
+        .modal-footer { border-top: 1px solid rgba(255,255,255,0.1); }
+        .btn-close { filter: invert(1); opacity: 0.8; }
+
+        /* Transaction List */
+        .transaction-item {
+            background: rgba(255,255,255,0.03);
+            margin-bottom: 8px;
+            border-radius: 10px;
+            padding: 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-left: 4px solid transparent;
+        }
+        .transaction-item:hover { background: rgba(255,255,255,0.06); }
+        
+        .cat-badge {
+            font-size: 0.75rem;
+            padding: 3px 8px;
+            border-radius: 20px;
+            background: rgba(255,255,255,0.1);
+            margin-left: 8px;
+        }
+
+        /* Utilities */
+        .text-teal { color: var(--accent-teal); }
+        .text-gold { color: var(--accent-gold); }
+        .text-danger-light { color: #ff7675; }
+        
+        /* Loading Overlay */
+        #loader {
+            position: fixed; inset: 0; background: #0f2027; z-index: 9999;
+            display: flex; justify-content: center; align-items: center; flex-direction: column;
+            transition: opacity 0.5s;
+        }
+    </style>
 </head>
-
 <body>
-  <!-- loader -->
-  <div id="loader">
-    <div class="text-center">
-      <div class="spinner-border text-info mb-3" role="status"></div>
-      <div class="fw-bold">جاري الاتصال بقاعدة البيانات...</div>
-      <div class="small text-white-50 mt-1">Realtime Database</div>
+
+    <!-- Loading Screen -->
+    <div id="loader">
+        <div class="spinner-border text-info mb-3" role="status"></div>
+        <h5 class="text-white">جاري الاتصال بقاعدة البيانات...</h5>
     </div>
-  </div>
 
-  <!-- top bar -->
-  <nav class="navbar navbar-expand-lg fixed-top appbar">
-    <div class="container-fluid px-3">
-      <a class="navbar-brand text-white d-flex align-items-center gap-2" href="#">
-        <span class="brand-dot"></span>
-        <span class="fw-bold">مصاريف المنزل</span>
-        <span class="badge badge-soft ms-1 d-none d-md-inline">نسخة مهندس بولس سمير</span>
-      </a>
+    <div class="container py-4">
+        <!-- Header -->
+        <header class="text-center mb-4">
+            <h2 class="fw-bold mb-1 text-white"><i class="fas fa-home me-2 text-gold"></i>مصاريف المنزل</h2>
+            <p class="small text-white-50">م. بولس سمير | نظام سحابي ذكي</p>
+        </header>
 
-      <div class="ms-auto d-flex gap-2 align-items-center">
-        <div class="d-none d-md-flex align-items-center gap-2">
-          <span class="small text-white-50"><i class="fa-regular fa-calendar me-1"></i>الشهر</span>
-          <input id="monthSelector" type="month" class="form-control" style="width: 170px;">
+        <!-- Month Selector -->
+        <div class="glass-panel p-3 mb-4 d-flex justify-content-between align-items-center">
+            <label class="fw-bold text-teal"><i class="far fa-calendar-alt ms-2"></i>الشهر المالي:</label>
+            <input type="month" id="monthSelector" class="form-control w-auto" style="min-width: 150px;">
         </div>
 
-        <button class="btn btn-outline-warning d-none d-md-inline" id="quickAddBtn" type="button">
-          <i class="fa-solid fa-plus me-1"></i>مصروف
-        </button>
-      </div>
-    </div>
-  </nav>
-
-  <div class="container-fluid">
-    <div class="row">
-      <!-- main content - full width now (no sidebar) -->
-      <div class="col-12">
-        <div class="tab-content pb-4" id="tabContent">
-
-          <!-- DASHBOARD -->
-          <div class="tab-pane active" id="tabDashboard" role="tabpanel">
-            <div class="glass p-3 p-md-4 mb-3">
-              <div class="d-flex flex-wrap gap-2 justify-content-between align-items-center">
-                <div>
-                  <div class="fw-bold fs-5">ملخص الشهر</div>
-                  <div class="small text-white-50">نظرة سريعة على إجمالي المصروفات</div>
+        <!-- Dashboard Summary -->
+        <div class="row g-3 mb-4">
+            <div class="col-4">
+                <div class="glass-panel stat-card">
+                    <div class="stat-label">الميزانية</div>
+                    <div class="stat-value text-white" id="totalBudgetDisplay">0</div>
+                    <small class="text-white-50">ج.م</small>
                 </div>
-                <div class="d-flex gap-2 align-items-center">
-                  <div class="d-md-none">
-                    <label class="small text-white-50 mb-1 d-block">الشهر</label>
-                    <input id="monthSelectorInline" type="month" class="form-control" style="width: 180px;">
-                  </div>
-                </div>
-              </div>
-
-              <div class="row g-2 g-md-3 mt-1">
-                <div class="col-12 col-md-4">
-                  <div class="stat">
-                    <div class="label"><i class="fa-solid fa-sack-dollar me-1"></i>الميزانية</div>
-                    <div class="value" id="totalBudgetDisplay">0</div>
-                    <div class="small text-white-50">ج.م</div>
-                  </div>
-                </div>
-                <div class="col-12 col-md-4">
-                  <div class="stat" role="button" tabindex="0" id="openAllTxFromStat">
-                    <div class="label"><i class="fa-solid fa-arrow-trend-up me-1"></i>المصروف</div>
-                    <div class="value text-danger-soft" id="totalSpentDisplay">0</div>
-                    <div class="small text-white-50">ج.م</div>
-                  </div>
-                </div>
-                <div class="col-12 col-md-4">
-                  <div class="stat">
-                    <div class="label"><i class="fa-solid fa-shield-heart me-1"></i>المتبقي</div>
-                    <div class="value text-teal" id="totalRemainingDisplay">0</div>
-                    <div class="small text-white-50">ج.م</div>
-                  </div>
-                </div>
-              </div>
             </div>
-
-            <div class="glass p-3 p-md-4">
-              <div class="d-flex justify-content-between align-items-center mb-2">
-                <div>
-                  <div class="fw-bold">حالة الفئات</div>
-                  <div class="small text-white-50">المتبقي لكل فئة + نسبة الاستهلاك</div>
+            <div class="col-4">
+                <div class="glass-panel stat-card" onclick="app.showExpenseDetailsModal()" style="cursor: pointer; border-bottom: 3px solid #e74c3c;">
+                    <div class="stat-label">المصروف</div>
+                    <div class="stat-value text-danger-light" id="totalSpentDisplay">0</div>
+                    <small class="text-white-50">ج.م</small>
                 </div>
-                <button class="btn btn-outline-light btn-sm" id="goSettingsCategories">
-                  <i class="fa-solid fa-pen-to-square me-1"></i>تعديل الفئات
-                </button>
-              </div>
-
-              <div class="table-responsive">
-                <table class="table align-middle mb-0">
-                  <thead>
-                    <tr>
-                      <th>الفئة</th>
-                      <th class="text-nowrap">الميزانية</th>
-                      <th class="text-nowrap">المصروف</th>
-                      <th class="text-nowrap">المتبقي</th>
-                      <th style="min-width: 160px;">النسبة</th>
-                    </tr>
-                  </thead>
-                  <tbody id="categoriesTable"></tbody>
-                </table>
-              </div>
             </div>
-          </div>
-
-          <!-- ADD EXPENSE -->
-          <div class="tab-pane" id="tabAdd" role="tabpanel">
-            <div class="glass p-3 p-md-4">
-              <div class="d-flex justify-content-between align-items-center mb-3">
-                <div>
-                  <div class="fw-bold fs-5"><i class="fa-solid fa-wallet me-2 text-gold"></i>إضافة مصروف</div>
-                  <div class="small text-white-50">تسجيل سريع + معاينة المتبقي من الفئة</div>
+            <div class="col-4">
+                <div class="glass-panel stat-card" style="border-bottom: 3px solid var(--accent-teal);">
+                    <div class="stat-label">المتبقي</div>
+                    <div class="stat-value text-teal" id="totalRemainingDisplay">0</div>
+                    <small class="text-white-50">ج.م</small>
                 </div>
-              </div>
-
-              <div class="row g-2 g-md-3">
-                <div class="col-12 col-md-4">
-                  <label class="small text-white-50 mb-1">الفئة</label>
-                  <select id="expenseCategory" class="form-select">
-                    <option value="">اختر الفئة...</option>
-                  </select>
-                  <div id="categoryBalanceHint" class="small mt-1"></div>
-                </div>
-                <div class="col-12 col-md-4">
-                  <label class="small text-white-50 mb-1">المبلغ</label>
-                  <input id="expenseAmount" type="number" class="form-control" placeholder="0.00" inputmode="decimal">
-                </div>
-                <div class="col-12 col-md-4">
-                  <label class="small text-white-50 mb-1">التاريخ</label>
-                  <input id="expenseDate" type="date" class="form-control">
-                </div>
-                <div class="col-12">
-                  <label class="small text-white-50 mb-1">ملاحظات (اختياري)</label>
-                  <input id="expenseNotes" type="text" class="form-control" placeholder="تفاصيل الصرف...">
-                </div>
-                <div class="col-12 col-md-6">
-                  <button class="btn btn-warning w-100 fw-bold text-dark py-2" id="saveExpenseBtn" type="button">
-                    <i class="fa-solid fa-check me-1"></i>تسجيل العملية
-                  </button>
-                </div>
-                <div class="col-12 col-md-6">
-                  <button class="btn btn-outline-light w-100 fw-bold py-2" id="clearExpenseForm" type="button">
-                    <i class="fa-solid fa-rotate-left me-1"></i>تفريغ
-                  </button>
-                </div>
-              </div>
-
-              <hr class="border-secondary my-4">
-
-              <div class="d-flex justify-content-between align-items-center mb-2">
-                <div class="fw-bold">آخر 8 عمليات (الشهر)</div>
-                <button class="btn btn-outline-info btn-sm" id="goTxTab">
-                  <i class="fa-solid fa-arrow-left-long me-1"></i>عرض كل العمليات
-                </button>
-              </div>
-              <div class="table-responsive">
-                <table class="table mb-0">
-                  <thead>
-                    <tr>
-                      <th>التاريخ</th>
-                      <th>الفئة</th>
-                      <th>المبلغ</th>
-                      <th>ملاحظات</th>
-                      <th class="text-nowrap">تحكم</th>
-                    </tr>
-                  </thead>
-                  <tbody id="recentTxTable"></tbody>
-                </table>
-              </div>
             </div>
-          </div>
+        </div>
 
-          <!-- TRANSACTIONS -->
-          <div class="tab-pane" id="tabTx" role="tabpanel">
-            <div class="glass p-3 p-md-4">
-              <div class="d-flex flex-wrap justify-content-between align-items-end gap-2 mb-3">
-                <div>
-                  <div class="fw-bold fs-5"><i class="fa-solid fa-list-check me-2 text-teal"></i>العمليات</div>
-                  <div class="small text-white-50">بحث + فلترة + تعديل/حذف</div>
-                </div>
-
-                <div class="d-flex flex-wrap gap-2">
-                  <div>
-                    <label class="small text-white-50 mb-1">بحث</label>
-                    <input id="txSearch" class="form-control" placeholder="ابحث في الفئة أو الملاحظات...">
-                  </div>
-                  <div>
-                    <label class="small text-white-50 mb-1">فلتر فئة</label>
-                    <select id="txCatFilter" class="form-select" style="min-width: 180px;">
-                      <option value="">كل الفئات</option>
+        <!-- Add Expense Form -->
+        <div class="glass-panel p-3 mb-4 position-relative overflow-hidden">
+            <div class="d-flex align-items-center mb-3">
+                <div class="bg-teal rounded-circle p-2 me-2"></div>
+                <h5 class="m-0 fw-bold text-gold"><i class="fas fa-wallet ms-2"></i>إضافة مصروف</h5>
+            </div>
+            
+            <div class="row g-2">
+                <div class="col-6 col-md-3">
+                    <label class="small text-white-50 mb-1">الفئة</label>
+                    <select id="expenseCategory" class="form-select">
+                        <option value="">اختر الفئة...</option>
                     </select>
-                  </div>
-                  <div class="d-flex align-items-end">
-                    <button class="btn btn-outline-light" id="exportCsvBtn" type="button">
-                      <i class="fa-solid fa-file-csv me-1"></i>CSV
+                    <!-- Remaining Badge -->
+                    <div id="categoryBalanceHint" class="mt-1 small fw-bold" style="min-height: 20px; font-size: 0.8rem;"></div>
+                </div>
+                <div class="col-6 col-md-3">
+                    <label class="small text-white-50 mb-1">المبلغ</label>
+                    <input type="number" id="expenseAmount" placeholder="0.00" class="form-control">
+                </div>
+                <div class="col-12 col-md-6">
+                    <label class="small text-white-50 mb-1">ملاحظات (اختياري)</label>
+                    <input type="text" id="expenseNotes" placeholder="تفاصيل الصرف..." class="form-control">
+                </div>
+                <div class="col-12 col-md-6">
+                    <label class="small text-white-50 mb-1">التاريخ</label>
+                    <input type="date" id="expenseDate" class="form-control">
+                </div>
+                <div class="col-12 col-md-6 d-flex align-items-end">
+                    <button class="btn btn-warning w-100 fw-bold text-dark" onclick="app.addExpense()">
+                        <i class="fas fa-check ms-1"></i> تسجيل العملية
                     </button>
-                  </div>
                 </div>
-              </div>
-
-              <div class="table-responsive">
-                <table class="table align-middle mb-0">
-                  <thead>
-                    <tr>
-                      <th class="text-nowrap">التاريخ</th>
-                      <th>الفئة</th>
-                      <th class="text-nowrap">المبلغ</th>
-                      <th>ملاحظات</th>
-                      <th class="text-nowrap">تحكم</th>
-                    </tr>
-                  </thead>
-                  <tbody id="txTable"></tbody>
-                </table>
-              </div>
             </div>
-          </div>
+        </div>
 
-          <!-- REPORTS -->
-          <div class="tab-pane" id="tabReports" role="tabpanel">
-            <div class="glass p-3 p-md-4">
-              <div class="d-flex justify-content-between align-items-center mb-3">
-                <div>
-                  <div class="fw-bold fs-5"><i class="fa-solid fa-file-invoice-dollar me-2 text-gold"></i>التقارير</div>
-                  <div class="small text-white-50">مشاركة كنص أو صورة (WhatsApp)</div>
-                </div>
-              </div>
+        <!-- Categories Grid -->
+        <h6 class="text-teal mb-3 px-1">حالة الفئات والميزانية</h6>
+        <div id="categoriesGrid" class="row g-3 mb-5">
+            <!-- Categories Injected Here -->
+        </div>
 
-              <div id="reportPreview" class="glass-soft p-3 p-md-4 mb-3"></div>
-
-              <div class="row g-2">
-                <div class="col-12 col-md-6">
-                  <button class="btn btn-success w-100 fw-bold py-2" id="shareTextBtn">
-                    <i class="fa-brands fa-whatsapp me-2"></i>مشاركة كنص
-                  </button>
-                </div>
-                <div class="col-12 col-md-6">
-                  <button class="btn btn-warning w-100 fw-bold text-dark py-2" id="shareImgBtn">
-                    <i class="fa-solid fa-image me-2"></i>مشاركة كصورة
-                  </button>
-                </div>
-              </div>
+        <!-- Recent Transactions -->
+        <div class="d-flex justify-content-between align-items-end mb-2 px-1">
+            <h6 class="text-teal m-0">آخر العمليات (هذا الشهر)</h6>
+            <button class="btn btn-sm btn-outline-light rounded-pill" onclick="app.showExpenseDetailsModal()">عرض الكل</button>
+        </div>
+        <div class="glass-panel p-2 mb-5" style="max-height: 400px; overflow-y: auto;">
+            <div id="transactionsList">
+                <!-- Transactions injected here -->
             </div>
-          </div>
+        </div>
+    </div>
 
-          <!-- SETTINGS -->
-          <div class="tab-pane" id="tabSettings" role="tabpanel">
-            <div class="glass p-3 p-md-4">
-              <div class="d-flex justify-content-between align-items-center mb-3">
-                <div>
-                  <div class="fw-bold fs-5"><i class="fa-solid fa-gear me-2"></i>الإعدادات</div>
-                  <div class="small text-white-50">الميزانية + إدارة الفئات</div>
+    <!-- Admin FAB -->
+    <button class="fab-btn" onclick="app.openAdminModal()" title="لوحة التحكم">
+        <i class="fas fa-cogs"></i>
+    </button>
+
+    <!-- ADMIN MODAL -->
+    <div class="modal fade" id="adminModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title fw-bold text-gold">لوحة تحكم النظام</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
-              </div>
+                <div class="modal-body">
+                    <ul class="nav nav-pills mb-3 nav-fill" id="adminTabs" role="tablist">
+                        <li class="nav-item">
+                            <button class="nav-link active rounded-pill" data-bs-toggle="tab" data-bs-target="#settingsTab">الميزانية</button>
+                        </li>
+                        <li class="nav-item">
+                            <button class="nav-link rounded-pill" data-bs-toggle="tab" data-bs-target="#categoriesTab">الفئات</button>
+                        </li>
+                        <li class="nav-item">
+                            <button class="nav-link rounded-pill" data-bs-toggle="tab" data-bs-target="#reportsTab">تقارير</button>
+                        </li>
+                    </ul>
 
-              <div class="row g-3">
-                <div class="col-12 col-xl-5">
-                  <div class="glass-soft p-3">
-                    <div class="fw-bold mb-2">الميزانية الشهرية الكلية</div>
-                    <div class="input-group">
-                      <span class="input-group-text">ج.م</span>
-                      <input id="globalBudgetInput" type="number" class="form-control" placeholder="مثال: 5000">
-                      <button class="btn btn-success fw-bold" id="saveBudgetBtn" type="button">حفظ</button>
+                    <div class="tab-content pt-2">
+                        <!-- Settings -->
+                        <div class="tab-pane fade show active" id="settingsTab">
+                            <div class="p-3 bg-dark bg-opacity-50 rounded mb-3">
+                                <label class="mb-2 text-info">الميزانية الشهرية الكلية (الراتب/الدخل):</label>
+                                <div class="input-group">
+                                    <span class="input-group-text bg-secondary border-0 text-white">ج.م</span>
+                                    <input type="number" id="globalBudgetInput" class="form-control" placeholder="مثال: 5000">
+                                    <button class="btn btn-success" onclick="app.saveGlobalSettings()">حفظ</button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Categories -->
+                        <div class="tab-pane fade" id="categoriesTab">
+                            <div class="card bg-dark bg-opacity-25 border-secondary mb-3">
+                                <div class="card-body p-2">
+                                    <h6 class="mb-2 text-gold" id="catFormTitle">إضافة فئة جديدة</h6>
+                                    <input type="hidden" id="editCatId"> <!-- Hidden ID for editing -->
+                                    <div class="input-group">
+                                        <input type="text" id="newCatName" class="form-control" placeholder="اسم الفئة (مثال: لحوم)">
+                                        <input type="number" id="newCatLimit" class="form-control" placeholder="الحد الأقصى">
+                                        <button class="btn btn-primary" id="saveCatBtn" onclick="app.saveCategory()">إضافة</button>
+                                        <button class="btn btn-secondary d-none" id="cancelCatEditBtn" onclick="app.resetCategoryForm()">إلغاء</button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div id="adminCatList" class="list-group list-group-flush rounded overflow-hidden">
+                                <!-- List -->
+                            </div>
+                        </div>
+
+                        <!-- Reports -->
+                        <div class="tab-pane fade" id="reportsTab">
+                            <div id="reportContainer" class="bg-white bg-opacity-10 p-4 rounded mb-3 shadow-sm" style="font-family: 'Tajawal', sans-serif;">
+                                <div id="reportPreview"></div>
+                            </div>
+                            <div class="d-flex gap-2">
+                                <button class="btn btn-success flex-grow-1 py-2 fw-bold" onclick="app.shareWhatsApp()">
+                                    <i class="fab fa-whatsapp fa-lg me-2"></i> مشاركة كنص
+                                </button>
+                                <button class="btn btn-warning flex-grow-1 py-2 fw-bold" onclick="app.shareImage()">
+                                    <i class="fas fa-image fa-lg me-2"></i> مشاركة كصورة
+                                </button>
+                            </div>
+                        </div>
                     </div>
-                    <div class="small text-white-50 mt-2">
-                      * يتم الحفظ في <span class="badge badge-soft">settings/globalBudget</span>
-                    </div>
-                  </div>
                 </div>
+            </div>
+        </div>
+    </div>
 
-                <div class="col-12 col-xl-7">
-                  <div class="glass-soft p-3">
-                    <div class="d-flex justify-content-between align-items-center mb-2">
-                      <div class="fw-bold">الفئات</div>
-                      <span class="small text-white-50">إضافة / تعديل / حذف</span>
+    <!-- EDIT EXPENSE MODAL -->
+    <div class="modal fade" id="editExpenseModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title text-info">تعديل مصروف</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <input type="hidden" id="editExpId">
+                    <div class="mb-2">
+                        <label>الفئة</label>
+                        <select id="editExpCategory" class="form-select"></select>
                     </div>
-
-                    <div class="row g-2">
-                      <input type="hidden" id="editCatId">
-                      <div class="col-12 col-md-5">
-                        <input id="newCatName" type="text" class="form-control" placeholder="اسم الفئة (مثال: لحوم)">
-                      </div>
-                      <div class="col-12 col-md-4">
-                        <input id="newCatLimit" type="number" class="form-control" placeholder="الحد الأقصى">
-                      </div>
-                      <div class="col-12 col-md-3 d-grid">
-                        <button class="btn btn-primary fw-bold" id="saveCatBtn" type="button">
-                          <i class="fa-solid fa-plus me-1"></i>حفظ
-                        </button>
-                      </div>
-                      <div class="col-12 d-none" id="cancelCatWrap">
-                        <button class="btn btn-outline-light w-100" id="cancelCatEditBtn" type="button">
-                          <i class="fa-solid fa-xmark me-1"></i>إلغاء التعديل
-                        </button>
-                      </div>
+                    <div class="mb-2">
+                        <label>المبلغ</label>
+                        <input type="number" id="editExpAmount" class="form-control">
                     </div>
+                    <div class="mb-2">
+                        <label>ملاحظات</label>
+                        <input type="text" id="editExpNotes" class="form-control">
+                    </div>
+                    <div class="mb-3">
+                        <label>التاريخ</label>
+                        <input type="date" id="editExpDate" class="form-control">
+                    </div>
+                    <button class="btn btn-info w-100 fw-bold" onclick="app.updateExpense()">حفظ التعديلات</button>
+                </div>
+            </div>
+        </div>
+    </div>
 
-                    <hr class="border-secondary my-3">
+    <!-- DETAILS MODAL -->
+    <div class="modal fade" id="catDetailsModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="catModalTitle"></h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="d-flex justify-content-between text-center mb-3 bg-black bg-opacity-25 p-2 rounded">
+                        <div><small>الميزانية</small><div id="catModalLimit" class="fw-bold">0</div></div>
+                        <div><small>المصروف</small><div id="catModalSpent" class="fw-bold text-danger">0</div></div>
+                        <div><small>المتبقي</small><div id="catModalRemaining" class="fw-bold text-success">0</div></div>
+                    </div>
+                    <h6 class="text-white-50 border-bottom pb-1">سجل العمليات:</h6>
+                    <ul id="catModalHistory" class="list-group list-group-flush p-0"></ul>
+                </div>
+            </div>
+        </div>
+    </div>
 
+    <!-- ALL EXPENSES TABLE MODAL -->
+    <div class="modal fade" id="expenseDetailsModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-scrollable modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">سجل المصروفات الكامل</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body p-0">
                     <div class="table-responsive">
-                      <table class="table align-middle mb-0">
-                        <thead>
-                          <tr>
-                            <th>الفئة</th>
-                            <th class="text-nowrap">الحد</th>
-                            <th class="text-nowrap">تحكم</th>
-                          </tr>
-                        </thead>
-                        <tbody id="adminCatTable"></tbody>
-                      </table>
+                        <table class="table table-dark table-striped table-hover mb-0 align-middle">
+                            <thead class="table-light text-dark">
+                                <tr>
+                                    <th>التاريخ</th>
+                                    <th>الفئة</th>
+                                    <th>ملاحظات</th>
+                                    <th>المبلغ</th>
+                                    <th>تحكم</th>
+                                </tr>
+                            </thead>
+                            <tbody id="detailedExpenseTable"></tbody>
+                        </table>
                     </div>
-                  </div>
                 </div>
-              </div>
-
-              <hr class="border-secondary my-4">
-
-              
             </div>
-          </div>
-
-        </div><!-- tab-content -->
-      </div><!-- main -->
-    </div><!-- row -->
-  </div><!-- container-fluid -->
-
-  <!-- floating menu button -->
-  <button class="fab-menu" id="fabMenuButton" title="القائمة">
-    <i class="fa-solid fa-plus"></i>
-  </button>
-
-  <!-- Edit expense modal -->
-  <div class="modal fade" id="editExpenseModal" tabindex="-1">
-    <div class="modal-dialog">
-      <div class="modal-content text-bg-dark" style="border: 1px solid rgba(255,255,255,.10); border-radius: 18px;">
-        <div class="modal-header border-secondary">
-          <h6 class="modal-title fw-bold text-info"><i class="fa-solid fa-pen me-2"></i>تعديل مصروف</h6>
-          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
         </div>
-        <div class="modal-body">
-          <input type="hidden" id="editExpId">
-          <div class="mb-2">
-            <label class="small text-white-50 mb-1">الفئة</label>
-            <select id="editExpCategory" class="form-select"></select>
-          </div>
-          <div class="mb-2">
-            <label class="small text-white-50 mb-1">المبلغ</label>
-            <input type="number" id="editExpAmount" class="form-control">
-          </div>
-          <div class="mb-2">
-            <label class="small text-white-50 mb-1">ملاحظات</label>
-            <input type="text" id="editExpNotes" class="form-control">
-          </div>
-          <div class="mb-3">
-            <label class="small text-white-50 mb-1">التاريخ</label>
-            <input type="date" id="editExpDate" class="form-control">
-          </div>
-          <button class="btn btn-info w-100 fw-bold" id="updateExpenseBtn" type="button">حفظ</button>
-        </div>
-      </div>
     </div>
-  </div>
 
-  <!-- confirm delete modal -->
-  <div class="modal fade" id="confirmModal" tabindex="-1" style="z-index: 1060;">
-    <div class="modal-dialog modal-dialog-centered">
-      <div class="modal-content text-bg-dark" style="border: 1px solid rgba(255,255,255,.10); border-radius: 18px;">
-        <div class="modal-header border-secondary">
-          <h6 class="modal-title text-danger fw-bold"><i class="fa-solid fa-triangle-exclamation me-2"></i>تأكيد الحذف</h6>
-          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+    <!-- NEW CONFIRMATION MODAL -->
+    <div class="modal fade" id="confirmModal" tabindex="-1" style="z-index: 1060;">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content bg-dark border-secondary shadow-lg">
+                <div class="modal-header border-secondary">
+                    <h5 class="modal-title text-danger fw-bold"><i class="fas fa-exclamation-triangle me-2"></i> تأكيد الحذف</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body text-white">
+                    هل أنت متأكد من الحذف؟ هذه العملية لا يمكن التراجع عنها.
+                </div>
+                <div class="modal-footer border-secondary">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">إلغاء</button>
+                    <button type="button" class="btn btn-danger fw-bold" onclick="app.executeDelete()">تأكيد الحذف</button>
+                </div>
+            </div>
         </div>
-        <div class="modal-body">هل أنت متأكد من الحذف؟ هذه العملية لا يمكن التراجع عنها.</div>
-        <div class="modal-footer border-secondary">
-          <button type="button" class="btn btn-outline-light" data-bs-dismiss="modal">إلغاء</button>
-          <button type="button" class="btn btn-danger fw-bold" id="confirmDeleteBtn">تأكيد الحذف</button>
-        </div>
-      </div>
     </div>
-  </div>
-
-  <!-- toast container -->
-  <div class="toast-container position-fixed top-0 start-0 p-3" style="z-index: 2001;">
-    <div id="appToast" class="toast text-bg-dark border border-secondary" role="alert" aria-live="assertive" aria-atomic="true">
-      <div class="d-flex">
-        <div class="toast-body" id="toastMsg">تم</div>
-        <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
-      </div>
-    </div>
-  </div>
-
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-
-  <script>
-    // =====================================================
-    // Firebase config: ضع نفس بياناتك الحالية هنا (لم نغيّر شيء)
-    // =====================================================
-    const firebaseConfig = {
-      apiKey: "AIzaSyCBVxpqtMCzKH2BTKr70gI9UUlbJuHzFEw",
-      authDomain: "masrof2-9e67a.firebaseapp.com",
-      databaseURL: "https://masrof2-9e67a-default-rtdb.firebaseio.com",
-      projectId: "masrof2-9e67a",
-      storageBucket: "masrof2-9e67a.firebasestorage.app",
-      messagingSenderId: "958997909952",
-      appId: "1:958997909952:web:975ba540314a6389abb825"
-    };
-
-    firebase.initializeApp(firebaseConfig);
-    const db = firebase.database();
-
-    // =====================================================
-    // Floating Menu System - مبسط وتم إصلاحه
-    // =====================================================
-    class FloatingMenu {
-      constructor() {
-        this.isOpen = false;
-        this.menuElement = null;
-        this.overlayElement = null;
-        this.init();
-      }
-
-      init() {
-        // إنشاء القائمة
-        this.createMenu();
-        
-        // إضافة الأحداث
-        document.getElementById('fabMenuButton').addEventListener('click', () => this.toggle());
-      }
-
-      createMenu() {
-        // إنشاء overlay
-        this.overlayElement = document.createElement('div');
-        this.overlayElement.className = 'fab-menu-overlay';
-        this.overlayElement.style.display = 'none';
-        this.overlayElement.addEventListener('click', () => this.close());
-        
-        // إنشاء القائمة
-        this.menuElement = document.createElement('div');
-        this.menuElement.className = 'fab-menu-expanded';
-        this.menuElement.style.display = 'none';
-        this.menuElement.innerHTML = `
-          <div class="fab-menu-header">
-            <div class="d-flex align-items-center gap-2">
-              <span class="brand-dot"></span>
-              <span class="fw-bold">القائمة</span>
-            </div>
-            <button class="fab-menu-close" id="fabMenuClose">
-              <i class="fa-solid fa-xmark"></i>
-            </button>
-          </div>
-          <div class="fab-menu-items">
-            <div class="fab-menu-item" data-tab="tabDashboard">
-              <i class="fa-solid fa-chart-pie"></i>
-              <span>لوحة المتابعة</span>
-            </div>
-            <div class="fab-menu-item" data-tab="tabAdd">
-              <i class="fa-solid fa-wallet"></i>
-              <span>إضافة مصروف</span>
-            </div>
-            <div class="fab-menu-item" data-tab="tabTx">
-              <i class="fa-solid fa-list-check"></i>
-              <span>العمليات</span>
-            </div>
-            <div class="fab-menu-item" data-tab="tabReports">
-              <i class="fa-solid fa-file-invoice-dollar"></i>
-              <span>التقارير</span>
-            </div>
-            <div class="fab-menu-item" data-tab="tabSettings">
-              <i class="fa-solid fa-gear"></i>
-              <span>الإعدادات</span>
-            </div>
-            <hr class="border-secondary my-2 mx-3">
-            <div class="px-3 py-2">
-              <div class="small text-white-50 mb-1">الشهر المحدد</div>
-              <div class="month-badge" id="fabMonthBadge">${new Date().toISOString().slice(0,7)}</div>
-            </div>
-          </div>
-        `;
-        
-        // إضافة العناصر إلى body
-        document.body.appendChild(this.overlayElement);
-        document.body.appendChild(this.menuElement);
-        
-        // إضافة الأحداث للعناصر داخل القائمة
-        const closeBtn = this.menuElement.querySelector('#fabMenuClose');
-        if (closeBtn) {
-          closeBtn.addEventListener('click', () => this.close());
-        }
-        
-        // إضافة الأحداث لبنود القائمة
-        const menuItems = this.menuElement.querySelectorAll('.fab-menu-item');
-        menuItems.forEach(item => {
-          item.addEventListener('click', (e) => {
-            e.preventDefault();
-            const tabId = item.getAttribute('data-tab');
-            this.close();
-            app.switchTab(tabId);
-          });
-        });
-      }
-
-      open() {
-        this.isOpen = true;
-        this.menuElement.style.display = 'block';
-        this.overlayElement.style.display = 'block';
-        
-        // تحديث الشهر في القائمة
-        document.getElementById('fabMonthBadge').textContent = app.state.selectedMonth;
-        
-        // تحديث العنصر النشط
-        this.updateActiveTab();
-      }
-
-      close() {
-        this.isOpen = false;
-        this.menuElement.style.display = 'none';
-        this.overlayElement.style.display = 'none';
-      }
-
-      toggle() {
-        if (this.isOpen) {
-          this.close();
-        } else {
-          this.open();
-        }
-      }
-
-      updateActiveTab() {
-        // إزالة النشط من جميع العناصر
-        const menuItems = this.menuElement.querySelectorAll('.fab-menu-item');
-        menuItems.forEach(item => {
-          item.classList.remove('active');
-        });
-        
-        // إضافة النشط للعنصر الحالي
-        const currentTab = document.querySelector('.tab-pane.active')?.id;
-        if (currentTab) {
-          const activeItem = this.menuElement.querySelector(`[data-tab="${currentTab}"]`);
-          if (activeItem) {
-            activeItem.classList.add('active');
-          }
-        }
-      }
-    }
-
-    // =====================================================
-    // App
-    // =====================================================
-    const UI = {
-      toast: null,
-      showToast(msg){
-        document.getElementById("toastMsg").innerText = msg;
-        if(!this.toast) this.toast = new bootstrap.Toast(document.getElementById("appToast"), { delay: 2600 });
-        this.toast.show();
-      },
-      money(n){
-        const num = Number(n || 0);
-        return new Intl.NumberFormat('en-EG').format(num);
-      },
-      safeText(s){
-        return (s ?? "").toString().replace(/[<>&]/g, ch => ({'<':'&lt;','>':'&gt;','&':'&amp;'}[ch]));
-      }
-    };
-
-    const app = {
-      state: {
-        categories: {},
-        expenses: {},
-        settings: { globalBudget: 0 },
-        selectedMonth: localStorage.getItem("selectedMonth") || new Date().toISOString().slice(0,7),
-        pendingDelete: null,
-      },
-
-      init(){
-        // Initialize floating menu
-        this.floatingMenu = new FloatingMenu();
-
-        // bind month pickers
-        const monthSelectors = ["monthSelector","monthSelectorInline"]
-          .map(id => document.getElementById(id)).filter(Boolean);
-
-        monthSelectors.forEach(el => el.value = this.state.selectedMonth);
-        monthSelectors.forEach(el => el.addEventListener("change", (e)=>{
-          this.state.selectedMonth = e.target.value;
-          localStorage.setItem("selectedMonth", this.state.selectedMonth);
-          monthSelectors.forEach(x => { if (x !== el) x.value = this.state.selectedMonth; });
-          this.renderAll();
-        }));
-
-        // set default date in add form
-        document.getElementById("expenseDate").valueAsDate = new Date();
-
-        // buttons / actions
-        document.getElementById("saveExpenseBtn").addEventListener("click", ()=> this.addExpense());
-        document.getElementById("clearExpenseForm").addEventListener("click", ()=> this.clearExpenseForm());
-        document.getElementById("expenseCategory").addEventListener("change", ()=> this.updateCategoryBalanceHint());
-
-        document.getElementById("saveBudgetBtn").addEventListener("click", ()=> this.saveGlobalSettings());
-        document.getElementById("saveCatBtn").addEventListener("click", ()=> this.saveCategory());
-        document.getElementById("cancelCatEditBtn").addEventListener("click", ()=> this.resetCategoryForm());
-
-        document.getElementById("updateExpenseBtn").addEventListener("click", ()=> this.updateExpense());
-        document.getElementById("confirmDeleteBtn").addEventListener("click", ()=> this.executeDelete());
-
-        document.getElementById("txSearch").addEventListener("input", ()=> this.renderTransactionsTable());
-        document.getElementById("txCatFilter").addEventListener("change", ()=> this.renderTransactionsTable());
-
-        document.getElementById("exportCsvBtn").addEventListener("click", ()=> this.exportCsv());
-
-        document.getElementById("shareTextBtn").addEventListener("click", ()=> this.shareWhatsAppText());
-        document.getElementById("shareImgBtn").addEventListener("click", (e)=> this.shareReportImage(e));
-
-        document.getElementById("quickAddBtn").addEventListener("click", ()=> this.switchTab("tabAdd"));
-        document.getElementById("goTxTab").addEventListener("click", ()=> this.switchTab("tabTx"));
-        document.getElementById("openAllTxFromStat").addEventListener("click", ()=> this.switchTab("tabTx"));
-        document.getElementById("goSettingsCategories").addEventListener("click", ()=> this.switchTab("tabSettings"));
-
-        // sync firebase
-        this.syncData();
-      },
-
-      // دالة لتبديل التبويبات
-      switchTab(tabId) {
-        // إخفاء جميع التبويبات
-        const allTabs = document.querySelectorAll('.tab-pane');
-        allTabs.forEach(tab => {
-          tab.classList.remove('active');
-        });
-        
-        // إظهار التبويب المطلوب
-        const targetTab = document.getElementById(tabId);
-        if (targetTab) {
-          targetTab.classList.add('active');
-          window.scrollTo({ top: 0, behavior: "smooth" });
-        }
-        
-        // تحديث القائمة العائمة إذا كانت مفتوحة
-        if (this.floatingMenu && this.floatingMenu.isOpen) {
-          this.floatingMenu.updateActiveTab();
-        }
-      },
-
-      // --- Firebase Sync (نفس المسارات الموجودة) ---
-      syncData(){
-        const loader = document.getElementById("loader");
-
-        db.ref("categories").on("value", (snap)=>{
-          this.state.categories = snap.val() || {};
-          this.renderCategoryOptions();
-          this.renderAdminCategories();
-          this.renderAll();
-          this.hideLoader(loader);
-        });
-
-        db.ref("expenses").on("value", (snap)=>{
-          this.state.expenses = snap.val() || {};
-          this.renderAll();
-          this.hideLoader(loader);
-        });
-
-        db.ref("settings").on("value", (snap)=>{
-          if(snap.val()){
-            this.state.settings = snap.val();
-            document.getElementById("globalBudgetInput").value = this.state.settings.globalBudget ?? 0;
-            this.renderAll();
-          }
-          this.hideLoader(loader);
-        });
-      },
-
-      hideLoader(loader){
-        if(!loader || loader.dataset.hidden === "1") return;
-        // hide after first successful payload
-        loader.style.opacity = "0";
-        loader.dataset.hidden = "1";
-        setTimeout(()=> loader.remove(), 420);
-      },
-
-      // --- data helpers ---
-      getExpensesList(){
-        return Object.entries(this.state.expenses).map(([id, val]) => ({ id, ...val }));
-      },
-      getCategoriesList(){
-        return Object.entries(this.state.categories).map(([id, val]) => ({ id, ...val }));
-      },
-      getFilteredExpenses(){
-        const m = this.state.selectedMonth;
-        return this.getExpensesList().filter(e => (e.month ? e.month === m : (e.date || "").startsWith(m)));
-      },
-
-      // --- UI rendering ---
-      renderAll(){
-        this.renderDashboard();
-        this.renderTransactionsTable();
-        this.renderRecentTxTable();
-        this.generateReportPreview();
-        this.updateCategoryBalanceHint();
-      },
-
-      renderCategoryOptions(){
-        const cats = this.getCategoriesList().sort((a,b)=> (a.name||"").localeCompare(b.name||""));
-        const opts = ['<option value="">اختر الفئة...</option>']
-          .concat(cats.map(c=> `<option value="${c.id}">${UI.safeText(c.name)}</option>`))
-          .join("");
-
-        document.getElementById("expenseCategory").innerHTML = opts;
-        document.getElementById("editExpCategory").innerHTML = opts;
-
-        const filterOpts = ['<option value="">كل الفئات</option>']
-          .concat(cats.map(c=> `<option value="${c.id}">${UI.safeText(c.name)}</option>`))
-          .join("");
-        document.getElementById("txCatFilter").innerHTML = filterOpts;
-      },
-
-      renderDashboard(){
-        const exps = this.getFilteredExpenses();
-        const cats = this.getCategoriesList();
-
-        let totalSpent = exps.reduce((s,e)=> s + Number(e.amount || 0), 0);
-        let totalBudget = Number(this.state.settings.globalBudget || 0);
-        let remaining = totalBudget - totalSpent;
-
-        document.getElementById("totalBudgetDisplay").innerText = UI.money(totalBudget);
-        document.getElementById("totalSpentDisplay").innerText = UI.money(totalSpent);
-
-        const remEl = document.getElementById("totalRemainingDisplay");
-        remEl.innerText = UI.money(remaining);
-        remEl.className = "value " + (remaining < 0 ? "text-danger-soft" : "text-teal");
-
-        // categories status table
-        const tbody = document.getElementById("categoriesTable");
-        tbody.innerHTML = "";
-
-        // aggregate spent by cat
-        const spentByCat = {};
-        exps.forEach(e => {
-          spentByCat[e.categoryId] = (spentByCat[e.categoryId] || 0) + Number(e.amount || 0);
-        });
-
-        const rows = cats.map(c=>{
-          const limit = Number(c.limit || 0);
-          const spent = Number(spentByCat[c.id] || 0);
-          const rem = limit - spent;
-          const pct = limit > 0 ? Math.min((spent/limit)*100, 999) : 0;
-          return { ...c, limit, spent, rem, pct };
-        }).sort((a,b)=> (b.spent - a.spent));
-
-        rows.forEach(r=>{
-          const pctShow = Math.min(r.pct, 100);
-          const barClass = r.pct > 90 ? "bg-danger" : (r.pct > 60 ? "bg-warning" : "bg-info");
-          const remClass = r.rem < 0 ? "text-danger-soft" : "text-teal";
-
-          const tr = document.createElement("tr");
-          tr.innerHTML = `
-            <td class="fw-bold">${UI.safeText(r.name)}</td>
-            <td class="text-nowrap">${UI.money(r.limit)}</td>
-            <td class="text-nowrap">${UI.money(r.spent)}</td>
-            <td class="text-nowrap fw-bold ${remClass}">${UI.money(r.rem)}</td>
-            <td>
-              <div class="progress" style="height: 7px; background: rgba(255,255,255,.08);">
-                <div class="progress-bar ${barClass}" style="width:${pctShow}%;"></div>
-              </div>
-              <div class="small text-white-50 mt-1">${Math.round(r.pct)}%</div>
-            </td>
-          `;
-          tbody.appendChild(tr);
-        });
-      },
-
-      renderRecentTxTable(){
-        const tbody = document.getElementById("recentTxTable");
-        if(!tbody) return;
-
-        const exps = this.getFilteredExpenses()
-          .sort((a,b)=> new Date(b.date) - new Date(a.date))
-          .slice(0,8);
-
-        if(exps.length === 0){
-          tbody.innerHTML = `<tr><td colspan="5" class="text-center text-white-50 py-3">لا توجد عمليات في هذا الشهر</td></tr>`;
-          return;
-        }
-
-        tbody.innerHTML = exps.map(e=>{
-          const catName = this.state.categories[e.categoryId]?.name || "-";
-          return `
-            <tr>
-              <td class="text-nowrap">${UI.safeText(e.date || "")}</td>
-              <td><span class="badge badge-soft">${UI.safeText(catName)}</span></td>
-              <td class="fw-bold text-gold">${UI.money(e.amount)}</td>
-              <td class="text-white-50">${UI.safeText(e.notes || "")}</td>
-              <td class="text-nowrap">
-                <button class="btn btn-sm btn-outline-info" onclick="app.prepEditExpense('${e.id}')"><i class="fa-solid fa-pen"></i></button>
-                <button class="btn btn-sm btn-outline-danger ms-1" onclick="app.deleteExpense('${e.id}')"><i class="fa-solid fa-trash"></i></button>
-              </td>
-            </tr>
-          `;
-        }).join("");
-      },
-
-      renderTransactionsTable(){
-        const tbody = document.getElementById("txTable");
-        if(!tbody) return;
-
-        const q = (document.getElementById("txSearch").value || "").trim().toLowerCase();
-        const catFilter = document.getElementById("txCatFilter").value;
-
-        let exps = this.getFilteredExpenses().sort((a,b)=> new Date(b.date) - new Date(a.date));
-
-        if(catFilter) exps = exps.filter(e=> e.categoryId === catFilter);
-        if(q){
-          exps = exps.filter(e=> {
-            const catName = (this.state.categories[e.categoryId]?.name || "").toLowerCase();
-            const notes = (e.notes || "").toLowerCase();
-            return catName.includes(q) || notes.includes(q) || (e.date||"").includes(q);
-          });
-        }
-
-        if(exps.length === 0){
-          tbody.innerHTML = `<tr><td colspan="5" class="text-center text-white-50 py-4">لا توجد نتائج</td></tr>`;
-          return;
-        }
-
-        tbody.innerHTML = exps.map(e=>{
-          const catName = this.state.categories[e.categoryId]?.name || "-";
-          return `
-            <tr>
-              <td class="text-nowrap">${UI.safeText(e.date || "")}</td>
-              <td><span class="badge badge-soft">${UI.safeText(catName)}</span></td>
-              <td class="fw-bold text-gold text-nowrap">${UI.money(e.amount)}</td>
-              <td class="text-white-50">${UI.safeText(e.notes || "")}</td>
-              <td class="text-nowrap">
-                <button class="btn btn-sm btn-outline-info" onclick="app.prepEditExpense('${e.id}')"><i class="fa-solid fa-pen"></i></button>
-                <button class="btn btn-sm btn-outline-danger ms-1" onclick="app.deleteExpense('${e.id}')"><i class="fa-solid fa-trash"></i></button>
-              </td>
-            </tr>
-          `;
-        }).join("");
-      },
-
-      renderAdminCategories(){
-        const tbody = document.getElementById("adminCatTable");
-        if(!tbody) return;
-
-        const cats = this.getCategoriesList().sort((a,b)=> (a.name||"").localeCompare(b.name||""));
-        if(cats.length === 0){
-          tbody.innerHTML = `<tr><td colspan="3" class="text-center text-white-50 py-3">لا توجد فئات</td></tr>`;
-          return;
-        }
-
-        tbody.innerHTML = cats.map(c=> `
-          <tr>
-            <td class="fw-bold">${UI.safeText(c.name)}</td>
-            <td class="text-nowrap">${UI.money(c.limit)} ج.م</td>
-            <td class="text-nowrap">
-              <button class="btn btn-sm btn-outline-warning" onclick="app.prepEditCategory('${c.id}')"><i class="fa-solid fa-pen"></i></button>
-              <button class="btn btn-sm btn-outline-danger ms-1" onclick="app.deleteCategory('${c.id}')"><i class="fa-solid fa-trash"></i></button>
-            </td>
-          </tr>
-        `).join("");
-      },
-
-      updateCategoryBalanceHint(){
-        const catId = document.getElementById("expenseCategory").value;
-        const hintEl = document.getElementById("categoryBalanceHint");
-
-        if(!catId || !this.state.categories[catId]){
-          hintEl.innerHTML = "";
-          return;
-        }
-
-        const cat = this.state.categories[catId];
-        const exps = this.getFilteredExpenses().filter(e => e.categoryId === catId);
-        const spent = exps.reduce((s,e)=> s + Number(e.amount||0), 0);
-        const remaining = Number(cat.limit||0) - spent;
-
-        hintEl.innerHTML = `المتبقي من <b>${UI.safeText(cat.name)}</b>: <span class="${remaining < 0 ? 'text-danger-soft' : 'text-teal'} fw-bold">${UI.money(remaining)} ج.م</span>`;
-      },
-
-      // --- actions: expenses ---
-      clearExpenseForm(){
-        document.getElementById("expenseCategory").value = "";
-        document.getElementById("expenseAmount").value = "";
-        document.getElementById("expenseNotes").value = "";
-        document.getElementById("expenseDate").valueAsDate = new Date();
-        this.updateCategoryBalanceHint();
-      },
-
-      addExpense(){
-        const catId = document.getElementById("expenseCategory").value;
-        const amount = document.getElementById("expenseAmount").value;
-        const date = document.getElementById("expenseDate").value;
-        const notes = document.getElementById("expenseNotes").value;
-
-        if(!catId || !amount || !date){
-          UI.showToast("من فضلك املأ (الفئة + المبلغ + التاريخ).");
-          return;
-        }
-
-        const month = date.slice(0,7); // حقل جديد اختياري
-
-        db.ref("expenses").push().set({
-          categoryId: catId,
-          amount: Number(amount),
-          date,
-          month,
-          notes: notes || ""
-        }).then(()=>{
-          UI.showToast("تم حفظ المصروف ✅");
-          document.getElementById("expenseAmount").value = "";
-          document.getElementById("expenseNotes").value = "";
-          this.updateCategoryBalanceHint();
-        }).catch(err => UI.showToast("خطأ في الحفظ: " + err.message));
-      },
-
-      deleteExpense(id){
-        this.state.pendingDelete = { type: "expense", id };
-        new bootstrap.Modal(document.getElementById("confirmModal")).show();
-      },
-
-      prepEditExpense(id){
-        const exp = this.state.expenses[id];
-        if(!exp) return;
-
-        document.getElementById("editExpId").value = id;
-        document.getElementById("editExpCategory").value = exp.categoryId || "";
-        document.getElementById("editExpAmount").value = exp.amount ?? 0;
-        document.getElementById("editExpNotes").value = exp.notes || "";
-        document.getElementById("editExpDate").value = exp.date || "";
-
-        new bootstrap.Modal(document.getElementById("editExpenseModal")).show();
-      },
-
-      updateExpense(){
-        const id = document.getElementById("editExpId").value;
-        const categoryId = document.getElementById("editExpCategory").value;
-        const amount = document.getElementById("editExpAmount").value;
-        const date = document.getElementById("editExpDate").value;
-        const notes = document.getElementById("editExpNotes").value;
-
-        const month = (date || "").slice(0,7);
-
-        db.ref("expenses/" + id).update({
-          categoryId,
-          amount: Number(amount),
-          date,
-          month,
-          notes: notes || ""
-        }).then(()=>{
-          bootstrap.Modal.getInstance(document.getElementById("editExpenseModal")).hide();
-          UI.showToast("تم تحديث المصروف ✅");
-        }).catch(err => UI.showToast("خطأ: " + err.message));
-      },
-
-      // --- actions: settings / categories ---
-      saveGlobalSettings(){
-        const val = document.getElementById("globalBudgetInput").value;
-        db.ref("settings").set({ globalBudget: Number(val || 0) })
-          .then(()=> UI.showToast("تم حفظ الميزانية ✅"))
-          .catch(err => UI.showToast("خطأ: " + err.message));
-      },
-
-      saveCategory(){
-        const id = document.getElementById("editCatId").value;
-        const name = document.getElementById("newCatName").value.trim();
-        const limit = document.getElementById("newCatLimit").value;
-
-        if(!name || !limit){
-          UI.showToast("اكتب اسم الفئة والحد.");
-          return;
-        }
-
-        const payload = { name, limit: Number(limit) };
-
-        if(id){
-          db.ref("categories/" + id).update(payload).then(()=>{
-            UI.showToast("تم تحديث الفئة ✅");
-            this.resetCategoryForm();
-          });
-        }else{
-          db.ref("categories").push(payload).then(()=>{
-            UI.showToast("تم إضافة الفئة ✅");
-            this.resetCategoryForm();
-          });
-        }
-      },
-
-      prepEditCategory(id){
-        const cat = this.state.categories[id];
-        if(!cat) return;
-
-        document.getElementById("editCatId").value = id;
-        document.getElementById("newCatName").value = cat.name || "";
-        document.getElementById("newCatLimit").value = cat.limit ?? 0;
-
-        document.getElementById("cancelCatWrap").classList.remove("d-none");
-        document.getElementById("saveCatBtn").className = "btn btn-warning fw-bold";
-        document.getElementById("saveCatBtn").innerHTML = '<i class="fa-solid fa-rotate me-1"></i>تحديث';
-      },
-
-      resetCategoryForm(){
-        document.getElementById("editCatId").value = "";
-        document.getElementById("newCatName").value = "";
-        document.getElementById("newCatLimit").value = "";
-        document.getElementById("cancelCatWrap").classList.add("d-none");
-        document.getElementById("saveCatBtn").className = "btn btn-primary fw-bold";
-        document.getElementById("saveCatBtn").innerHTML = '<i class="fa-solid fa-plus me-1"></i>حفظ';
-      },
-
-      deleteCategory(id){
-        this.state.pendingDelete = { type: "category", id };
-        new bootstrap.Modal(document.getElementById("confirmModal")).show();
-      },
-
-      executeDelete(){
-        if(!this.state.pendingDelete) return;
-        const { type, id } = this.state.pendingDelete;
-
-        const ref = (type === "category") ? db.ref("categories/" + id) : db.ref("expenses/" + id);
-        ref.remove().then(()=>{
-          UI.showToast("تم الحذف ✅");
-        }).catch(err => UI.showToast("خطأ: " + err.message)).finally(()=>{
-          bootstrap.Modal.getInstance(document.getElementById("confirmModal")).hide();
-          this.state.pendingDelete = null;
-        });
-      },
-
-      // --- reports ---
-      generateReportPreview(){
-        const exps = this.getFilteredExpenses();
-        const cats = this.getCategoriesList();
-        const dateStr = new Date().toLocaleDateString('ar-EG', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
-
-        const spentByCat = {};
-        exps.forEach(e => { spentByCat[e.categoryId] = (spentByCat[e.categoryId] || 0) + Number(e.amount||0); });
-
-        let totalSpent = 0;
-        const rows = cats.map(c=>{
-          const spent = Number(spentByCat[c.id] || 0);
-          totalSpent += spent;
-          const rem = Number(c.limit||0) - spent;
-          const cls = rem < 0 ? "color:#ff7675" : "color:#1abc9c";
-          return `
-            <div style="display:flex;justify-content:space-between;gap:10px;padding:10px 0;border-bottom:1px solid rgba(255,255,255,.08)">
-              <div style="font-weight:700;opacity:.9">${UI.safeText(c.name)}</div>
-              <div style="opacity:.9">
-                <span style="opacity:.65">صرف:</span> <b>${UI.money(spent)}</b>
-                <span style="opacity:.35;margin:0 8px">|</span>
-                <span style="opacity:.65">متبقي:</span> <b style="${cls}">${UI.money(rem)}</b>
-              </div>
-            </div>
-          `;
-        }).join("");
-
-        const budget = Number(this.state.settings.globalBudget || 0);
-        const remAll = budget - totalSpent;
-        const remColor = remAll < 0 ? "#ff7675" : "#1abc9c";
-
-        document.getElementById("reportPreview").innerHTML = `
-          <div style="text-align:center;margin-bottom:14px">
-            <div style="font-size:20px;font-weight:800;color:#f1c40f">
-              <i class="fa-solid fa-file-invoice-dollar"></i> تقرير المصاريف الشهري
-            </div>
-            <div style="margin-top:8px;display:inline-block;padding:6px 10px;border-radius:999px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.08);font-size:13px;opacity:.9">
-              <i class="fa-regular fa-clock"></i> ${UI.safeText(dateStr)} | شهر ${UI.safeText(this.state.selectedMonth)}
-            </div>
-          </div>
-
-          <div style="padding:12px;border-radius:14px;background:rgba(0,0,0,.25);border:1px solid rgba(255,255,255,.08)">
-            <div style="color:#1abc9c;font-weight:800;margin-bottom:10px">تفاصيل الفئات</div>
-            ${rows || '<div style="opacity:.7">لا توجد فئات</div>'}
-          </div>
-
-          <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:14px">
-            <div style="padding:12px;border-radius:14px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);text-align:center">
-              <div style="opacity:.7;font-size:12px">الميزانية</div>
-              <div style="font-weight:900;font-size:18px">${UI.money(budget)}</div>
-            </div>
-            <div style="padding:12px;border-radius:14px;background:rgba(220,53,69,.12);border:1px solid rgba(220,53,69,.25);text-align:center">
-              <div style="opacity:.85;font-size:12px;color:#ff7675">إجمالي الصرف</div>
-              <div style="font-weight:900;font-size:18px;color:#ff7675">${UI.money(totalSpent)}</div>
-            </div>
-            <div style="padding:12px;border-radius:14px;background:rgba(25,135,84,.12);border:1px solid rgba(25,135,84,.25);text-align:center">
-              <div style="opacity:.85;font-size:12px;color:#1abc9c">المتبقي</div>
-              <div style="font-weight:900;font-size:18px;color:${remColor}">${UI.money(remAll)}</div>
-            </div>
-          </div>
-
-          <div style="text-align:center;margin-top:14px;padding-top:10px;border-top:1px solid rgba(255,255,255,.08)">
-            <span style="display:inline-block;padding:6px 10px;border-radius:999px;background:rgba(241,196,15,.10);border:1px solid rgba(241,196,15,.18);color:#f1c40f;font-size:12px">
-              <i class="fa-solid fa-code"></i> تصميم وبرمجة: م. بولس سمير
-            </span>
-          </div>
-        `;
-      },
-
-      shareWhatsAppText(){
-        const exps = this.getFilteredExpenses();
-        const cats = this.getCategoriesList();
-        const spentByCat = {};
-        exps.forEach(e => { spentByCat[e.categoryId] = (spentByCat[e.categoryId] || 0) + Number(e.amount||0); });
-
-        let total = 0;
-        let text = `*تقرير مصاريف - شهر ${this.state.selectedMonth}*%0a`;
-
-        cats.forEach(c=>{
-          const spent = Number(spentByCat[c.id] || 0);
-          total += spent;
-          const rem = Number(c.limit||0) - spent;
-          text += `📌 *${c.name}:* صرف ${Math.round(spent)} (متبقي ${Math.round(rem)})%0a`;
-        });
-
-        text += `------------------%0a`;
-        text += `💰 *الإجمالي:* ${Math.round(total)} / ${Math.round(Number(this.state.settings.globalBudget||0))}`;
-
-        window.open(`https://wa.me/?text=${text}`, "_blank");
-      },
-
-      async shareReportImage(evt){
-        const btn = evt?.currentTarget;
-        const original = btn?.innerHTML;
-        if(btn) btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin me-2"></i>جاري التجهيز...';
-
-        try{
-          const element = document.getElementById("reportPreview");
-          const canvas = await html2canvas(element, { backgroundColor: "#0f2430", scale: 2 });
-          const blob = await new Promise(res => canvas.toBlob(res, "image/png"));
-
-          const file = new File([blob], "Expenses_Report.png", { type: "image/png" });
-
-          if(navigator.share && navigator.canShare && navigator.canShare({ files: [file] })){
-            await navigator.share({ files: [file], title: "تقرير المصاريف", text: "تقرير مصاريف المنزل" });
-          }else{
-            const link = document.createElement("a");
-            link.download = "Expenses_Report.png";
-            link.href = canvas.toDataURL("image/png");
-            link.click();
-            UI.showToast("تم حفظ صورة التقرير على جهازك ✅");
-          }
-        }catch(e){
-          console.error(e);
-          UI.showToast("حدث خطأ أثناء إنشاء الصورة.");
-        }finally{
-          if(btn) btn.innerHTML = original;
-        }
-      },
-
-      exportCsv(){
-        const exps = this.getFilteredExpenses().sort((a,b)=> new Date(a.date) - new Date(b.date));
-        const header = ["date","category","amount","notes"].join(",");
-        const rows = exps.map(e=>{
-          const cat = (this.state.categories[e.categoryId]?.name || "").replaceAll('"','""');
-          const notes = (e.notes || "").replaceAll('"','""');
-          return `"${e.date||""}","${cat}","${Number(e.amount||0)}","${notes}"`;
-        });
-        const csv = [header, ...rows].join("\n");
-
-        const blob = new Blob([csv], { type: "text/csv;charset=utf-8" });
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement("a");
-        a.href = url;
-        a.download = `expenses_${this.state.selectedMonth}.csv`;
-        a.click();
-        URL.revokeObjectURL(url);
-      }
-    };
-
-    // expose for onclick handlers
-    window.app = app;
-
-    document.addEventListener("DOMContentLoaded", ()=> app.init());
-  </script>
+
+    <!-- JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+        // --- تهيئة Firebase ---
+        const firebaseConfig = {
+            apiKey: "AIzaSyCBVxpqtMCzKH2BTKr70gI9UUlbJuHzFEw",
+            authDomain: "masrof2-9e67a.firebaseapp.com",
+            databaseURL: "https://masrof2-9e67a-default-rtdb.firebaseio.com",
+            projectId: "masrof2-9e67a",
+            storageBucket: "masrof2-9e67a.firebasestorage.app",
+            messagingSenderId: "958997909952",
+            appId: "1:958997909952:web:975ba540314a6389abb825"
+        };
+
+        // تهيئة التطبيق
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.database(); // Realtime Database
+
+        const app = {
+            state: {
+                categories: {},
+                expenses: {},
+                settings: { globalBudget: 5000 },
+                selectedMonth: new Date().toISOString().slice(0, 7),
+                pendingDelete: null // To store info about what to delete
+            },
+
+            init: function() {
+                // UI Init
+                document.getElementById('monthSelector').value = this.state.selectedMonth;
+                document.getElementById('expenseDate').valueAsDate = new Date();
+                
+                // Event Listeners
+                document.getElementById('monthSelector').addEventListener('change', (e) => {
+                    this.state.selectedMonth = e.target.value;
+                    this.renderDashboard();
+                });
+
+                document.getElementById('expenseCategory').addEventListener('change', this.updateCategoryBalanceHint.bind(this));
+
+                // Start Sync
+                this.syncData();
+            },
+
+            // --- Firebase Sync ---
+            syncData: function() {
+                const loader = document.getElementById('loader');
+                
+                // Listen to Categories
+                db.ref('categories').on('value', (snapshot) => {
+                    this.state.categories = snapshot.val() || {};
+                    this.renderCategoryOptions();
+                    this.renderDashboard();
+                    this.renderAdminCategories();
+                    loader.style.opacity = '0';
+                    setTimeout(() => loader.style.display = 'none', 500);
+                });
+
+                // Listen to Expenses
+                db.ref('expenses').on('value', (snapshot) => {
+                    this.state.expenses = snapshot.val() || {};
+                    this.renderDashboard();
+                });
+
+                // Listen to Settings
+                db.ref('settings').on('value', (snapshot) => {
+                    if(snapshot.val()) {
+                        this.state.settings = snapshot.val();
+                        document.getElementById('globalBudgetInput').value = this.state.settings.globalBudget;
+                        this.renderDashboard();
+                    }
+                });
+            },
+
+            // --- Core Logic ---
+            getExpensesList: function() {
+                return Object.entries(this.state.expenses).map(([key, val]) => ({ id: key, ...val }));
+            },
+
+            getCategoriesList: function() {
+                return Object.entries(this.state.categories).map(([key, val]) => ({ id: key, ...val }));
+            },
+
+            getFilteredExpenses: function() {
+                return this.getExpensesList().filter(exp => exp.date.startsWith(this.state.selectedMonth));
+            },
+
+            // --- UI Rendering ---
+            renderDashboard: function() {
+                const currentExpenses = this.getFilteredExpenses();
+                
+                // 1. Calculations
+                let totalSpent = 0;
+                currentExpenses.forEach(e => totalSpent += parseFloat(e.amount));
+                const totalBudget = parseFloat(this.state.settings.globalBudget) || 0;
+                const remaining = totalBudget - totalSpent;
+
+                // 2. Update Stats
+                document.getElementById('totalBudgetDisplay').innerText = this.formatMoney(totalBudget);
+                document.getElementById('totalSpentDisplay').innerText = this.formatMoney(totalSpent);
+                document.getElementById('totalRemainingDisplay').innerText = this.formatMoney(remaining);
+                document.getElementById('totalRemainingDisplay').className = `stat-value ${remaining < 0 ? 'text-danger-light' : 'text-teal'}`;
+
+                // 3. Grid
+                this.renderCategoriesGrid(currentExpenses);
+
+                // 4. List
+                this.renderTransactionsList(currentExpenses);
+
+                // 5. Hint Update (if a category is selected in form)
+                this.updateCategoryBalanceHint();
+            },
+
+            renderCategoryOptions: function() {
+                const select = document.getElementById('expenseCategory');
+                const editSelect = document.getElementById('editExpCategory');
+                const currentVal = select.value;
+
+                let opts = '<option value="">اختر الفئة...</option>';
+                this.getCategoriesList().forEach(cat => {
+                    opts += `<option value="${cat.id}">${cat.name}</option>`;
+                });
+                
+                select.innerHTML = opts;
+                editSelect.innerHTML = opts;
+                select.value = currentVal; // Restore selection if possible
+            },
+
+            updateCategoryBalanceHint: function() {
+                const catId = document.getElementById('expenseCategory').value;
+                const hintEl = document.getElementById('categoryBalanceHint');
+                
+                if(!catId || !this.state.categories[catId]) {
+                    hintEl.innerText = '';
+                    return;
+                }
+
+                const cat = this.state.categories[catId];
+                const expenses = this.getFilteredExpenses().filter(e => e.categoryId === catId);
+                const spent = expenses.reduce((sum, e) => sum + parseFloat(e.amount), 0);
+                const remaining = parseFloat(cat.limit) - spent;
+
+                hintEl.innerHTML = `المتبقي: <span class="${remaining < 0 ? 'text-danger' : 'text-success'}">${this.formatMoney(remaining)}</span>`;
+            },
+
+            renderCategoriesGrid: function(currentExpenses) {
+                const grid = document.getElementById('categoriesGrid');
+                grid.innerHTML = '';
+
+                this.getCategoriesList().forEach(cat => {
+                    const spent = currentExpenses
+                        .filter(e => e.categoryId === cat.id)
+                        .reduce((sum, e) => sum + parseFloat(e.amount), 0);
+                    
+                    const limit = parseFloat(cat.limit);
+                    const remaining = limit - spent;
+                    const percent = Math.min((spent / limit) * 100, 100);
+                    
+                    // Colors
+                    let barColor = 'bg-info';
+                    let textColor = 'text-white';
+                    if (percent > 90) { barColor = 'bg-danger'; textColor = 'text-danger-light'; }
+                    else if (percent > 60) { barColor = 'bg-warning'; textColor = 'text-warning'; }
+
+                    const col = document.createElement('div');
+                    col.className = 'col-6 col-md-4 col-lg-3';
+                    col.innerHTML = `
+                        <div class="glass-card text-center" onclick="app.openCategoryDetails('${cat.id}')">
+                            <h6 class="fw-bold mb-1">${cat.name}</h6>
+                            <div class="small opacity-50 mb-1">الميزانية: ${this.formatMoney(limit)}</div>
+                            <div class="h5 fw-bold ${textColor} mb-2">${this.formatMoney(remaining)}</div>
+                            <div class="progress" style="height: 4px; background: rgba(255,255,255,0.1);">
+                                <div class="progress-bar ${barColor}" role="progressbar" style="width: ${percent}%"></div>
+                            </div>
+                        </div>
+                    `;
+                    grid.appendChild(col);
+                });
+            },
+
+            renderTransactionsList: function(expenses) {
+                const list = document.getElementById('transactionsList');
+                list.innerHTML = '';
+                
+                // Sort Descending
+                const sorted = [...expenses].sort((a, b) => new Date(b.date) - new Date(a.date));
+
+                if (sorted.length === 0) {
+                    list.innerHTML = '<div class="text-center text-white-50 py-3">لا توجد عمليات مسجلة</div>';
+                    return;
+                }
+
+                sorted.forEach(exp => {
+                    const catName = this.state.categories[exp.categoryId]?.name || 'محذوف';
+                    const div = document.createElement('div');
+                    div.className = 'transaction-item';
+                    div.style.borderLeftColor = this.getColorForAmount(exp.amount);
+                    div.innerHTML = `
+                        <div class="d-flex flex-column">
+                            <span class="fw-bold text-white">${catName}</span>
+                            <small class="text-white-50" style="font-size:0.75rem">
+                                ${exp.date} ${exp.notes ? ' | ' + exp.notes : ''}
+                            </small>
+                        </div>
+                        <div class="d-flex align-items-center">
+                            <span class="fw-bold text-gold ms-3">${this.formatMoney(exp.amount)}</span>
+                            <div class="btn-group btn-group-sm">
+                                <button class="btn btn-outline-info border-0 p-1" onclick="app.prepEditExpense('${exp.id}')"><i class="fas fa-pen"></i></button>
+                                <button class="btn btn-outline-danger border-0 p-1" onclick="app.deleteExpense('${exp.id}')"><i class="fas fa-trash"></i></button>
+                            </div>
+                        </div>
+                    `;
+                    list.appendChild(div);
+                });
+            },
+
+            // --- Actions ---
+
+            openAdminModal: function() {
+                this.renderAdminCategories();
+                this.generateReportPreview();
+                new bootstrap.Modal(document.getElementById('adminModal')).show();
+            },
+
+            generateReportPreview: function() {
+                const currentExpenses = this.getFilteredExpenses();
+                // Get Arabic formatted date
+                const date = new Date();
+                const dateStr = date.toLocaleDateString('ar-EG', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+                
+                let totalSpent = 0;
+                let categoriesHtml = '';
+
+                this.getCategoriesList().forEach(cat => {
+                    const spent = currentExpenses.filter(e => e.categoryId === cat.id)
+                                    .reduce((sum, e) => sum + parseFloat(e.amount), 0);
+                    totalSpent += spent;
+                    const rem = cat.limit - spent;
+                    const colorClass = rem < 0 ? 'text-danger' : 'text-success';
+                    
+                    categoriesHtml += `
+                        <div class="d-flex justify-content-between border-bottom border-secondary py-2">
+                            <span class="fw-bold text-white-50">${cat.name}</span>
+                            <span class="small">
+                                <span class="text-white-50">صرف:</span> <span class="fw-bold text-white ms-1">${this.formatMoney(spent)}</span>
+                                <span class="mx-1">|</span>
+                                <span class="text-white-50">متبقي:</span> <span class="fw-bold ${colorClass}">${this.formatMoney(rem)}</span>
+                            </span>
+                        </div>
+                    `;
+                });
+                
+                const globalBudget = this.state.settings.globalBudget || 0;
+                const totalRemaining = globalBudget - totalSpent;
+                const remColor = totalRemaining < 0 ? '#ff7675' : '#1abc9c';
+
+                const html = `
+                    <!-- Header -->
+                    <div class="text-center mb-4">
+                        <h4 class="text-gold fw-bold mb-1"><i class="fas fa-file-invoice-dollar me-2"></i>تقرير المصاريف الشهري</h4>
+                        <div class="badge bg-secondary bg-opacity-50 text-light mt-2 p-2 fw-normal" style="font-size: 0.9rem;">
+                            <i class="far fa-clock me-1"></i> ${dateStr}
+                        </div>
+                    </div>
+
+                    <!-- Categories List -->
+                    <div class="p-3 mb-4 rounded" style="background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.05);">
+                        <h6 class="text-teal mb-3 border-bottom border-secondary pb-2">تفاصيل الفئات</h6>
+                        ${categoriesHtml}
+                    </div>
+
+                    <!-- Totals Cards -->
+                    <div class="row text-center g-2 mb-4">
+                        <div class="col-4">
+                            <div class="p-3 rounded border border-secondary" style="background: rgba(255,255,255,0.05);">
+                                <small class="d-block text-white-50 mb-1">الميزانية</small>
+                                <strong class="h5 d-block text-white mb-0">${this.formatMoney(globalBudget)}</strong>
+                            </div>
+                        </div>
+                        <div class="col-4">
+                            <div class="p-3 rounded border border-danger border-opacity-50" style="background: rgba(220, 53, 69, 0.1);">
+                                <small class="d-block text-danger-light mb-1">إجمالي الصرف</small>
+                                <strong class="h5 d-block text-danger-light mb-0">${this.formatMoney(totalSpent)}</strong>
+                            </div>
+                        </div>
+                        <div class="col-4">
+                            <div class="p-3 rounded border border-success border-opacity-50" style="background: rgba(25, 135, 84, 0.1);">
+                                <small class="d-block text-teal mb-1">المتبقي الكلي</small>
+                                <strong class="h5 d-block mb-0" style="color: ${remColor}">${this.formatMoney(totalRemaining)}</strong>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Footer -->
+                    <div class="text-center pt-3 border-top border-secondary">
+                        <div class="d-inline-flex align-items-center justify-content-center px-3 py-1 rounded-pill" style="background: rgba(241, 196, 15, 0.1); border: 1px solid rgba(241, 196, 15, 0.2);">
+                            <small class="text-gold" style="font-size: 0.8rem; letter-spacing: 0.5px;">
+                                <i class="fas fa-code me-1"></i> تصميم وبرمجة: مهندس بولس سمير
+                            </small>
+                        </div>
+                    </div>
+                `;
+                
+                document.getElementById('reportPreview').innerHTML = html;
+            },
+
+            shareWhatsApp: function() {
+                const currentExpenses = this.getFilteredExpenses();
+                let text = `*تقرير مالي - شهر ${this.state.selectedMonth}* %0a`;
+                
+                let totalSpent = 0;
+                this.getCategoriesList().forEach(cat => {
+                    const spent = currentExpenses.filter(e => e.categoryId === cat.id)
+                                    .reduce((sum, e) => sum + parseFloat(e.amount), 0);
+                    totalSpent += spent;
+                    const rem = cat.limit - spent;
+                    text += `📌 *${cat.name}:* صرف ${Math.round(spent)} (متبقي ${Math.round(rem)}) %0a`;
+                });
+
+                text += `------------------%0a`;
+                text += `💰 *الاجمالي:* ${Math.round(totalSpent)} / ${this.state.settings.globalBudget}`;
+
+                window.open(`https://wa.me/?text=${text}`, '_blank');
+            },
+
+            shareImage: function() {
+                const element = document.getElementById('reportPreview');
+                
+                // Show loading or feedback
+                const btn = event.currentTarget;
+                const originalText = btn.innerHTML;
+                btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> جاري التجهيز...';
+                
+                html2canvas(element, {
+                    backgroundColor: '#1e2a36', // Ensure dark background for the image
+                    scale: 2 // Higher resolution
+                }).then(canvas => {
+                    canvas.toBlob(blob => {
+                        const file = new File([blob], "Expenses_Report.png", { type: "image/png" });
+                        
+                        // Check if Web Share API supports files (Mobile mostly)
+                        if (navigator.share && navigator.canShare({ files: [file] })) {
+                            navigator.share({
+                                files: [file],
+                                title: 'تقرير المصاريف',
+                                text: 'تقرير مصاريف المنزل - م. بولس سمير'
+                            }).catch(console.error);
+                        } else {
+                            // Fallback for Desktop: Download the image
+                            const link = document.createElement('a');
+                            link.download = 'House_Report.png';
+                            link.href = canvas.toDataURL();
+                            link.click();
+                            alert('تم حفظ صورة التقرير على جهازك. يمكنك الآن إرسالها عبر الواتساب.');
+                        }
+                        btn.innerHTML = originalText;
+                    });
+                }).catch(err => {
+                    console.error(err);
+                    alert('حدث خطأ أثناء إنشاء الصورة');
+                    btn.innerHTML = originalText;
+                });
+            },
+
+            // 1. Add Expense
+            addExpense: function() {
+                const catId = document.getElementById('expenseCategory').value;
+                const amount = document.getElementById('expenseAmount').value;
+                const date = document.getElementById('expenseDate').value;
+                const notes = document.getElementById('expenseNotes').value;
+
+                if (!catId || !amount || !date) {
+                    alert('يرجى ملء البيانات الأساسية');
+                    return;
+                }
+
+                const newRef = db.ref('expenses').push();
+                newRef.set({
+                    categoryId: catId,
+                    amount: parseFloat(amount),
+                    date: date,
+                    notes: notes || ''
+                }).then(() => {
+                    // Reset Form
+                    document.getElementById('expenseAmount').value = '';
+                    document.getElementById('expenseNotes').value = '';
+                    this.updateCategoryBalanceHint(); // Refresh hint
+                }).catch(err => alert("خطأ في الحفظ: " + err.message));
+            },
+
+            // 2. Delete Expense (NEW)
+            deleteExpense: function(id) {
+                this.state.pendingDelete = { type: 'expense', id: id };
+                new bootstrap.Modal(document.getElementById('confirmModal')).show();
+            },
+
+            // 3. Edit Expense (Prep & Execute)
+            prepEditExpense: function(id) {
+                const exp = this.state.expenses[id];
+                if(!exp) return;
+
+                document.getElementById('editExpId').value = id;
+                document.getElementById('editExpCategory').value = exp.categoryId;
+                document.getElementById('editExpAmount').value = exp.amount;
+                document.getElementById('editExpNotes').value = exp.notes || '';
+                document.getElementById('editExpDate').value = exp.date;
+
+                new bootstrap.Modal(document.getElementById('editExpenseModal')).show();
+            },
+
+            updateExpense: function() {
+                const id = document.getElementById('editExpId').value;
+                const catId = document.getElementById('editExpCategory').value;
+                const amount = document.getElementById('editExpAmount').value;
+                const date = document.getElementById('editExpDate').value;
+                const notes = document.getElementById('editExpNotes').value;
+
+                db.ref('expenses/' + id).update({
+                    categoryId: catId,
+                    amount: parseFloat(amount),
+                    date: date,
+                    notes: notes
+                }).then(() => {
+                    bootstrap.Modal.getInstance(document.getElementById('editExpenseModal')).hide();
+                });
+            },
+
+            // 4. Admin Settings
+            saveGlobalSettings: function() {
+                const val = document.getElementById('globalBudgetInput').value;
+                db.ref('settings').set({ globalBudget: parseFloat(val) });
+            },
+
+            // 5. Category Management (Add/Edit)
+            renderAdminCategories: function() {
+                const list = document.getElementById('adminCatList');
+                list.innerHTML = '';
+                this.getCategoriesList().forEach(cat => {
+                    const item = document.createElement('div');
+                    item.className = 'list-group-item bg-dark bg-opacity-50 text-white d-flex justify-content-between align-items-center mb-1 border-0 rounded';
+                    item.innerHTML = `
+                        <span>
+                            <span class="fw-bold text-info">${cat.name}</span> 
+                            <small class="text-white-50 mx-2">(${cat.limit} ج.م)</small>
+                        </span>
+                        <div>
+                            <button class="btn btn-sm btn-outline-warning me-1" onclick="app.prepEditCategory('${cat.id}')">تعديل</button>
+                            <button class="btn btn-sm btn-outline-danger" onclick="app.deleteCategory('${cat.id}')">حذف</button>
+                        </div>
+                    `;
+                    list.appendChild(item);
+                });
+            },
+
+            prepEditCategory: function(id) {
+                const cat = this.state.categories[id];
+                if(!cat) return;
+
+                document.getElementById('catFormTitle').innerText = 'تعديل الفئة';
+                document.getElementById('editCatId').value = id;
+                document.getElementById('newCatName').value = cat.name;
+                document.getElementById('newCatLimit').value = cat.limit;
+                
+                document.getElementById('saveCatBtn').innerText = 'تحديث';
+                document.getElementById('saveCatBtn').className = 'btn btn-warning';
+                document.getElementById('cancelCatEditBtn').classList.remove('d-none');
+            },
+
+            resetCategoryForm: function() {
+                document.getElementById('catFormTitle').innerText = 'إضافة فئة جديدة';
+                document.getElementById('editCatId').value = '';
+                document.getElementById('newCatName').value = '';
+                document.getElementById('newCatLimit').value = '';
+                
+                document.getElementById('saveCatBtn').innerText = 'إضافة';
+                document.getElementById('saveCatBtn').className = 'btn btn-primary';
+                document.getElementById('cancelCatEditBtn').classList.add('d-none');
+            },
+
+            saveCategory: function() {
+                const id = document.getElementById('editCatId').value;
+                const name = document.getElementById('newCatName').value;
+                const limit = document.getElementById('newCatLimit').value;
+
+                if(!name || !limit) return;
+
+                if(id) {
+                    // Update
+                    db.ref('categories/' + id).update({ name, limit: parseFloat(limit) })
+                      .then(() => this.resetCategoryForm());
+                } else {
+                    // Create
+                    db.ref('categories').push({ name, limit: parseFloat(limit) })
+                      .then(() => this.resetCategoryForm());
+                }
+            },
+
+            // 6. Delete Category (NEW)
+            deleteCategory: function(id) {
+                this.state.pendingDelete = { type: 'category', id: id };
+                new bootstrap.Modal(document.getElementById('confirmModal')).show();
+            },
+
+            // 7. Execute Deletion (Triggered by Modal)
+            executeDelete: function() {
+                if(!this.state.pendingDelete) return;
+
+                const { type, id } = this.state.pendingDelete;
+                
+                if (type === 'category') {
+                     db.ref('categories/' + id).remove().catch(err => alert("خطأ: " + err.message));
+                } else if (type === 'expense') {
+                     db.ref('expenses/' + id).remove().catch(err => alert("خطأ: " + err.message));
+                }
+                
+                // Hide and Reset
+                bootstrap.Modal.getInstance(document.getElementById('confirmModal')).hide();
+                this.state.pendingDelete = null;
+            },
+
+            // --- Modals & Reports ---
+            openCategoryDetails: function(catId) {
+                const cat = this.state.categories[catId];
+                if(!cat) return;
+
+                const exps = this.getFilteredExpenses().filter(e => e.categoryId === catId);
+                const spent = exps.reduce((sum, e) => sum + parseFloat(e.amount), 0);
+                const remaining = parseFloat(cat.limit) - spent;
+
+                document.getElementById('catModalTitle').innerText = cat.name;
+                document.getElementById('catModalLimit').innerText = this.formatMoney(cat.limit);
+                document.getElementById('catModalSpent').innerText = this.formatMoney(spent);
+                document.getElementById('catModalRemaining').innerText = this.formatMoney(remaining);
+
+                const hist = document.getElementById('catModalHistory');
+                hist.innerHTML = '';
+                exps.sort((a,b) => new Date(b.date) - new Date(a.date)).forEach(e => {
+                    hist.innerHTML += `
+                        <li class="list-group-item bg-transparent text-white border-bottom border-secondary d-flex justify-content-between align-items-center">
+                            <span>
+                                <div class="fw-bold">${this.formatMoney(e.amount)}</div>
+                                <small class="text-white-50">${e.date}</small>
+                            </span>
+                            <span class="small text-info">${e.notes || ''}</span>
+                        </li>`;
+                });
+
+                new bootstrap.Modal(document.getElementById('catDetailsModal')).show();
+            },
+
+            showExpenseDetailsModal: function() {
+                const exps = this.getFilteredExpenses().sort((a,b) => new Date(b.date) - new Date(a.date));
+                const tbody = document.getElementById('detailedExpenseTable');
+                tbody.innerHTML = '';
+
+                exps.forEach(e => {
+                    const catName = this.state.categories[e.categoryId]?.name || '-';
+                    tbody.innerHTML += `
+                        <tr>
+                            <td>${e.date}</td>
+                            <td><span class="badge bg-secondary">${catName}</span></td>
+                            <td><small class="text-white-50">${e.notes || ''}</small></td>
+                            <td class="fw-bold text-gold">${this.formatMoney(e.amount)}</td>
+                            <td>
+                                <button class="btn btn-sm btn-link text-info p-0" onclick="app.prepEditExpense('${e.id}'); bootstrap.Modal.getInstance(document.getElementById('expenseDetailsModal')).hide();"><i class="fas fa-pen"></i></button>
+                                <button class="btn btn-sm btn-link text-danger p-0 ms-2" onclick="app.deleteExpense('${e.id}')"><i class="fas fa-trash"></i></button>
+                            </td>
+                        </tr>
+                    `;
+                });
+                new bootstrap.Modal(document.getElementById('expenseDetailsModal')).show();
+            },
+
+            // Utility
+            formatMoney: function(amount) {
+                return new Intl.NumberFormat('en-EG').format(amount);
+            },
+            getColorForAmount: function(amount) {
+                if(amount > 500) return '#e74c3c';
+                if(amount > 200) return '#f1c40f';
+                return '#1abc9c';
+            }
+        };
+
+        // Init
+        document.addEventListener('DOMContentLoaded', () => app.init());
+
+    </script>
 </body>
 </html>
-
